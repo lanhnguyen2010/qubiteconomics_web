@@ -12,17 +12,17 @@ function LoginScreen({navigation, loginSuccess}) {
     const [password, setPassword] = useState("");
 
     const onClickLogin = () => {
-        console.log("onclickLogin aaaa");
-        console.log("onclickLogin " + JSON.stringify(username));
+        console.log("onclickLogin " + username);
         loginSuccess({username: username, password: password});
     };
 
   return (
     <div>
-        <TextField
-        onChange={(text) => {
+        <input
+            onChange={(e) => {
+                const text = e.target.value;
             setUsername(text);
-            setPassword(text)
+            setPassword(text);
         }}
         />
         <Button
