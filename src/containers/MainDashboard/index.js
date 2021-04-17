@@ -20,7 +20,10 @@ class MainDashboardScreen extends Component {
     return (
       <Container fluid>
           <Row>
-              <Col><Candlestick data={{priceData: stockPrice.priceData, volumeData: stockPrice.volumeData}}/></Col>
+              <Col><Candlestick data={{priceData: stockPrice.priceData, volumeData: stockPrice.volumeData}}
+              chartRef={(r) => {
+                console.log("chartRef", r)
+              }}/></Col>
               <Col><LineChart/></Col>
 
           </Row>

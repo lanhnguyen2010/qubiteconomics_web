@@ -6,7 +6,7 @@ import { areaData } from './areaData';
 
 import './CandlestickStyles.css';
 
-function Candlestick({data}) {
+function Candlestick({data, chartRef}) {
   const chartContainerRef = useRef();
   const chart = useRef();
   const chartSeries = useRef();
@@ -39,6 +39,8 @@ function Candlestick({data}) {
         borderColor: '#485c7b',
       },
     });
+
+    chartRef(chart);
 
     chartSeries.current = chart.current.addCandlestickSeries({
       upColor: '#4bffb5',
