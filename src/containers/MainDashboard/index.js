@@ -7,8 +7,6 @@ import {
     Container, Row, Col
   } from 'react-bootstrap';
 
-import * as VOLUMN from "../../components/Candlestick/volumeData"
-
 class MainDashboardScreen extends Component {
   
   componentDidMount() {
@@ -20,9 +18,9 @@ class MainDashboardScreen extends Component {
     console.log('props', this.props);
     const { stockPrice } = this.props;
     return (
-      <Container>
+      <Container fluid>
           <Row>
-              <Col><Candlestick data={{priceData: stockPrice.priceData, volumeData: VOLUMN.volumeData}}/></Col>
+              <Col><Candlestick data={{priceData: stockPrice.priceData, volumeData: stockPrice.volumeData}}/></Col>
               <Col><LineChart/></Col>
 
           </Row>

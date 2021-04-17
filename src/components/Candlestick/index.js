@@ -1,9 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { createChart, CrosshairMode } from 'lightweight-charts';
+import { createChart, CrosshairMode, isBusinessDay } from 'lightweight-charts';
 // import { priceData } from './priceData';
 
 import { areaData } from './areaData';
-import { volumeData } from './volumeData';
 
 import './CandlestickStyles.css';
 
@@ -41,9 +40,6 @@ function Candlestick({data}) {
       },
     });
 
-    console.log(chart.current);
-    console.log('data ' , data);
-
     chartSeries.current = chart.current.addCandlestickSeries({
       upColor: '#4bffb5',
       downColor: '#ff4976',
@@ -53,8 +49,6 @@ function Candlestick({data}) {
       wickUpColor: '#838ca1',
     });
     
-    console.log(data.priceData);
-
     volumeSeries.current = chart.current.addHistogramSeries({
       color: '#182233',
       lineWidth: 2,
@@ -66,6 +60,55 @@ function Candlestick({data}) {
         top: 0.8,
         bottom: 0,
       },
+    });
+    document.body.style.position = 'relative';
+
+    var container = document.createElement('div');
+    document.body.appendChild(container);
+    const width = chartContainerRef.current.clientWidth;
+    const height = chartContainerRef.current.clientHeight;
+    
+    function businessDayToString(businessDay) {
+      return businessDay.year + '-' + businessDay.month + '-' + businessDay.day;
+    }
+
+    var toolTipWidth = 100;
+    var toolTipHeight = 80;
+    var toolTipMargin = 15;
+
+    var toolTip = document.createElement('div');
+    toolTip.className = 'floating-tooltip-2';
+    container.appendChild(toolTip);
+
+    chart.current.subscribeCrosshairMove(function(param) {
+      if (!param.time || param.point.x < 0 || param.point.x > width || param.point.y < 0 || param.point.y > height) {
+        toolTip.style.display = 'none';
+        return;
+      }
+
+      var dateStr = isBusinessDay(param.time)
+        ? businessDayToString(param.time)
+        : new Date(param.time * 1000).toLocaleDateString();
+    
+      toolTip.style.display = 'block';
+      var price = param.seriesPrices.get(chartSeries.current);
+      if (price){
+
+      toolTip.innerHTML = '<div style="color: rgba(255, 70, 70, 1)">Open</div>' +
+        '<div style="font-size: 24px; margin: 4px 0px">' + Math.round(price.open * 100) / 100 + '</div>' +
+        '<div>' + dateStr + '</div>';
+      }
+    
+      var y = param.point.y;
+    
+      var left = param.point.x + 100;
+      var top = y + toolTipMargin;
+      if (top > height - toolTipHeight) {
+        top = y - toolTipHeight - toolTipMargin;
+      }
+    
+      toolTip.style.left = left + 'px';
+      toolTip.style.top = param.point.y + 'px';
     });
   }, []);
 
@@ -88,6 +131,7 @@ function Candlestick({data}) {
   
   useEffect(() => {
     chartSeries.current.setData(data.priceData);
+    console.log("stock data", data);
     volumeSeries.current.setData(data.volumeData);
   },[data]);
 
