@@ -13,17 +13,24 @@ class MainDashboardScreen extends Component {
     super(props);
     this.state = {
       candlestickRef: null,
-      lineChartRef: null
+      lineChartRef: null,
+      intervalId: null,
     }
   }
 
   componentDidMount() {
     const { fetchPriceData } = this.props;
     fetchPriceData();
+    // const intervelId = setInterval(fetchPriceData, 5000);
+    // this.setState({intervalId: intervelId});
   }
 
   componentDidUpdate() {
-    console.log("componentDidUpdate candlestickRef", this.state);
+    console.log("componentDidUpdate candlestickRef", this.state.candlestickRef);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.state.intervalId);
   }
 
   render() {
