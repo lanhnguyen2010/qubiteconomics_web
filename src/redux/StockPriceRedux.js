@@ -13,9 +13,7 @@ const types = {
   
   export const actions = {
     fetchPriceData: (dispatch) => {
-        const data = priceData;
-        console.log('fetchPriceData atcion', data)
-        dispatch(actions.fetchPriceDataSuccess(data));
+        dispatch(actions.fetchPriceDataSuccess(priceData));
 
     },
     fetchPriceDataSuccess: (priceData) => {
@@ -39,7 +37,7 @@ const types = {
       case types.FETCH_PRICE_DATA_SUCCESS: {
         return {
           ...state,
-          priceData: priceData || [],
+          priceData: priceData,
           error: null,
         };
       }
