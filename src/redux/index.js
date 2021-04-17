@@ -5,6 +5,7 @@ import storage from "redux-persist/es/storage";
 
 // You have to import every reducers and combine them.
 import { reducer as UserRedux } from "./UserRedux";
+import { reducer as StockPriceRedux} from './StockPriceRedux';
 
 
 const config = {key: "root",
@@ -20,5 +21,6 @@ blacklist: [
 ]}
 
 export default persistCombineReducers(config, {
-  user: UserRedux
+  user: UserRedux,
+  stockPrice: StockPriceRedux
 });

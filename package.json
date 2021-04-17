@@ -26,7 +26,11 @@
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
     "reduxsauce": "^1.1.0",
-    "reselect": "^4.0.0"
+    "reselect": "^4.0.0",
+    "react-query": "^3.13.4",
+    "react-table": "^7.6.3",
+    "styled-components": "^5.2.3",
+    "lightweight-charts": "^3.3.0"
   },
   "scripts": {
     "start": "react-scripts start",

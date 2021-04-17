@@ -1,0 +1,17 @@
+html,
+body,
+#root,
+.Candlestick {
+  margin: 0;
+  height: 400px;
+}
+
+.Candlestick {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.chart-container {
+  flex: 1;
+}

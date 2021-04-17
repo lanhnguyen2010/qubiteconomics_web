@@ -1,0 +1,17 @@
+html,
+body,
+#root,
+.LineSeries {
+  margin: 0;
+  height: 400px;
+}
+
+.LineSeries {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.chart-container {
+  flex: 1;
+}

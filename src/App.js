@@ -10,12 +10,14 @@ import _ from "lodash";
 import * as ROUTES from './common/Routes';
 import store from './store'
 import Login from './containers/Login'
+import MainDashboard from './containers/MainDashboard'
 
 
 const AppStateLess = () => (
   <Provider store={store}>
     <Router>
       <Route path={ROUTES.LOGIN} component={Login}/>
+      <Route path={ROUTES.HOME} component={MainDashboard}/>
     </Router>
   </Provider>
 );
