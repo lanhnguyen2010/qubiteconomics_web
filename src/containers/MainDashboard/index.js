@@ -1,57 +1,58 @@
 /** @format */
 import {connect} from "react-redux";
-import React, {useEffect, useRef, useState, Component} from "react";
+import React from "react";
 import Candlestick from "../../components/Candlestick";
 import LineChart from "../../components/LineChart"
 import {
-    Container, Row, Col
-  } from 'react-bootstrap';
+  Container, Row, Col
+} from 'react-bootstrap';
 
-class MainDashboardScreen extends Component {
+class MainDashboardScreen extends React.Component {
   
   constructor(props){
     super(props);
-    this.state = {
-      candlestickRef: null,
-      lineChartRef: null
-    }
+
+    this.candlestickRef = React.createRef();
+    this.lineChartRef = React.createRef();
   }
 
   componentDidMount() {
+    this.candlestickRef.current.chart.timeScale().subscribeVisibleTimeRangeChange(this.onVisibleTimeRangeChanged.bind(this));
+    this.lineChartRef.current.chart.timeScale().subscribeVisibleTimeRangeChange(this.onVisibleTimeRangeChanged.bind(this));
+
     const { fetchPriceData } = this.props;
     fetchPriceData();
   }
 
-  componentDidUpdate() {
-    console.log("componentDidUpdate candlestickRef", this.state);
+  onVisibleTimeRangeChanged(event) {
+    this.updateTimeRange(this.lineChartRef.current.chart, event);
+    this.updateTimeRange(this.candlestickRef.current.chart, event);
+  }
+
+  updateTimeRange(chart, event) {
+    if (chart.timeScale().getVisibleRange()) {
+      chart.timeScale().setVisibleRange({
+        from: event.from,
+        to: event.to
+      });
+    }
   }
 
   render() {
-    console.log('props', this.props);
     const { stockPrice } = this.props;
     return (
       <Container fluid>
-          <Row>
-              <Col>
-                <Candlestick data={{priceData: stockPrice.priceData, volumeData: stockPrice.volumeData}}
-                  chartRef={(r) => {
-                  this.setState({candlestickRef : r})
-                }}/>
-              </Col>
-              <Col>
-                <LineChart  data={{openPrice: stockPrice.openPrice}} chartRef={(r) => {
-                  this.state.lineChartRef = r;
-                  if (!this.state.lineChartRef) {
-                    this.setState({lineChartRef : r})
-                  };
-                }}/>
-              </Col>
-
-          </Row>
+        <Row>
+            <Col>
+              <Candlestick ref={this.candlestickRef} data={{priceData: stockPrice.priceData, volumeData: stockPrice.volumeData}} />
+            </Col>
+            <Col>
+              <LineChart ref={this.lineChartRef} data={{openPrice: stockPrice.openPrice}} />
+            </Col>
+        </Row>
       </Container>
     )
   }
- 
 }
 
 const mapDispatchToProps = (dispatch) => {
