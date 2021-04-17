@@ -6,13 +6,11 @@ import LineChart from "../../components/LineChart"
 import {
     Container, Row, Col
   } from 'react-bootstrap';
-// import { priceData as _priceData } from "components/Candlestick/priceData";
-// import { volumnData as _volumnData } from "../../components/Candlestick/volumeData";
+
 import * as VOLUMN from "../../components/Candlestick/volumeData"
 
 class MainDashboardScreen extends Component {
   
-  // Similar to componentDidMount and componentDidUpdate
   componentDidMount() {
     const { fetchPriceData } = this.props;
     fetchPriceData();
@@ -42,6 +40,7 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const mapStateToProps = (state) => {
+  console.log('map to props', state);
   return {
     stockPrice: state.stockPrice
   }

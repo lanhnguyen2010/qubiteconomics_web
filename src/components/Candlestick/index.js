@@ -10,6 +10,8 @@ import './CandlestickStyles.css';
 function Candlestick({data}) {
   const chartContainerRef = useRef();
   const chart = useRef();
+  const chartSeries = useRef();
+  const volumeSeries = useRef();
   const resizeObserver = useRef();
 
   useEffect(() => {
@@ -42,7 +44,7 @@ function Candlestick({data}) {
     console.log(chart.current);
     console.log('data ' , data);
 
-    const candleSeries = chart.current.addCandlestickSeries({
+    chartSeries.current = chart.current.addCandlestickSeries({
       upColor: '#4bffb5',
       downColor: '#ff4976',
       borderDownColor: '#ff4976',
@@ -50,19 +52,10 @@ function Candlestick({data}) {
       wickDownColor: '#838ca1',
       wickUpColor: '#838ca1',
     });
+    
     console.log(data.priceData);
-    candleSeries.setData(data.priceData);
 
-    const areaSeries = chart.current.addAreaSeries({
-      topColor: 'rgba(38,198,218, 0.56)',
-      bottomColor: 'rgba(38,198,218, 0.04)',
-      lineColor: 'rgba(38,198,218, 1)',
-      lineWidth: 2
-    });
-
-    //areaSeries.setData(areaData);
-
-    const volumeSeries = chart.current.addHistogramSeries({
+    volumeSeries.current = chart.current.addHistogramSeries({
       color: '#182233',
       lineWidth: 2,
       priceFormat: {
@@ -74,9 +67,6 @@ function Candlestick({data}) {
         bottom: 0,
       },
     });
-    console.log(data.volumeData);
-
-    volumeSeries.setData(data.volumeData);
   }, []);
 
   // Resize chart on container resizes.
@@ -89,10 +79,18 @@ function Candlestick({data}) {
       }, 0);
     });
 
+
     resizeObserver.current.observe(chartContainerRef.current);
 
     return () => resizeObserver.current.disconnect();
   }, []);
+  
+  
+  useEffect(() => {
+    chartSeries.current.setData(data.priceData);
+    volumeSeries.current.setData(data.volumeData);
+  },[data]);
+
 
   return (
     
