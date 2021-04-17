@@ -14,13 +14,13 @@ const types = {
   export const actions = {
     fetchPriceData: (dispatch) => {
       console.log("fetch data");  
-      fetch("http://113.161.34.115:5022/end-point", {headers: {'Content-Type': 'application/json'}})
+      fetch("http://113.161.34.115:5022/end-point-intraday")
       .then(res => {
         return res.json()
       })
       .then(
         (result) => {   
-          console.log(result);     
+          console.log("result", result[0]);     
           dispatch(actions.fetchPriceDataSuccess(result));
         },
         // Note: it's important to handle errors here
@@ -43,7 +43,8 @@ const types = {
   const initialState = {
      priceData: [],
      error: null,
-     volumeData: []
+     volumeData: [],
+     openPrice: []
   };
   
   export const reducer = (state = initialState, action) => {
@@ -52,8 +53,9 @@ const types = {
       case types.FETCH_PRICE_DATA_SUCCESS: {
         return {
           ...state,
-          priceData: priceData,
-          volumeData: priceData.map(({time, volume}) => ({time : time, value: volume})),
+          priceData: priceData.map((data) => ({ ...data, time : Math.floor(new Date(data.time).getTime()/1000)})),
+          volumeData: priceData.map(({time, volume}) => ({time : Math.floor(new Date(time).getTime()/1000), value: volume})),
+          openPrice: priceData.map(({time, open}) => ({time : Math.floor(new Date(time).getTime()/1000), value: open})),
           error: null,
         };
       }

@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { createChart, CrosshairMode } from 'lightweight-charts';
-import { areaData } from './areaData';
 import './styles.css';
-function LineChart() {
+function LineChart({data, chartRef}) {
     const chartContainerRef = useRef();
     const chart = useRef();
+    const lineSeries = useRef();
     const resizeObserver = useRef();
   
     useEffect(() => {
@@ -31,12 +31,14 @@ function LineChart() {
           },
           timeScale: {
             borderColor: '#485c7b',
+            timeVisible: true,
+            secondsVisible: false
           },
         });
     
-        console.log(chart.current);
+        chartRef(chart);
     
-        const lineSeries = chart.current.addLineSeries({
+        lineSeries.current = chart.current.addLineSeries({
           upColor: '#4bffb5',
           downColor: '#ff4976',
           borderDownColor: '#ff4976',
@@ -44,8 +46,13 @@ function LineChart() {
           wickDownColor: '#838ca1',
           wickUpColor: '#838ca1',
         });
-        lineSeries.setData(areaData);
       }, []);
+        
+  useEffect(() => {
+
+
+    lineSeries.current.setData(data.openPrice);
+  },[data]);
 
   return (
     <div className="LineSeries">

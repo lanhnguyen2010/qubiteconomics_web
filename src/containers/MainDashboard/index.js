@@ -9,6 +9,15 @@ import {
 
 class MainDashboardScreen extends Component {
   
+  constructor(props){
+    super(props);
+    this.state = {
+      candlestickRef: null,
+      lineChartRef: null
+    }
+
+  }
+
   componentDidMount() {
     const { fetchPriceData } = this.props;
     fetchPriceData();
@@ -23,8 +32,12 @@ class MainDashboardScreen extends Component {
               <Col><Candlestick data={{priceData: stockPrice.priceData, volumeData: stockPrice.volumeData}}
               chartRef={(r) => {
                 console.log("chartRef", r)
+                this.state.candlestickRef = r;
               }}/></Col>
-              <Col><LineChart/></Col>
+              <Col><LineChart  data={{openPrice: stockPrice.openPrice}} chartRef={(r) => {
+                this.state.lineChartRef = r;
+                console.log("chartRef", r)
+              }}/></Col>
 
           </Row>
       </Container>

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
+import moment from 'moment';
 import { createChart, CrosshairMode, isBusinessDay } from 'lightweight-charts';
-// import { priceData } from './priceData';
 
 import { areaData } from './areaData';
 
@@ -37,11 +37,11 @@ function Candlestick({data, chartRef}) {
       },
       timeScale: {
         borderColor: '#485c7b',
+        timeVisible: true,
+        secondsVisible: false
       },
     });
-
     chartRef(chart);
-
     chartSeries.current = chart.current.addCandlestickSeries({
       upColor: '#4bffb5',
       downColor: '#ff4976',
@@ -49,10 +49,11 @@ function Candlestick({data, chartRef}) {
       borderUpColor: '#4bffb5',
       wickDownColor: '#838ca1',
       wickUpColor: '#838ca1',
+      timeVisible: true
     });
     
     volumeSeries.current = chart.current.addHistogramSeries({
-      color: '#182233',
+      color: '#186233',
       lineWidth: 2,
       priceFormat: {
         type: 'volume',
@@ -90,15 +91,19 @@ function Candlestick({data, chartRef}) {
 
       var dateStr = isBusinessDay(param.time)
         ? businessDayToString(param.time)
-        : new Date(param.time * 1000).toLocaleDateString();
+        : moment(new Date(param.time * 1000)).format("DD MMM YY hh:mm");
     
       toolTip.style.display = 'block';
       var price = param.seriesPrices.get(chartSeries.current);
+      var volume = param.seriesPrices.get(volumeSeries.current);
+
       if (price){
 
-      toolTip.innerHTML = '<div style="color: rgba(255, 70, 70, 1)">Open</div>' +
-        '<div style="font-size: 24px; margin: 4px 0px">' + Math.round(price.open * 100) / 100 + '</div>' +
-        '<div>' + dateStr + '</div>';
+        toolTip.innerHTML = '<div style="color: rgba(255, 70, 70, 1)">' + dateStr +'</div>' +
+          '<div style="font-size: 12px; margin: 4px 0px"> Open: ' + Math.round(price.open * 100) / 100 + '</div>' +
+          '<div style="font-size: 12px; margin: 4px 0px"> High: ' + Math.round(price.high * 100) / 100 + '</div>' +
+          '<div style="font-size: 12px; margin: 4px 0px"> Close: ' + Math.round(price.close * 100) / 100 + '</div>' +
+          '<div style="font-size: 12px; margin: 4px 0px"> Volume: ' + Math.round(volume * 100) / 100 + '</div>';
       }
     
       var y = param.point.y;
@@ -132,6 +137,7 @@ function Candlestick({data, chartRef}) {
   
   
   useEffect(() => {
+
     chartSeries.current.setData(data.priceData);
     console.log("stock data", data);
     volumeSeries.current.setData(data.volumeData);
