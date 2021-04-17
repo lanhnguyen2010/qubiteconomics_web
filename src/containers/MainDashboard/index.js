@@ -11,17 +11,9 @@ class MainDashboardScreen extends React.Component {
   
   constructor(props){
     super(props);
-<<<<<<< HEAD
 
     this.candlestickRef = React.createRef();
     this.lineChartRef = React.createRef();
-=======
-    this.state = {
-      candlestickRef: null,
-      lineChartRef: null,
-      intervalId: null,
-    }
->>>>>>> 0b773c71ef7d58e8ca242808b149668ca2e0388c
   }
 
   componentDidMount() {
@@ -30,11 +22,8 @@ class MainDashboardScreen extends React.Component {
 
     const { fetchPriceData } = this.props;
     fetchPriceData();
-    // const intervelId = setInterval(fetchPriceData, 5000);
-    // this.setState({intervalId: intervelId});
   }
 
-<<<<<<< HEAD
   onVisibleTimeRangeChanged(event) {
     this.updateTimeRange(this.lineChartRef.current.chart, event);
     this.updateTimeRange(this.candlestickRef.current.chart, event);
@@ -47,14 +36,6 @@ class MainDashboardScreen extends React.Component {
         to: event.to
       });
     }
-=======
-  componentDidUpdate() {
-    console.log("componentDidUpdate candlestickRef", this.state.candlestickRef);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.state.intervalId);
->>>>>>> 0b773c71ef7d58e8ca242808b149668ca2e0388c
   }
 
   render() {
