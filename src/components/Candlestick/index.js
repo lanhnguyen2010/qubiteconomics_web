@@ -41,7 +41,11 @@ function Candlestick({data, chartRef}) {
         secondsVisible: false
       },
     });
-    chartRef(chart);
+    
+    if (chartRef) {
+      chartRef(chart);
+    }
+   
     chartSeries.current = chart.current.addCandlestickSeries({
       upColor: '#4bffb5',
       downColor: '#ff4976',

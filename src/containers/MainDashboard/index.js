@@ -15,12 +15,15 @@ class MainDashboardScreen extends Component {
       candlestickRef: null,
       lineChartRef: null
     }
-
   }
 
   componentDidMount() {
     const { fetchPriceData } = this.props;
     fetchPriceData();
+  }
+
+  componentDidUpdate() {
+    console.log("componentDidUpdate candlestickRef", this.state);
   }
 
   render() {
@@ -29,15 +32,20 @@ class MainDashboardScreen extends Component {
     return (
       <Container fluid>
           <Row>
-              <Col><Candlestick data={{priceData: stockPrice.priceData, volumeData: stockPrice.volumeData}}
-              chartRef={(r) => {
-                console.log("chartRef", r)
-                this.state.candlestickRef = r;
-              }}/></Col>
-              <Col><LineChart  data={{openPrice: stockPrice.openPrice}} chartRef={(r) => {
-                this.state.lineChartRef = r;
-                console.log("chartRef", r)
-              }}/></Col>
+              <Col>
+                <Candlestick data={{priceData: stockPrice.priceData, volumeData: stockPrice.volumeData}}
+                  chartRef={(r) => {
+                  this.setState({candlestickRef : r})
+                }}/>
+              </Col>
+              <Col>
+                <LineChart  data={{openPrice: stockPrice.openPrice}} chartRef={(r) => {
+                  this.state.lineChartRef = r;
+                  if (!this.state.lineChartRef) {
+                    this.setState({lineChartRef : r})
+                  };
+                }}/>
+              </Col>
 
           </Row>
       </Container>
