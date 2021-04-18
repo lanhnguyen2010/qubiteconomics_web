@@ -1,17 +1,18 @@
-import React from "react";
-import { createChart, CrosshairMode } from 'lightweight-charts';
+import BaseChart from "components/charts/BaseChart";
+import { createChart, CrosshairMode, isBusinessDay } from 'lightweight-charts';
+import moment from 'moment';
 
 import './CandlestickStyles.css';
 
-export default class Candlestick extends React.Component {
+export default class Candlestick extends BaseChart {
 
   constructor(props) {
     super(props);
 
-    this.chartContainerRef = React.createRef();
+    this.className = "Candlestick";
   }
 
-  componentDidMount() {
+  createChart() {
     this.chart = createChart(this.chartContainerRef.current, {
       width: this.chartContainerRef.current.clientWidth,
       height: this.chartContainerRef.current.clientHeight,
@@ -61,21 +62,61 @@ export default class Candlestick extends React.Component {
         bottom: 0,
       },
     });
-
-    this.chartSeries.setData(this.props.data.priceData);
-    this.volumeSeries.setData(this.props.data.volumeData);
   }
 
-  componentDidUpdate() {
-    this.chartSeries.setData(this.props.data.priceData);
-    this.volumeSeries.setData(this.props.data.volumeData);
+  addTooltip() {
+    var container = document.createElement('div');
+    document.body.appendChild(container);
+    const height = this.chartContainerRef.current.clientHeight;
+
+    var toolTipHeight = 80;
+    var toolTipMargin = 15;
+
+    var toolTip = document.createElement('div');
+    toolTip.className = 'floating-tooltip-2';
+    container.appendChild(toolTip);
+
+    this.chart.subscribeCrosshairMove((param) => {
+      if (!param.time) {
+        toolTip.style.display = 'none';
+        return;
+      }
+
+      var dateStr = isBusinessDay(param.time) ? this.businessDayToString(param.time) : moment(new Date(param.time * 1000)).format("DD MMM YY hh:mm");
+
+      toolTip.style.display = 'block';
+      var price = param.seriesPrices.get(this.chartSeries);
+      var volume = param.seriesPrices.get(this.volumeSeries);
+
+      if (price) {
+        toolTip.innerHTML = '<div style="color: rgba(255, 70, 70, 1)">' + dateStr +'</div>' +
+          '<div style="font-size: 12px; margin: 4px 0px"> Open: ' + Math.round(price.open * 100) / 100 + '</div>' +
+          '<div style="font-size: 12px; margin: 4px 0px"> Close: ' + Math.round(price.close * 100) / 100 + '</div>' +
+          '<div style="font-size: 12px; margin: 4px 0px"> Low: ' + Math.round(price.low * 100) / 100 + '</div>' +
+          '<div style="font-size: 12px; margin: 4px 0px"> High: ' + Math.round(price.high * 100) / 100 + '</div>' +
+          '<div style="font-size: 12px; margin: 4px 0px"> Volume: ' + Math.round(volume * 100) / 100 + '</div>';
+      }
+
+      var y = param.point.y;
+
+      var left = param.point.x + 100;
+      var top = y + toolTipMargin;
+      if (top > height - toolTipHeight) {
+        top = y - toolTipHeight - toolTipMargin;
+      }
+
+      toolTip.style.left = left + 'px';
+      toolTip.style.top = param.point.y + 'px';
+    })
   }
 
-  render() {
-    return (
-      <div className="Candlestick">
-        <div ref={this.chartContainerRef} className="chart-container" />
-      </div>
-    )
+  setChartData() {
+    /*
+    this.chartSeries.setData(this.props.data.priceData);
+    this.volumeSeries.setData(this.props.data.volumeData);
+    */
+
+    this.chartSeries.setData(this.generateDummyData(false));
+    this.volumeSeries.setData(this.generateDummyData(true));
   }
 }

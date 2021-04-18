@@ -1,17 +1,18 @@
-import React from 'react';
-import { createChart, CrosshairMode } from 'lightweight-charts';
+import BaseChart from "components/charts/BaseChart";
+import { createChart, CrosshairMode, isBusinessDay } from 'lightweight-charts';
+import moment from 'moment';
 
 import './styles.css';
 
-export default class LineChart extends React.Component {
+export default class LineChart extends BaseChart {
 
   constructor(props) {
     super(props);
 
-    this.chartContainerRef = React.createRef();
+    this.className = "LineSeries";
   }
 
-  componentDidMount() {
+  createChart() {
     this.chart = createChart(this.chartContainerRef.current, {
       width: this.chartContainerRef.current.clientWidth,
       height: this.chartContainerRef.current.clientHeight,
@@ -48,19 +49,12 @@ export default class LineChart extends React.Component {
       wickDownColor: '#838ca1',
       wickUpColor: '#838ca1',
     });
-
-    this.chartLineSeries.setData(this.props.data.openPrice);
   }
 
-  componentDidUpdate() {
-    this.chartLineSeries.setData(this.props.data.openPrice);
-  }
+  setChartData() {
+    /*this.chartLineSeries.setData(this.props.data.openPrice);*/
 
-  render() {
-    return (
-      <div className="LineSeries">
-        <div ref={this.chartContainerRef} className="chart-container" />
-      </div>
-    )
+    var data = this.generateDummyData(true);
+    this.chartLineSeries.setData(data);
   }
 }

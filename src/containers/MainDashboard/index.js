@@ -1,8 +1,8 @@
 /** @format */
 import {connect} from "react-redux";
 import React from "react";
-import Candlestick from "../../components/Candlestick";
-import LineChart from "../../components/LineChart"
+import Candlestick from "components/Candlestick";
+import LineChart from "components/LineChart";
 import {
   Container, Row, Col
 } from 'react-bootstrap';
@@ -36,6 +36,11 @@ class MainDashboardScreen extends React.Component {
         to: event.to
       });
     }
+  }
+
+  componentWillUnmount() {
+    this.candlestickRef.current.chart.timeScale().unsubscribeVisibleTimeRangeChange (this.onVisibleTimeRangeChanged.bind(this));
+    this.lineChartRef.current.chart.timeScale().unsubscribeVisibleTimeRangeChange(this.onVisibleTimeRangeChanged.bind(this));
   }
 
   render() {
