@@ -69,7 +69,7 @@ export default class Candlestick extends BaseChart {
     document.body.appendChild(container);
     const height = this.chartContainerRef.current.clientHeight;
 
-    var toolTipHeight = 80;
+    var toolTipHeight = 140;
     var toolTipMargin = 15;
 
     var toolTip = document.createElement('div');
