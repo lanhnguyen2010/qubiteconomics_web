@@ -111,12 +111,10 @@ export default class Candlestick extends BaseChart {
   }
 
   setChartData() {
-    /*
     this.chartSeries.setData(this.props.data.priceData);
     this.volumeSeries.setData(this.props.data.volumeData);
-    */
 
-    this.chartSeries.setData(this.generateDummyData(false));
-    this.volumeSeries.setData(this.generateDummyData(true));
+    // this.chartSeries.setData(this.generateDummyData(false));
+    // this.volumeSeries.setData(this.generateDummyData(true));
   }
 }

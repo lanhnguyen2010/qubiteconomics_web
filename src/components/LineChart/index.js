@@ -52,9 +52,9 @@ export default class LineChart extends BaseChart {
   }
 
   setChartData() {
-    /*this.chartLineSeries.setData(this.props.data.openPrice);*/
+    this.chartLineSeries.setData(this.props.data.openPrice);
 
-    var data = this.generateDummyData(true);
-    this.chartLineSeries.setData(data);
+    // var data = this.generateDummyData(true);
+    // this.chartLineSeries.setData(data);
   }
 }
