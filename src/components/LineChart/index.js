@@ -1,6 +1,7 @@
 import BaseChart from "components/charts/BaseChart";
-import { createChart, CrosshairMode, isBusinessDay } from 'lightweight-charts';
-import moment from 'moment';
+
+import * as am4core from "@amcharts/amcharts4/core";
+import * as am4charts from "@amcharts/amcharts4/charts";
 
 import './styles.css';
 
@@ -13,48 +14,37 @@ export default class LineChart extends BaseChart {
   }
 
   createChart() {
-    this.chart = createChart(this.chartContainerRef.current, {
-      width: this.chartContainerRef.current.clientWidth,
-      height: this.chartContainerRef.current.clientHeight,
-      layout: {
-        backgroundColor: '#253248',
-        textColor: 'rgba(255, 255, 255, 0.9)',
-      },
-      grid: {
-        vertLines: {
-          color: '#334158',
-        },
-        horzLines: {
-          color: '#334158',
-        },
-      },
-      crosshair: {
-        mode: CrosshairMode.Normal,
-      },
-      priceScale: {
-        borderColor: '#485c7b',
-      },
-      timeScale: {
-        borderColor: '#485c7b',
-        timeVisible: true,
-        secondsVisible: false
-      },
-    });
+    am4core.ready(() => {
+      var chart = this.chart = am4core.create(this.chartContainerRef.current, am4charts.XYChart);
 
-    this.chartLineSeries = this.chart.addLineSeries({
-      upColor: '#4bffb5',
-      downColor: '#ff4976',
-      borderDownColor: '#ff4976',
-      borderUpColor: '#4bffb5',
-      wickDownColor: '#838ca1',
-      wickUpColor: '#838ca1',
-    });
+      chart.dateFormatter.inputDateFormat = "yyyy-MM-dd";
+
+      // Create axes
+      var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+      dateAxis.renderer.minGridDistance = 60;
+
+      chart.yAxes.push(new am4charts.ValueAxis());
+
+      // Create series
+      var series = chart.series.push(new am4charts.LineSeries());
+      series.dataFields.valueY = "value";
+      series.dataFields.dateX = "date";
+      series.tooltipText = "{value}"
+
+      series.tooltip.pointerOrientation = "vertical";
+
+      chart.cursor = new am4charts.XYCursor();
+      chart.cursor.snapToSeries = series;
+      chart.cursor.xAxis = dateAxis;
+    })
   }
 
   setChartData() {
-    this.chartLineSeries.setData(this.props.data.openPrice);
+    //this.chart.data = this.props.data.openPrice;
 
-    // var data = this.generateDummyData(true);
-    // this.chartLineSeries.setData(data);
+    am4core.ready(() => {
+      var data = this.generateDummyData(true);
+      this.chart.data = data;
+    })
   }
 }

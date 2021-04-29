@@ -1,6 +1,4 @@
 
-import {priceData} from '../components/Candlestick/priceData';
-
 const types = {
     FETCH_PRICE_DATA_SUCCESS: 'FETCH_PRICE_DATA_SUCCESS',
     FETCH_PRICE_DATA_FAILURE: 'FETCH_PRICE_DATA_FAILURE',

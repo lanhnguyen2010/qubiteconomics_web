@@ -28,11 +28,6 @@ export default class BaseChart extends React.Component {
   }
 
   bindResizeEvents() {
-    const ro = new ResizeObserver((entries) => {
-      const cr = entries[0].contentRect;
-      this.resizeChart(cr.width, cr.height);
-    });
-    ro.observe(this.chartContainerRef.current);
   }
 
   addTooltip() {
@@ -53,7 +48,7 @@ export default class BaseChart extends React.Component {
     times.forEach(day => {
       if (forLineSeries) {
         data.push({
-          time: day,
+          date: day.year + "-" + day.month + "-" + day.day,
           value: this.randomInRange(100, 300)
         });
       } else {
@@ -63,7 +58,7 @@ export default class BaseChart extends React.Component {
         var close = this.randomInRange(low + 5, high - 5);
 
         data.push({
-          time: day,
+          date: day.year + "-" + day.month + "-" + day.day,
           open: open,
           low: low,
           high: high,
@@ -77,11 +72,6 @@ export default class BaseChart extends React.Component {
 
   randomInRange(min, max) {
     return Math.round((Math.random() < 0.5 ? ((1-Math.random()) * (max-min) + min) : (Math.random() * (max-min) + min)) * 100) / 100;
-  }
-
-  resizeChart(width, height) {
-    console.log(width, height);
-    this.chart.resize(width, height);
   }
 
   businessDayToString(date) {
