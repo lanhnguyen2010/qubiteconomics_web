@@ -5,15 +5,13 @@ async function handleErrors(response) {
 }
 
 export const request = async (url, data = {}) => {
-    // try {
-    //     console.log("request url ", url)
-    //     console.log("request data ", data)
-    //     const response = await fetch(url, data)
-    // } catch(err) {
-    //     return {error: err}
-    // }
-
-    //TODO
-
-    return fetch(url, data);
+    return await fetch(url, {
+        method: 'GET',
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin':'*',
+          }
+      }).then(response => {
+          return response;
+      });
 }

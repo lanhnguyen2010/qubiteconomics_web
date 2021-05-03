@@ -15,7 +15,7 @@ class MainDashboardScreen extends React.Component {
     super(props);
 
     this.chartRefs = [];
-    this.chartRefs.push(this.chartC1Ref = React.createRef());
+    //this.chartRefs.push(this.chartC1Ref = React.createRef());
     this.chartRefs.push(this.chartC2Ref = React.createRef());
     this.chartRefs.push(this.chartC3Ref = React.createRef());
   }
@@ -43,18 +43,18 @@ class MainDashboardScreen extends React.Component {
   }
 
   render() {
-    const { stockPrice } = this.props;
+    const { priceVN30Data } = this.props;
     return (
       <Container fluid>
         <Row>
-            <Col>
+            {/* <Col>
               <ForeignDerivativeChart ref={this.chartC1Ref} data={{openPrice: stockPrice.openPrice}} />
+            </Col> */}
+            <Col>
+              <VN30DerivativeChart ref={this.chartC2Ref} data={{openPrice: priceVN30Data}} />
             </Col>
             <Col>
-              <VN30DerivativeChart ref={this.chartC2Ref} data={{openPrice: stockPrice.openPrice}} />
-            </Col>
-            <Col>
-              <VN30DerivativeChart ref={this.chartC3Ref} data={{openPrice: stockPrice.openPrice}} />
+              <VN30DerivativeChart ref={this.chartC3Ref} data={{openPrice: priceVN30Data}} />
             </Col>
         </Row>
       </Container>
@@ -65,14 +65,16 @@ class MainDashboardScreen extends React.Component {
 const mapDispatchToProps = (dispatch) => {
   const {actions} = require("../../redux/StockPriceRedux");
   return {
-    fetchPriceData: () => actions.fetchPriceData(dispatch)
+    fetchPriceData: () =>{
+       actions.fetchPriceVN30Data(dispatch)
+    }
   }
 };
 
 const mapStateToProps = (state) => {
   console.log('map to props', state);
   return {
-    stockPrice: state.stockPrice
+    priceVN30Data: state.priceVN30Data
   }
 }
 

@@ -1,6 +1,10 @@
+import { BASE_URL, VN30_LAST, VN30_PRICE } from "common/Constants";
+import { request } from "./request";
+
 const StockAPI = {
-    loadStockData: {
+    loadVN30Price: async () => {
+        return await request(BASE_URL + VN30_PRICE);
     }
 }
 
-export default UserAPI;
+export default StockAPI;
