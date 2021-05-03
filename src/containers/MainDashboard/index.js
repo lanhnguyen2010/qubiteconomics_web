@@ -1,8 +1,9 @@
 /** @format */
 import {connect} from "react-redux";
 import React from "react";
-import Candlestick from "components/Candlestick";
-import LineChart from "components/LineChart";
+
+import VN30DerivativeChart from "components/charts/main_charts/VN30DerivativeChart";
+import ForeignDerivativeChart from "components/charts/main_charts/ForeignDerivativeChart";
 
 import {
   Container, Row, Col
@@ -13,13 +14,23 @@ class MainDashboardScreen extends React.Component {
   constructor(props){
     super(props);
 
-    this.candlestickRef = React.createRef();
-    this.lineChartRef = React.createRef();
+    this.chartRefs = [];
+    this.chartRefs.push(this.chartC1Ref = React.createRef());
+    this.chartRefs.push(this.chartC2Ref = React.createRef());
+    this.chartRefs.push(this.chartC3Ref = React.createRef());
   }
 
   componentDidMount() {
     const { fetchPriceData } = this.props;
     fetchPriceData();
+
+    for (var i = 0; i < this.chartRefs.length; i++) {
+      for (var j = 0; j < this.chartRefs.length; j++) {
+        if (i != j) {
+          this.chartRefs[i].current.registerOtherCharts(this.chartRefs[j].current.chart);
+        }
+      }
+    }
   }
 
   onVisibleTimeRangeChanged(event) {
@@ -37,10 +48,13 @@ class MainDashboardScreen extends React.Component {
       <Container fluid>
         <Row>
             <Col>
-              <Candlestick ref={this.candlestickRef} data={{priceData: stockPrice.priceData, volumeData: stockPrice.volumeData}} />
+              <ForeignDerivativeChart ref={this.chartC1Ref} data={{openPrice: stockPrice.openPrice}} />
             </Col>
             <Col>
-              <LineChart ref={this.lineChartRef} data={{openPrice: stockPrice.openPrice}} />
+              <VN30DerivativeChart ref={this.chartC2Ref} data={{openPrice: stockPrice.openPrice}} />
+            </Col>
+            <Col>
+              <VN30DerivativeChart ref={this.chartC3Ref} data={{openPrice: stockPrice.openPrice}} />
             </Col>
         </Row>
       </Container>

@@ -1,5 +1,8 @@
 import React from "react";
 
+import * as am4core from "@amcharts/amcharts4/core";
+import * as am4charts from "@amcharts/amcharts4/charts";
+
 export default class BaseChart extends React.Component {
 
   constructor(props) {
@@ -7,21 +10,41 @@ export default class BaseChart extends React.Component {
 
     this.className = "chart";
     this.chartContainerRef = React.createRef();
+
+    this.otherCharts = [];
   }
 
   componentDidMount() {
-    this.createChart();
-    this.setChartData();
+      this.__initChart();
+      this.__initChartBehavior();
 
-    this.bindResizeEvents();
-    this.addTooltip();
+      this.buildChart();
+      this.setChartData();
+
+      this.bindResizeEvents();
+      this.addTooltip();
+
   }
 
   componentDidUpdate() {
     this.setChartData();
   }
 
-  createChart() {
+  __initChart() {
+    this.chart = am4core.create(this.chartContainerRef.current, this.getChartType());
+    this.chart.dateFormatter.inputDateFormat = "yyyy-MM-dd";
+  }
+
+  __initChartBehavior() {
+    this.chart.cursor = new am4charts.XYCursor();
+    this.chart.cursor.behavior = "panX";
+  }
+
+  getChartType() {
+    return am4charts.XYChart;
+  }
+
+  buildChart() {
   }
 
   setChartData(){
@@ -31,6 +54,10 @@ export default class BaseChart extends React.Component {
   }
 
   addTooltip() {
+  }
+
+  registerOtherCharts(chart) {
+    this.otherCharts.push(chart);
   }
 
   generateDummyData(forLineSeries) {
