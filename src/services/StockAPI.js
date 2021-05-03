@@ -1,6 +1,6 @@
 const StockAPI = {
-
-    loadStockData: {}
+    loadStockData: {
+    }
 }
 
 export default UserAPI;
