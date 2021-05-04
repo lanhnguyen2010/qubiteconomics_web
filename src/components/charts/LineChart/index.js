@@ -19,10 +19,11 @@ export default class LineChart extends BaseChart {
     dateAxis.renderer.minGridDistance = 60;
     dateAxis.renderer.grid.template.location = 0.5;
     dateAxis.renderer.labels.template.location = 0.5;
+    dateAxis.skipEmptyPeriods = true;
 
     dateAxis.baseInterval = {
       "timeUnit": "second",
-      "count": 1
+      "count": 5
     };
 
     this.chart.yAxes.push(new am4charts.ValueAxis());
