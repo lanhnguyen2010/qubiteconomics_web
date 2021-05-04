@@ -27,23 +27,17 @@ class MainDashboardScreen extends React.Component {
     for (var i = 0; i < this.chartRefs.length; i++) {
       for (var j = 0; j < this.chartRefs.length; j++) {
         if (i != j) {
-          this.chartRefs[i].current.registerOtherCharts(this.chartRefs[j].current.chart);
+          //this.chartRefs[i].current.registerOtherCharts(this.chartRefs[j].current.chart);
         }
       }
     }
-  }
-
-  onVisibleTimeRangeChanged(event) {
-  }
-
-  updateTimeRange(chart, event) {
   }
 
   componentWillUnmount() {
   }
 
   render() {
-    const { priceVN30Data } = this.props;
+    console.log("before render chart", this.props);
     return (
       <Container fluid>
         <Row>
@@ -51,10 +45,10 @@ class MainDashboardScreen extends React.Component {
               <ForeignDerivativeChart ref={this.chartC1Ref} data={{openPrice: stockPrice.openPrice}} />
             </Col> */}
             <Col>
-              <VN30DerivativeChart ref={this.chartC2Ref} data={{openPrice: priceVN30Data}} />
+              <VN30DerivativeChart ref={this.chartC2Ref} data={{chartData: this.props.PSOutbound}} />
             </Col>
             <Col>
-              <VN30DerivativeChart ref={this.chartC3Ref} data={{openPrice: priceVN30Data}} />
+              <VN30DerivativeChart ref={this.chartC3Ref} data={{chartData: this.props.PSOutbound}} />
             </Col>
         </Row>
       </Container>
@@ -77,7 +71,6 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const mapStateToProps = (state) => {
-  console.log('map to props', state);
   return {
     PSOutbound: state.stockPrice.PSOutbound
   }

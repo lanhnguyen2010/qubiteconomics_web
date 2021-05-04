@@ -17,14 +17,21 @@ export default class LineChart extends BaseChart {
     // Create axes
     var dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
     dateAxis.renderer.minGridDistance = 60;
+    dateAxis.renderer.grid.template.location = 0.5;
+    dateAxis.renderer.labels.template.location = 0.5;
+
+    dateAxis.baseInterval = {
+      "timeUnit": "second",
+      "count": 1
+    };
 
     this.chart.yAxes.push(new am4charts.ValueAxis());
 
     // Create series
     var series = this.chart.series.push(new am4charts.LineSeries());
-    series.dataFields.valueY = "value";
-    series.dataFields.dateX = "date";
-    series.tooltipText = "{value}"
+    series.dataFields.valueY = "price";
+    series.dataFields.dateX = "time";
+    series.tooltipText = "{price}"
 
     series.tooltip.pointerOrientation = "vertical";
 
@@ -42,11 +49,8 @@ export default class LineChart extends BaseChart {
   }
 
   setChartData() {
-    //this.chart.data = this.props.data.openPrice;
-
     am4core.ready(() => {
-      var data = this.generateDummyData(true);
-      this.chart.data = data;
+      this.chart.data = this.props.data.chartData;
     })
   }
 }
