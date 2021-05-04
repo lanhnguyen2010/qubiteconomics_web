@@ -2,49 +2,154 @@
 import StockAPI from 'services/StockAPI';
 
 const types = {
-    FETCH_VN30_PRICE_DATA_SUCCESS: 'FETCH_PRICE_DATA_SUCCESS',
-    FETCH_VN30_PRICE_DATA_FAILURE: 'FETCH_PRICE_DATA_FAILURE',
+    FETCH_PS_OUTBOUND_SUCCESS: "FETCH_PS_OUTBOUND_SUCCESS",
+    FETCH_PS_OUTBOUND_FAILURE: "FETCH_PS_OUTBOUND_FAILURE",
 
-    FETCH_volume_DATA_SUCCESS: 'FETCH_volume_DATA_SUCCESS',
-    FETCH_volume_DATA_FAILURE: 'FETCH_volume_DATA_FAILURE'
- 
-  
+    FETCH_BUSD_OUTBOUND_SUCCESS: "FETCH_BUSD_OUTBOUND_SUCCESS",
+    FETCH_BUSD_OUTBOUND_FAILURE: "FETCH_BUSD_OUTBOUND_FAILURE",
+
+    FETCH_BuySellNNOutbound_SUCCESS: "FETCH_BuySellNNOutbound_SUCCESS",
+    FETCH_BuySellNNOutbound_FAILURE: "FETCH_BuySellNNOutbound_FAILURE",
+
+    FETCH_BusdNNOutbound_SUCCESS: "FETCH_BusdNNOutbound_SUCCESS",
+    FETCH_BusdNNOutbound_FAILURE: "FETCH_BusdNNOutbound_FAILURE",
+
+    FETCH_SuuF1Outbound_SUCCESS: "FETCH_SuuF1Outbound_SUCCESS",
+    FETCH_SuuF1Outbound_FAILURE: "FETCH_SuuF1Outbound_FAILURE",
+
+    FETCH_ArbitUnwind_SUCCESS: "FETCH_ArbitUnwind_SUCCESS",
+    FETCH_ArbitUnwind_FAILURE: "FETCH_ArbitUnwind_FAILURE"
   };
   
   export const actions =  {
-    fetchPriceVN30Data: async (dispatch) => {
-      console.log("fetch data");  
-      
-      await StockAPI.loadVN30Price()
-      .then((result) => {
-        console.log("VN 30 price: ", result);
-        dispatch(actions.fetchPriceDataSuccess(result));     
-       });
+    fetchAllData: {},
+
+    fetchPSOutboundData: async (dispatch) => {
+      const ps = await StockAPI.fetchPSOutbound();
+      if (!ps.error) {
+        console.log("fetchPSOutboundData result", ps.length);
+        dispatch(actions.fetchPSOutboundDataSuccess(ps))
+      }
     },
-    fetchPriceDataSuccess: (priceVN30Data) => {
-        return { type: types.FETCH_VN30_PRICE_DATA_SUCCESS, priceVN30Data};
-    },
-    fetchPriceDataFailure: (error) => {
-        return { type: types.FETCH_VN30_PRICE_DATA_FAILURE, error};
+    fetchPSOutboundDataSuccess: (PSOutbound) => {
+      return { type: types.FETCH_PS_OUTBOUND_SUCCESS, PSOutbound };
     },
 
+    fetchBusdOutboundData: async (dispatch) => {
+      const busd = await StockAPI.fetchBusdOutbound();
+      if (!busd.error) {
+        dispatch(actions.fetchBusdOutboundDataSuccess(busd));
+      }
+    },
+    fetchBusdOutboundDataSuccess: (BusdOutbound) => {
+      return { type: types.FETCH_BUSD_OUTBOUND_SUCCESS, BusdOutbound };
+    },
+
+    fetchBuySellNNOutboundData: async (dispatch) => {
+      const buysellNN = await StockAPI.fetchBuySellNNOutbound();
+      if (!buysellNN.error) {
+        dispatch(actions.fetchBuySellNNOutboundDataSuccess(buysellNN));
+      }
+    },
+    fetchBuySellNNOutboundDataSuccess: (BuySellNNOutbound) => {
+      return { type: types.FETCH_BuySellNNOutbound_SUCCESS, BuySellNNOutbound };
+    },
+ 
+    fetchBusdNNOutboundData: async (dispatch) => {
+      const busdNN = await StockAPI.fetchBusdNNOutbound();
+      if (!busdNN.error) {
+        dispatch(actions.fetchBusdNNOutboundDataSuccess(busdNN));
+      } 
+    },
+    fetchBusdNNOutboundDataSuccess: (BusdNNOutbound) => {
+      return { type: types.FETCH_BusdNNOutbound_SUCCESS, BusdNNOutbound };
+    },
+
+    fetchSuuF1OutboundData: async (dispatch) => {
+      const suuF1 = await StockAPI.fetchSuuF1Outbound();
+      if (!suuF1.error) {
+        dispatch(actions.fetchSuuF1OutboundDataSuccess(suuF1));
+      }
+    },
+    fetchSuuF1OutboundDataSuccess: (SuuF1Outbound) => {
+      return { type: types.FETCH_SuuF1Outbound_SUCCESS, SuuF1Outbound }
+    },
+
+    fetchArbitUnwindData: async (dispatch) => {
+      const data = await StockAPI.fetchArbitUnwind();
+      if (!data.error) {
+        dispatch(actions.fetchArbitUnwindDataSuccess(data));
+      }
+    },
+    fetchArbitUnwindDataSuccess: (ArbitUnwind) => {
+      return { type: types.FETCH_ArbitUnwind_SUCCESS, ArbitUnwind }
+    }
   };
   
   const initialState = {
-     priceData: [],
-     error: null,
-     volumeData: [],
-     openPrice: []
+    PSOutbound: null,
+    BusdOutbound: null,
+    BuySellNNOutbound: null,
+    BusdNNOutbound: null,
+    SuuF1Outbound: null,
+    ArbitUnwind: null,
+
+    PSOutboundError: null,
+    BusdOutboundError: null,
+    BuySellNNOutboundError: null,
+    BusdNNOutboundError: null,
+    SuuF1OutboundError: null,
+    ArbitUnwindError: null
   };
   
   export const reducer = (state = initialState, action) => {
-    const { type, priceVN30Data } = action;
+    const { type, PSOutbound, BusdOutbound, BuySellNNOutbound, BusdNNOutbound, SuuF1Outbound, ArbitUnwind} = action;
     switch (type) {
-      case types.FETCH_VN30_PRICE_DATA_SUCCESS: {
+      case types.FETCH_PS_OUTBOUND_SUCCESS: {
         return {
           ...state,
-          priceVN30Data: priceVN30Data,
-          error: null,
+          PSOutbound: PSOutbound,
+          PSOutboundError: null,
+        };
+      }
+
+      case types.FETCH_BUSD_OUTBOUND_SUCCESS: {
+        return {
+          ...state,
+          BusdOutbound: BusdOutbound,
+          BusdOutboundError: null,
+        };
+      }
+
+      case types.FETCH_BuySellNNOutbound_SUCCESS: {
+        return {
+          ...state,
+          BuySellNNOutbound: BuySellNNOutbound,
+          BuySellNNOutboundError: null,
+        };
+      }
+
+      case types.FETCH_BusdNNOutbound_SUCCESS: {
+        return {
+          ...state,
+          BusdNNOutbound: BusdNNOutbound,
+          BusdNNOutboundError: null,
+        };
+      }
+
+      case types.FETCH_SuuF1Outbound_SUCCESS: {
+        return {
+          ...state,
+          SuuF1Outbound: SuuF1Outbound,
+          SuuF1OutboundError: null,
+        };
+      }
+
+      case types.FETCH_ArbitUnwind_SUCCESS: {
+        return {
+          ...state,
+          ArbitUnwind: ArbitUnwind,
+          ArbitUnwindError: null,
         };
       }
   

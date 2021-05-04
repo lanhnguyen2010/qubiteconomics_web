@@ -1,3 +1,18 @@
-export const BASE_URL= 'http://localhost:5000';
-export const VN30_PRICE = '/api/ps-outbound';
-export const VN30_LAST = '/api/busd-outbound';
+
+export default {
+    BASE_URL: '',
+
+    PS_OUTBOUND_URL: '/api/ps-outbound',
+    // buy updateLocale, sell down
+    BUSD_OUTBOUND_URL: '/api/busd-outbound',
+
+    // foreign PS, buy sell pressure
+    BUYSELL_NN_OUTBOUND_URL: '/api/bs-nn-outbound',
+
+    BUSD_NN_OUTBOUND_URL: '/api/busd-nn-outbound',
+
+    // F1 last  
+    SUU_F1_OUTBOUND_URL: '/api/suu-f1-outbound',
+
+    ARBIT_UNWIND_URL:'/api/arbit-unwind-outbound',
+}

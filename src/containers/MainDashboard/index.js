@@ -21,8 +21,8 @@ class MainDashboardScreen extends React.Component {
   }
 
   componentDidMount() {
-    const { fetchPriceData } = this.props;
-    fetchPriceData();
+    const { fetchAllData } = this.props;
+    fetchAllData();
 
     for (var i = 0; i < this.chartRefs.length; i++) {
       for (var j = 0; j < this.chartRefs.length; j++) {
@@ -65,8 +65,13 @@ class MainDashboardScreen extends React.Component {
 const mapDispatchToProps = (dispatch) => {
   const {actions} = require("../../redux/StockPriceRedux");
   return {
-    fetchPriceData: () =>{
-       actions.fetchPriceVN30Data(dispatch)
+    fetchAllData: () =>{
+       actions.fetchPSOutboundData(dispatch);
+       actions.fetchBusdOutboundData(dispatch);
+       actions.fetchBusdNNOutboundData(dispatch);
+       actions.fetchBuySellNNOutboundData(dispatch);
+       actions.fetchSuuF1OutboundData(dispatch);
+       actions.fetchArbitUnwindData(dispatch);
     }
   }
 };
@@ -74,7 +79,7 @@ const mapDispatchToProps = (dispatch) => {
 const mapStateToProps = (state) => {
   console.log('map to props', state);
   return {
-    priceVN30Data: state.priceVN30Data
+    PSOutbound: state.stockPrice.PSOutbound
   }
 }
 

@@ -1,17 +1,18 @@
 
-async function handleErrors(response) {
-    const respObj = await response.json;
-
-}
-
+/**
+ * An async fetch with error catch
+ * @param url
+ * @param data
+ * @returns {Promise.<*>}
+ */
 export const request = async (url, data = {}) => {
-    return await fetch(url, {
-        method: 'GET',
-        mode: 'no-cors',
-        headers: {
-            'Access-Control-Allow-Origin':'*',
-          }
-      }).then(response => {
-          return response;
-      });
-}
+    try {
+        console.log("request ", url)
+        const response = await fetch(url, data)
+        console.log("response: ", response);
+        return await response.json();
+    } catch (err) {
+        console.log("error", err);
+        return { error: err };
+    }
+};
