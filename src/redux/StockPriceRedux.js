@@ -108,7 +108,7 @@ const types = {
         return {
           ...state,
           PSOutbound: PSOutbound.map((i) => {
-            return {...i, time: new Date(2021, 1, 1, parseInt(i.hour), parseInt(i.minute), parseInt(i.second))}
+            return {price: i.price, time: new Date(2021, 1, 1, parseInt(i.hour), parseInt(i.minute), parseInt(i.second))}
           }),
           PSOutboundError: null,
         };
