@@ -32,7 +32,7 @@ export default class BaseChart extends React.Component {
 
   __initChart() {
     this.chart = am4core.create(this.chartContainerRef.current, this.getChartType());
-    this.chart.dateFormatter.inputDateFormat = "HH:mm:ss";
+    //this.chart.dateFormatter.inputDateFormat = "HH:mm:ss";
   }
 
   __initChartBehavior() {

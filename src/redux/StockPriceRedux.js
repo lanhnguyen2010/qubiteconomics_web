@@ -27,7 +27,6 @@ const types = {
     fetchPSOutboundData: async (dispatch) => {
       const ps = await StockAPI.fetchPSOutbound();
       if (!ps.error) {
-        console.log("fetchPSOutboundData result", ps.length);
         dispatch(actions.fetchPSOutboundDataSuccess(ps))
       }
     },
@@ -108,7 +107,9 @@ const types = {
       case types.FETCH_PS_OUTBOUND_SUCCESS: {
         return {
           ...state,
-          PSOutbound: PSOutbound,
+          PSOutbound: PSOutbound.map((i) => {
+            return {...i, time: new Date(2021, 1, 1, parseInt(i.hour), parseInt(i.minute), parseInt(i.second))}
+          }),
           PSOutboundError: null,
         };
       }

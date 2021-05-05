@@ -51,6 +51,7 @@ export default class LineChart extends BaseChart {
 
   setChartData() {
     am4core.ready(() => {
+      console.log(this.props.data.chartData)
       this.chart.data = this.props.data.chartData;
     })
   }
