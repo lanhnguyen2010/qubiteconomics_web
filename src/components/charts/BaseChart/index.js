@@ -1,18 +1,16 @@
 import React from "react";
 
-// import * as am4core from "@amcharts/amcharts4/core";
-// import * as am4charts from "@amcharts/amcharts4/charts";
-import CanvasJSReact from 'lib/canvasjs.react';
-var CanvasJS = CanvasJSReact.CanvasJS;
+import CanvasJSReact from 'lib/canvasjs.stock.react';
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
+
 export default class BaseChart extends React.Component {
 
   constructor(props) {
     super(props);
 
-    // this.className = "chart";
-    this.chartContainerRef = React.createRef();
-    this.options = {}
+    this.chart = null;
+    this.dataPoints = [];
+    this.options = {};
 
     this.otherCharts = [];
   }
@@ -43,6 +41,9 @@ export default class BaseChart extends React.Component {
     // this.chart.cursor.behavior = "panX";
   }
 
+  getChartOptions() {
+  }
+
   getChartType() {
     // return am4charts.XYChart;
   }
@@ -64,10 +65,9 @@ export default class BaseChart extends React.Component {
   }
 
   render() {
-    console.log("render");
     return (
       <div>
-        <CanvasJSChart options = {this.options} />
+        <CanvasJSChart options={this.getChartOptions()} onRef={ref => this.chart = ref} />
       </div>
     )
   }
