@@ -1,15 +1,18 @@
 import React from "react";
 
-import * as am4core from "@amcharts/amcharts4/core";
-import * as am4charts from "@amcharts/amcharts4/charts";
-
+// import * as am4core from "@amcharts/amcharts4/core";
+// import * as am4charts from "@amcharts/amcharts4/charts";
+import CanvasJSReact from 'lib/canvasjs.react';
+var CanvasJS = CanvasJSReact.CanvasJS;
+var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 export default class BaseChart extends React.Component {
 
   constructor(props) {
     super(props);
 
-    this.className = "chart";
+    // this.className = "chart";
     this.chartContainerRef = React.createRef();
+    this.options = {}
 
     this.otherCharts = [];
   }
@@ -31,17 +34,17 @@ export default class BaseChart extends React.Component {
   }
 
   __initChart() {
-    this.chart = am4core.create(this.chartContainerRef.current, this.getChartType());
+    // this.chart = am4core.create(this.chartContainerRef.current, this.getChartType());
     //this.chart.dateFormatter.inputDateFormat = "HH:mm:ss";
   }
 
   __initChartBehavior() {
-    this.chart.cursor = new am4charts.XYCursor();
-    this.chart.cursor.behavior = "panX";
+    // this.chart.cursor = new am4charts.XYCursor();
+    // this.chart.cursor.behavior = "panX";
   }
 
   getChartType() {
-    return am4charts.XYChart;
+    // return am4charts.XYChart;
   }
 
   buildChart() {
@@ -61,9 +64,10 @@ export default class BaseChart extends React.Component {
   }
 
   render() {
+    console.log("render");
     return (
-      <div className={this.className}>
-        <div ref={this.chartContainerRef} className="chart-container" />
+      <div>
+        <CanvasJSChart options = {this.options} />
       </div>
     )
   }

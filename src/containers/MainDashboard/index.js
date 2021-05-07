@@ -45,14 +45,14 @@ class MainDashboardScreen extends React.Component {
                         <Row style={{height: '30vh'}}>
                             <VN30DerivativeChart ref={this.chartC3Ref} data={{chartData: this.props.PSOutbound}}/>
                         </Row>
-                        <Row style={{height: '30vh'}}>
+                        {/* <Row style={{height: '30vh'}}>
                             <VN30DerivativeChart ref={this.chartC3Ref} data={{chartData: this.props.PSOutbound}}/>
                         </Row>
                         <Row style={{height: '30vh'}}>
                             <VN30DerivativeChart ref={this.chartC3Ref} data={{chartData: this.props.PSOutbound}}/>
-                        </Row>
+                        </Row> */}
                     </Col>
-                    <Col>
+                    {/* <Col>
                         <Row style={{height: '25vh'}}>
                             <VN30DerivativeChart ref={this.chartC3Ref} data={{chartData: this.props.PSOutbound}}/>
                         </Row>
@@ -76,7 +76,7 @@ class MainDashboardScreen extends React.Component {
                         <Row style={{height: '30vh'}}>
                             <VN30DerivativeChart ref={this.chartC3Ref} data={{chartData: this.props.PSOutbound}}/>
                         </Row>
-                    </Col>
+                    </Col> */}
                 </Row>
             </Container>
         )
