@@ -65,10 +65,14 @@ export default class BaseChart extends React.Component {
   }
 
   render() {
+    const containerProps = {
+      width: "100%",
+      height: "100%",
+      margin: "auto"
+    };
+
     return (
-      <div>
-        <CanvasJSChart options={this.getChartOptions()} onRef={ref => this.chart = ref} />
-      </div>
+      <CanvasJSChart options={this.getChartOptions()} onRef={ref => this.chart = ref} containerProps = {containerProps} />
     )
   }
 }

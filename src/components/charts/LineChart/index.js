@@ -1,6 +1,4 @@
 import BaseChart from "components/charts/BaseChart";
-
-import './styles.css';
 export default class LineChart extends BaseChart {
 
   constructor(props) {
@@ -8,34 +6,6 @@ export default class LineChart extends BaseChart {
   }
 
   buildChart() {
-    var chart = this.chart;
-    this.chart.addEventListener("wheel", (e) => {
-      e.preventDefault();
-      
-      if(e.clientX < chart.plotArea.x1 || e.clientX > chart.plotArea.x2 || e.clientY < chart.plotArea.y1 || e.clientY > chart.plotArea.y2)
-        return;
-        
-      var axisX = chart.axisX[0];
-      var viewportMin = axisX.get("viewportMinimum"),
-          viewportMax = axisX.get("viewportMaximum"),
-          interval = axisX.get("minimum");
-    
-      var newViewportMin, newViewportMax;
-    
-      if (e.deltaY < 0) {
-        newViewportMin = viewportMin + interval;
-        newViewportMax = viewportMax - interval;
-      }
-      else if (e.deltaY > 0) {
-        newViewportMin = viewportMin - interval;
-        newViewportMax = viewportMax + interval;
-      }
-    
-      if(newViewportMin >= chart.axisX[0].get("minimum") && newViewportMax <= chart.axisX[0].get("maximum") && (newViewportMax - newViewportMin) > (2 * interval)){
-        chart.axisX[0].set("viewportMinimum", newViewportMin, false);
-        chart.axisX[0].set("viewportMaximum", newViewportMax);
-      }
-    });
   }
 
   getChartName() {
@@ -60,10 +30,19 @@ export default class LineChart extends BaseChart {
         includeZero: false,
 
         tickLength: 2,
-        tickColor: "red"
+        tickColor: "red",
+
+        scaleBreaks: {
+          customBreaks: [{
+            lineThickness: 0,
+            collapsibleThreshold: "0%",
+            spacing: 0,
+            startValue: new Date(2021, 1, 1, 11, 30, 0),
+            endValue: new Date(2021, 1, 1, 13, 0, 0)
+          }]
+        }
       },
       axisY: {
-        title: "Price",
         crosshair: {
           enabled: true
         },
