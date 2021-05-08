@@ -129,13 +129,18 @@ export default class LineChart extends BaseChart {
     }, 1500)
   }
 
-  setChartData() {
+  setDataPoints()
+  {
     let chartData = this.props.data.chartData;
     if (!chartData) chartData = [];
-    console.log(this.getChartName() + " Chart data: ", chartData)
-
     this.chart.options.data[0].dataPoints = chartData.map(item => ({ x: item.time, y: item.price }));
+  }
 
+  setChartData() {
+
+    this.setDataPoints();
+    let chartData = this.props.data.chartData;
+    if (!chartData) chartData = [];
     if (chartData.length)
     {
       var axisX = this.chart.axisX[0];

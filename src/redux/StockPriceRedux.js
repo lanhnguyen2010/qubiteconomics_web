@@ -123,7 +123,6 @@ const types = {
       }
 
       case types.FETCH_BuySellNNOutbound_SUCCESS: {
-        console.log("FETCH_BuySellNNOutbound_SUCCESS ", BuySellNNOutbound)
         return {
           ...state,
           BuySellNNOutbound: BuySellNNOutbound.buySell.time.map((i, index) => {
@@ -152,13 +151,20 @@ const types = {
       }
 
       case types.FETCH_SuuF1Outbound_SUCCESS: {
+        console.log("FETCH_SuuF1Outbound_SUCCESS ", SuuF1Outbound)
+
         return {
           ...state,
           SuuF1Outbound: SuuF1Outbound.map((i) => {
 
             //TODO timestamp not working
             let iTimeSplit = i.time.split(":")
-            return {price: i.last, time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2]))}
+            return {
+              price: i.last,
+              foreignerBuyVolume: i.foreignerBuyVolume,
+              foreignerSellVolume: i.foreignerSellVolume,
+              time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2]))
+            }
 
           }),
           SuuF1OutboundError: null,

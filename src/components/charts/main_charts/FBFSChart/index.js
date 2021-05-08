@@ -1,6 +1,6 @@
 import LineChart from "components/charts/LineChart";
 
-export default class BuySellPressureChart extends LineChart {
+export default class FBFSChart extends LineChart {
 
   constructor(props) {
     super(props);
@@ -22,7 +22,7 @@ export default class BuySellPressureChart extends LineChart {
   setDataPoints() {
     let chartData = this.props.data.chartData;
     if (!chartData) chartData = [];
-    this.chart.options.data[0].dataPoints = chartData.map(item => ({ x: item.time, y: item.sellPressure }));
-    this.chart.options.data[1].dataPoints = chartData.map(item => ({ x: item.time, y: item.buyPressure }));
+    this.chart.options.data[0].dataPoints = chartData.map(item => ({ x: item.time, y: item.foreignerBuyVolume }));
+    this.chart.options.data[1].dataPoints = chartData.map(item => ({ x: item.time, y: item.foreignerSellVolume }));
   }
 }
