@@ -58,26 +58,47 @@ export default class LineChart extends BaseChart {
       var chart = this.chart;
 
       var axisX = chart.axisX[0];
-      var viewportMin = axisX.get("viewportMinimum");
-      var viewportMax = axisX.get("viewportMaximum");
+      var currentViewportMin = axisX.get("viewportMinimum");
+      var currentViewportMax = axisX.get("viewportMaximum");
+      var currentMinuteDiffs = parseInt((currentViewportMax - currentViewportMin) / 1000 / 60);
+
       var interval = 5 * 60 * 1000;
     
       var newViewportMin, newViewportMax;
     
       if (event.deltaY < 0) {
-        newViewportMin = viewportMin + interval;
-        newViewportMax = viewportMax - interval;
+        newViewportMin = currentViewportMin + interval;
+        newViewportMax = currentViewportMax - interval;
       }
       else if (event.deltaY > 0) {
-        newViewportMin = viewportMin - interval;
-        newViewportMax = viewportMax + interval;
+        newViewportMin = currentViewportMin - interval;
+        newViewportMax = currentViewportMax + interval;
       }
 
-      if (newViewportMin >= chart.axisX[0].get("minimum") && newViewportMax <= chart.axisX[0].get("maximum") && (newViewportMax - newViewportMin) >= (2 * interval)) {
+      if (newViewportMin < this.minDateTimestamp) newViewportMin = this.minDateTimestamp;
+      if (newViewportMax > this.currentViewportMax) newViewportMax = this.currentViewportMax;
+
+      var minuteDiffs = parseInt((newViewportMax - newViewportMin) / 1000 / 60);
+
+      if (currentMinuteDiffs != minuteDiffs && minuteDiffs >= 20) {
         chart.axisX[0].set("viewportMinimum", newViewportMin, false);
         chart.axisX[0].set("viewportMaximum", newViewportMax);
 
-        this.syncViewports();
+        var chartInterval = 0;
+        if (minuteDiffs <= 40) {
+          chartInterval = 3;
+        }
+        else if (minuteDiffs <= 60) {
+          chartInterval = 5;
+        }
+        else if (minuteDiffs <= 120) {
+          chartInterval = 10;
+        } else {
+          chartInterval = 30;
+        }
+        chart.axisX[0].set("interval", chartInterval);
+
+        this.syncViewports(chartInterval);
       }
     });
 
@@ -121,6 +142,9 @@ export default class LineChart extends BaseChart {
 
       axisX.set("viewportMinimum", minDate);
       axisX.set("viewportMaximum", maxDate);
+
+      this.minDateTimestamp = chartData[chartData.length - 1].time.getTime();
+      this.maxDateTimestamp = chartData[0].time.getTime();
 
       axisX.set("scaleBreaks", {
         customBreaks: [{
