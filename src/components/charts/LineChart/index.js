@@ -20,6 +20,7 @@ export default class LineChart extends BaseChart {
       animationEnabled: true,
       zoomEnabled: true,
       panEnabled: true,
+      colorSet: "customColorSet1",
       legend: {
         horizontalAlign: "right", // "center" , "right"
         verticalAlign: "top",  // "top" , "bottom"
@@ -31,7 +32,9 @@ export default class LineChart extends BaseChart {
         }
       },
       title: {
-        text: this.getChartName()
+        text: this.getChartName(),
+        fontSize: 14,
+        horizontalAlign: "left"
       },
       toolTip:{
         content:"{y}" ,

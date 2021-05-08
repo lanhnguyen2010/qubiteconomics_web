@@ -2,7 +2,21 @@ import React from "react";
 
 import CanvasJSReact from 'lib/canvasjs.stock.react';
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
+const CanvasJS = CanvasJSReact.CanvasJS;
 
+CanvasJS.addColorSet("customColorSet1",
+    [//colorSet Array
+      "#4661EE",
+      "#EC5657",
+      "#1BCDD1",
+      "#8FAABB",
+      "#B08BEB",
+      "#3EA0DD",
+      "#F5A52A",
+      "#23BFAA",
+      "#FAA586",
+      "#EB8CC6",
+    ]);
 export default class BaseChart extends React.Component {
 
   constructor(props) {

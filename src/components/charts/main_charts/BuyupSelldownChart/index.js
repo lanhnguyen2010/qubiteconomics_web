@@ -24,6 +24,15 @@ export default class BuyupSelldownChart extends LineChart {
       xValueType: "dateTime",
       yValueFormatString: "#,##0.00",
       dataPoints: this.dataPoints
+    });
+    options.data.push({
+      type: "bubble",
+      lineThickness: 1,
+      showInLegend: true,
+      legendText: "Arbit",
+      xValueType: "dateTime",
+      yValueFormatString: "#,##0.00",
+      dataPoints: this.dataPoints
     })
     return options;
   }
