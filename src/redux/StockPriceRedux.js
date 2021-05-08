@@ -130,7 +130,12 @@ const types = {
 
             //TODO timestamp not working
             let iTimeSplit = i.split(":")
-            return {price: BuySellNNOutbound.buySell.netNN[index], time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2]))}
+            return {
+              price: BuySellNNOutbound.buySell.netNN[index],
+              time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
+              buyPressure: BuySellNNOutbound.buySell.buyPressure[index],
+              sellPressure: BuySellNNOutbound.buySell.sellPressure[index]
+            }
 
             //return {time: new Date(timeStamp/1000000 - 7*60*60*1000), price: BuySellNNOutbound.buySell.netNN[index]}
           }).reverse(),
@@ -147,7 +152,6 @@ const types = {
       }
 
       case types.FETCH_SuuF1Outbound_SUCCESS: {
-        console.log("FETCH_SuuF1Outbound_SUCCESS", SuuF1Outbound)
         return {
           ...state,
           SuuF1Outbound: SuuF1Outbound.map((i) => {

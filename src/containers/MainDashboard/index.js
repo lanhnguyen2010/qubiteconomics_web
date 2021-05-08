@@ -4,6 +4,7 @@ import React from "react";
 import VN30DerivativeChart from "components/charts/main_charts/VN30DerivativeChart";
 import ForeignDerivativeChart from "components/charts/main_charts/ForeignDerivativeChart";
 import SuuF1Chart from "components/charts/main_charts/SuuF1Chart";
+import BuySellPressureChart from "components/charts/main_charts/BuySellPressureChart";
 
 import {
     Container, Row, Col, Form
@@ -61,7 +62,7 @@ class MainDashboardScreen extends React.Component {
                             <ForeignDerivativeChart ref={this.chartC4Ref} data={{chartData: this.props.BuySellNNOutbound}}/>
                         </Row>
                         <Row style={{height: '25vh'}}>
-                            <VN30DerivativeChart ref={this.chartC5Ref} data={{chartData: this.props.PSOutbound}}/>
+                            <BuySellPressureChart ref={this.chartC5Ref} data={{chartData: this.props.BuySellNNOutbound}}/>
                         </Row>
                         <Row style={{height: '10vh'}}></Row>
                         <Row style={{height: '30vh'}}>
