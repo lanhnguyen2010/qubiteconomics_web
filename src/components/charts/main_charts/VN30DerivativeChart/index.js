@@ -10,4 +10,7 @@ export default class VN30DerivativeChart extends LineChart {
     return "VN30Index PS";
   }
 
+  getChartLegendText(){
+    return "Co so";
+  }
 }

@@ -11,6 +11,9 @@ export default class LineChart extends BaseChart {
     return "";
   }
 
+  getChartLegendText(){
+    return ""
+  }
   getChartOptions() {
     const options = {
       theme: "light1",
@@ -20,7 +23,7 @@ export default class LineChart extends BaseChart {
       legend: {
         horizontalAlign: "right", // "center" , "right"
         verticalAlign: "top",  // "top" , "bottom"
-        fontSize: 11,
+        fontSize: 9,
         fontWeight: "normal",
         itemclick: function (e) {
           e.dataSeries.visible = !(typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible);
@@ -56,6 +59,8 @@ export default class LineChart extends BaseChart {
       data: [{
         type: "line",
         lineThickness: 1,
+        showInLegend: true,
+        legendText: this.getChartLegendText(),
         xValueType: "dateTime",
         yValueFormatString: "#,##0.00",
         dataPoints: this.dataPoints

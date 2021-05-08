@@ -167,6 +167,7 @@ const types = {
               AskV  : i.totalOfferVolume,
               NetBA : i.Net_BA,
               SMA : i.SMA,
+              NetBS : i['Net_BU&SD2'],
               time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2]))
             }
 

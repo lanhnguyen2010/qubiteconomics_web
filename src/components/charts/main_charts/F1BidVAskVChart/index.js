@@ -7,8 +7,9 @@ export default class F1BidVAskVChart extends LineChart {
   }
 
   getChartName() {
-    return "F1 BidV, AskV";
+    return "";
   }
+
   getChartOptions(){
     let options = super.getChartOptions();
     options.data[0].showInLegend = true;

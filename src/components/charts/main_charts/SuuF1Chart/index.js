@@ -7,7 +7,11 @@ export default class SuuF1Chart extends LineChart {
   }
 
   getChartName() {
-    return "SUU F1";
+    return "F1 BidV, AskV";
+  }
+
+  getChartLegendText(){
+    return "last";
   }
 
 }

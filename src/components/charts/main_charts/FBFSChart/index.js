@@ -7,13 +7,20 @@ export default class FBFSChart extends LineChart {
   }
 
   getChartName() {
-    return "BuySell Pressure";
+    return "";
   }
+
+  getChartLegendText() {
+    return "FB";
+  }
+
   getChartOptions(){
     let options = super.getChartOptions();
     options.data.push({
       type: "line",
       lineThickness: 1,
+      showInLegend: true,
+      legendText: "FS",
       xValueType: "dateTime",
       yValueFormatString: "#,##0.00",
       dataPoints: this.dataPoints
