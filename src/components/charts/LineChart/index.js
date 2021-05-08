@@ -20,6 +20,9 @@ export default class LineChart extends BaseChart {
       title: {
         text: this.getChartName()
       },
+      toolTip:{
+        content:"{y}" ,
+      },
       axisX: {
         crosshair: {
           enabled: true,

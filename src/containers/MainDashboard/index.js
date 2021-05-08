@@ -3,6 +3,7 @@ import React from "react";
 
 import VN30DerivativeChart from "components/charts/main_charts/VN30DerivativeChart";
 import ForeignDerivativeChart from "components/charts/main_charts/ForeignDerivativeChart";
+import SuuF1Chart from "components/charts/main_charts/SuuF1Chart";
 
 import {
     Container, Row, Col, Form
@@ -71,7 +72,7 @@ class MainDashboardScreen extends React.Component {
                     </Col>
                     <Col>
                         <Row style={{height: '30vh'}}>
-                            <VN30DerivativeChart ref={this.chartC6Ref} data={{chartData: this.props.PSOutbound}}/>
+                            <SuuF1Chart ref={this.chartC6Ref} data={{chartData: this.props.SuuF1Outbound}}/>
                         </Row>
                         <Row style={{height: '30vh'}}>
                             <VN30DerivativeChart ref={this.chartC7Ref} data={{chartData: this.props.PSOutbound}}/>
@@ -103,7 +104,8 @@ const mapDispatchToProps = (dispatch) => {
 const mapStateToProps = (state) => {
     return {
         PSOutbound: state.stockPrice.PSOutbound,
-        BuySellNNOutbound: state.stockPrice.BuySellNNOutbound
+        BuySellNNOutbound: state.stockPrice.BuySellNNOutbound,
+        SuuF1Outbound: state.stockPrice.SuuF1Outbound
     }
 }
 
