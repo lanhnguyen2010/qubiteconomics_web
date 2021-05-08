@@ -1,17 +1,17 @@
 import LineChart from "components/charts/LineChart";
 
-export default class BuySellPressureChart extends LineChart {
+export default class BuyupSelldownChart extends LineChart {
 
   constructor(props) {
     super(props);
   }
 
   getChartName() {
-    return "BuySell Pressure";
+    return "Buyup, Selldown";
   }
 
   getChartLegendText() {
-    return "buy Pressure";
+    return "BU";
   }
 
   getChartOptions(){
@@ -20,7 +20,7 @@ export default class BuySellPressureChart extends LineChart {
       type: "line",
       lineThickness: 1,
       showInLegend: true,
-      legendText: "sell Pressure",
+      legendText: "SD",
       xValueType: "dateTime",
       yValueFormatString: "#,##0.00",
       dataPoints: this.dataPoints
@@ -30,9 +30,8 @@ export default class BuySellPressureChart extends LineChart {
   setDataPoints() {
     let chartData = this.props.data.chartData;
     if (!chartData) chartData = [];
-    this.chart.options.data[0].dataPoints = chartData.map(item => ({ x: item.time, y: item.buyPressure }));
-    this.chart.options.data[1].dataPoints = chartData.map(item => ({ x: item.time, y: item.sellPressure }));
-    console.log("BuySellPressureChart", this.chart.options.data)
-
+    this.chart.options.data[0].dataPoints = chartData.map(item => ({ x: item.time, y: item.BU }));
+    this.chart.options.data[1].dataPoints = chartData.map(item => ({ x: item.time, y: item.SD }));
+    console.log("BuyupSelldownChart", this.chart.options.data)
   }
 }

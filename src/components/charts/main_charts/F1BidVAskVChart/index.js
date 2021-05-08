@@ -52,6 +52,5 @@ export default class F1BidVAskVChart extends LineChart {
     this.chart.options.data[1].dataPoints = chartData.map(item => ({ x: item.time, y: item.AskV}));
     this.chart.options.data[2].dataPoints = chartData.map(item => ({ x: item.time, y: item.NetBA }));
     this.chart.options.data[3].dataPoints = chartData.map(item => ({ x: item.time, y: item.SMA }));
-    console.log("F1 BidV, AskV", chartData)
   }
 }

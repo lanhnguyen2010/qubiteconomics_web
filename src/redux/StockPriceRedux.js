@@ -115,9 +115,22 @@ const types = {
       }
 
       case types.FETCH_BUSD_OUTBOUND_SUCCESS: {
+        console.log("FETCH_BUSD_OUTBOUND_SUCCESS ", BusdOutbound)
+
         return {
           ...state,
-          BusdOutbound: BusdOutbound,
+          BusdOutbound: BusdOutbound.BUSD.time.map((i, index) => {
+
+            //TODO timestamp not working
+            let iTimeSplit = i.split(":")
+            return {
+              SD: BusdOutbound.BUSD.SD[index],
+              BU: BusdOutbound.BUSD.BU[index],
+              time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
+            }
+
+            //return {time: new Date(timeStamp/1000000 - 7*60*60*1000), price: BuySellNNOutbound.buySell.netNN[index]}
+          }).reverse(),
           BusdOutboundError: null,
         };
       }
@@ -151,8 +164,6 @@ const types = {
       }
 
       case types.FETCH_SuuF1Outbound_SUCCESS: {
-        console.log("FETCH_SuuF1Outbound_SUCCESS ", SuuF1Outbound)
-
         return {
           ...state,
           SuuF1Outbound: SuuF1Outbound.map((i) => {
