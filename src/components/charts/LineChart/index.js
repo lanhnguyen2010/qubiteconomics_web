@@ -91,10 +91,10 @@ export default class LineChart extends BaseChart {
         else if (minuteDiffs <= 60) {
           chartInterval = 5;
         }
-        else if (minuteDiffs <= 120) {
+        else if (minuteDiffs <= 200) {
           chartInterval = 10;
         } else {
-          chartInterval = 30;
+          chartInterval = 20;
         }
         chart.axisX[0].set("interval", chartInterval);
 
