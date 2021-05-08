@@ -32,19 +32,6 @@ export default class LineChart extends BaseChart {
 
         tickLength: 2,
         tickColor: "red",
-
-        scaleBreaks: {
-          customBreaks: [{
-            lineThickness: 0,
-            collapsibleThreshold: "0%",
-            spacing: 0,
-            startValue: new Date(2021, 1, 1, 11, 30, 0),
-            endValue: new Date(2021, 1, 1, 13, 0, 0)
-          }]
-        },
-
-        viewportMinimum: new Date(2021, 1, 1, 9, 0, 0),
-        viewportMaximum: new Date(2021, 1, 1, 10, 0, 0)
       },
       axisY: {
         crosshair: {
@@ -73,7 +60,7 @@ export default class LineChart extends BaseChart {
       var axisX = chart.axisX[0];
       var viewportMin = axisX.get("viewportMinimum");
       var viewportMax = axisX.get("viewportMaximum");
-      var interval = axisX.get("interval") * 60 * 1000;
+      var interval = 5 * 60 * 1000;
     
       var newViewportMin, newViewportMax;
     
@@ -86,12 +73,26 @@ export default class LineChart extends BaseChart {
         newViewportMax = viewportMax + interval;
       }
 
-      if (newViewportMin >= chart.axisX[0].get("minimum") && newViewportMax <= chart.axisX[0].get("maximum") && (newViewportMax - newViewportMin) > (4 * interval)){
+      if (newViewportMin >= chart.axisX[0].get("minimum") && newViewportMax <= chart.axisX[0].get("maximum") && (newViewportMax - newViewportMin) >= (2 * interval)) {
         chart.axisX[0].set("viewportMinimum", newViewportMin, false);
         chart.axisX[0].set("viewportMaximum", newViewportMax);
 
         this.syncViewports();
       }
+    });
+
+    ["mousemove", "mouseup", "mousedown", "mouseout"].forEach(evt => {
+      /*
+      this.chart.container.addEventListener(evt, (event) => {
+        this.dispatchEvents(this.createEvent(
+          event.type,
+          event.screenX + this.chart.get("width"),
+          event.screenY, 
+          event.clientX + this.chart.get("width"),
+          event.clientY
+        ));
+      });
+      */
     });
 
     setTimeout(() => {
@@ -109,13 +110,35 @@ export default class LineChart extends BaseChart {
     console.log(this.getChartName() + " Chart data: ", chartData)
 
     this.chart.options.data[0].dataPoints = chartData.map(item => ({ x: item.time, y: item.price }));
-    
+
     if (chartData.length)
     {
-      // this.chart.axisX[0].set("minimum", chartData[0].time.getTime());
-      // this.chart.axisX[0].set("maximum", chartData[chartData.length - 1].time.getTime());
+      var axisX = this.chart.axisX[0];
+
+      var minDate = new Date(chartData[chartData.length - 1].time);
+      var maxDate = new Date(minDate.getTime() + (60 * 60000));
+      console.log(minDate, maxDate);
+
+      axisX.set("viewportMinimum", minDate);
+      axisX.set("viewportMaximum", maxDate);
+
+      axisX.set("scaleBreaks", {
+        customBreaks: [{
+          lineThickness: 0,
+          collapsibleThreshold: "0%",
+          spacing: 0,
+          startValue: new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate(), 11, 30, 0),
+          endValue: new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate(), 13, 0, 0)
+        }]
+      })
     }
-    
+
     this.chart.render();
+
+    /*
+    var chartCv = this.chart.container.getElementsByClassName("canvasjs-chart-canvas")[0];
+    var ctx = chartCv.getContext("2d");
+    ctx.fillRect(chartCv.width - 200, chartCv.height - 20, 200, 100);
+    */
   }
 }

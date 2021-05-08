@@ -133,7 +133,7 @@ const types = {
             return {price: BuySellNNOutbound.buySell.netNN[index], time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2]))}
 
             //return {time: new Date(timeStamp/1000000 - 7*60*60*1000), price: BuySellNNOutbound.buySell.netNN[index]}
-          }),
+          }).reverse(),
           BuySellNNOutboundError: null,
         };
       }

@@ -15,18 +15,18 @@ export default class BaseChart extends React.Component {
     this.otherCharts = [];
 
     this.syncViewports = this.debounce(this.__syncViewports, 10);
+    this.dispatchEvents = this.debounce(this.__dispatchEvents, 10);
   }
 
   componentDidMount() {
-      this.__initChart();
-      this.__initChartBehavior();
+    this.__initChart();
+    this.__initChartBehavior();
 
-      this.buildChart();
-      this.setChartData();
+    this.buildChart();
+    this.setChartData();
 
-      this.bindResizeEvents();
-      this.addTooltip();
-
+    this.bindResizeEvents();
+    this.addTooltip();
   }
 
   componentDidUpdate() {
@@ -70,25 +70,42 @@ export default class BaseChart extends React.Component {
     this.syncViewports();
   }
 
-  __syncViewports() {
+  __syncViewports(chartInterval) {
     var xMin = this.chart.axisX[0].viewportMinimum;
     var xMax = this.chart.axisX[0].viewportMaximum;
-    var yMin = this.chart.axisY[0].viewportMinimum;
-    var yMax = this.chart.axisY[0].viewportMaximum;
 
     for (var i = 0; i < this.otherCharts.length; i++) {
       let chart = this.otherCharts[i];
 
       chart.options.axisX.viewportMinimum = xMin;
       chart.options.axisX.viewportMaximum = xMax;
-      
-      chart.options.axisY.viewportMinimum = yMin;
-      chart.options.axisY.viewportMaximum = yMax;
 
-      setTimeout(function() {
-        chart.render();
-      }, 10)
+      if (chartInterval) {
+        chart.axisX[0].set("interval", chartInterval);
+      }
+
+      chart.render();
     }
+  }
+
+  __dispatchEvents(event) {
+    for (var i = 0; i < this.otherCharts.length; i++) {
+      let chart = this.otherCharts[i];
+      chart.container.getElementsByClassName("canvasjs-chart-canvas")[1].dispatchEvent(event);
+    }
+  }
+
+  createEvent(type, screenX, screenY, clientX, clientY){
+    var event = new MouseEvent(type, {
+      view: window,
+      bubbles: false,
+      cancelable: true,
+      screenX: screenX,
+      screenY: screenY,
+      clientX: clientX,
+      clientY: clientY
+    });
+    return event;
   }
 
   debounce(func, wait, immediate) {
