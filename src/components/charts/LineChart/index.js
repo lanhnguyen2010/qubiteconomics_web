@@ -25,7 +25,7 @@ export default class LineChart extends BaseChart {
           enabled: true,
           snapToDataPoint: true
         },
-        valueFormatString: "HH:mm:ss",
+        valueFormatString: "HH:mm",
         interval: 5,
         intervalType: "minute",
         includeZero: false,
@@ -106,6 +106,7 @@ export default class LineChart extends BaseChart {
   setChartData() {
     let chartData = this.props.data.chartData;
     if (!chartData) chartData = [];
+    console.log(this.getChartName() + " Chart data: ", chartData)
 
     this.chart.options.data[0].dataPoints = chartData.map(item => ({ x: item.time, y: item.price }));
     

@@ -57,7 +57,7 @@ class MainDashboardScreen extends React.Component {
                     </Col>
                     <Col>
                         <Row style={{height: '25vh'}}>
-                            <VN30DerivativeChart ref={this.chartC4Ref} data={{chartData: this.props.PSOutbound}}/>
+                            <ForeignDerivativeChart ref={this.chartC4Ref} data={{chartData: this.props.BuySellNNOutbound}}/>
                         </Row>
                         <Row style={{height: '25vh'}}>
                             <VN30DerivativeChart ref={this.chartC5Ref} data={{chartData: this.props.PSOutbound}}/>
@@ -102,7 +102,8 @@ const mapDispatchToProps = (dispatch) => {
 
 const mapStateToProps = (state) => {
     return {
-        PSOutbound: state.stockPrice.PSOutbound
+        PSOutbound: state.stockPrice.PSOutbound,
+        BuySellNNOutbound: state.stockPrice.BuySellNNOutbound
     }
 }
 
