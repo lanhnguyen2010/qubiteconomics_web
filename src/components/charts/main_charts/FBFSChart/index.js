@@ -13,6 +13,7 @@ export default class FBFSChart extends LineChart {
     let options = super.getChartOptions();
     options.data.push({
       type: "line",
+      lineThickness: 1,
       xValueType: "dateTime",
       yValueFormatString: "#,##0.00",
       dataPoints: this.dataPoints

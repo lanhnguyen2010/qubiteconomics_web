@@ -17,6 +17,16 @@ export default class LineChart extends BaseChart {
       animationEnabled: true,
       zoomEnabled: true,
       panEnabled: true,
+      legend: {
+        horizontalAlign: "right", // "center" , "right"
+        verticalAlign: "top",  // "top" , "bottom"
+        fontSize: 11,
+        fontWeight: "normal",
+        itemclick: function (e) {
+          e.dataSeries.visible = !(typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible);
+          e.chart.render();
+        }
+      },
       title: {
         text: this.getChartName()
       },
@@ -45,6 +55,7 @@ export default class LineChart extends BaseChart {
       },
       data: [{
         type: "line",
+        lineThickness: 1,
         xValueType: "dateTime",
         yValueFormatString: "#,##0.00",
         dataPoints: this.dataPoints
@@ -147,7 +158,7 @@ export default class LineChart extends BaseChart {
 
       var minDate = new Date(chartData[chartData.length - 1].time);
       var maxDate = new Date(minDate.getTime() + (60 * 60000));
-      console.log(minDate, maxDate);
+      //console.log(minDate, maxDate);
 
       axisX.set("viewportMinimum", minDate);
       axisX.set("viewportMaximum", maxDate);

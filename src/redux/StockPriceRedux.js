@@ -163,6 +163,10 @@ const types = {
               price: i.last,
               foreignerBuyVolume: i.foreignerBuyVolume,
               foreignerSellVolume: i.foreignerSellVolume,
+              BidV: i.totalBidVolume,
+              AskV  : i.totalOfferVolume,
+              NetBA : i.Net_BA,
+              SMA : i.SMA,
               time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2]))
             }
 

@@ -6,6 +6,7 @@ import ForeignDerivativeChart from "components/charts/main_charts/ForeignDerivat
 import SuuF1Chart from "components/charts/main_charts/SuuF1Chart";
 import BuySellPressureChart from "components/charts/main_charts/BuySellPressureChart";
 import FBFSChart from "components/charts/main_charts/FBFSChart";
+import F1BidVAskVChart from "components/charts/main_charts/F1BidVAskVChart";
 
 import {
     Container, Row, Col, Form
@@ -73,13 +74,16 @@ class MainDashboardScreen extends React.Component {
                         </Row>
                     </Col>
                     <Col>
-                        <Row style={{height: '30vh'}}>
+                        <Row style={{height: '25vh'}}>
                             <SuuF1Chart ref={this.chartC6Ref} data={{chartData: this.props.SuuF1Outbound}}/>
                         </Row>
-                        <Row style={{height: '30vh'}}>
+                        <Row style={{height: '25vh'}}>
                             <FBFSChart ref={this.chartC7Ref} data={{chartData: this.props.SuuF1Outbound}}/>
                         </Row>
-                        <Row style={{height: '30vh'}}>
+                        <Row style={{height: '25vh'}}>
+                            <F1BidVAskVChart ref={this.chartC8Ref} data={{chartData: this.props.SuuF1Outbound}}/>
+                        </Row>
+                        <Row style={{height: '25vh'}}>
                             <VN30DerivativeChart ref={this.chartC8Ref} data={{chartData: this.props.PSOutbound}}/>
                         </Row>
                     </Col>
