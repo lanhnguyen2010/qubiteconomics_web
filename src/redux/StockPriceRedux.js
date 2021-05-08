@@ -126,6 +126,8 @@ const types = {
             return {
               SD: BusdOutbound.BUSD.SD[index],
               BU: BusdOutbound.BUSD.BU[index],
+              NetBUSD: BusdOutbound.BUSD.Net[index],
+              SMA: BusdOutbound.BUSD.SMA[index],
               time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
             }
 

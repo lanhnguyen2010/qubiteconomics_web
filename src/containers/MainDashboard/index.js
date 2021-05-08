@@ -9,6 +9,7 @@ import FBFSChart from "components/charts/main_charts/FBFSChart";
 import F1BidVAskVChart from "components/charts/main_charts/F1BidVAskVChart";
 import NetBSChart from "components/charts/main_charts/NetBSChart";
 import BuyupSelldownChart from "components/charts/main_charts/BuyupSelldownChart";
+import NETBUSDChart from "components/charts/main_charts/NETBUSDChart";
 
 import {
     Container, Row, Col, Form
@@ -58,7 +59,7 @@ class MainDashboardScreen extends React.Component {
                             <BuyupSelldownChart ref={this.chartC2Ref} data={{chartData: this.props.BusdOutbound}}/>
                         </Row>
                         <Row style={{height: '30vh'}}>
-                            <VN30DerivativeChart ref={this.chartC3Ref} data={{chartData: this.props.PSOutbound}}/>
+                            <NETBUSDChart ref={this.chartC3Ref} data={{chartData: this.props.BusdOutbound}}/>
                         </Row>
                     </Col>
                     <Col>
