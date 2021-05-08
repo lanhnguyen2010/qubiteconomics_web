@@ -1,14 +1,7 @@
-.LineSeries {
-  margin: 0;
-  height: 100%;
+.canvasjs-chart-toolbar {
+  visibility: hidden;
 }
 
-.LineSeries {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.chart-container {
-  flex: 1;
+.canvasjs-chart-credit {
+  display: none;
 }

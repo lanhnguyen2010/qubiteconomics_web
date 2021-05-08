@@ -14,9 +14,14 @@ class MainDashboardScreen extends React.Component {
         super(props);
 
         this.chartRefs = [];
-        //this.chartRefs.push(this.chartC1Ref = React.createRef());
+        this.chartRefs.push(this.chartC1Ref = React.createRef());
         this.chartRefs.push(this.chartC2Ref = React.createRef());
         this.chartRefs.push(this.chartC3Ref = React.createRef());
+        this.chartRefs.push(this.chartC4Ref = React.createRef());
+        this.chartRefs.push(this.chartC5Ref = React.createRef());
+        this.chartRefs.push(this.chartC6Ref = React.createRef());
+        this.chartRefs.push(this.chartC7Ref = React.createRef());
+        this.chartRefs.push(this.chartC8Ref = React.createRef());
     }
 
     componentDidMount() {
@@ -26,7 +31,7 @@ class MainDashboardScreen extends React.Component {
         for (var i = 0; i < this.chartRefs.length; i++) {
             for (var j = 0; j < this.chartRefs.length; j++) {
                 if (i != j) {
-                    //this.chartRefs[i].current.registerOtherCharts(this.chartRefs[j].current.chart);
+                    this.chartRefs[i].current.registerOtherCharts(this.chartRefs[j].current.chart);
                 }
             }
         }
@@ -36,16 +41,15 @@ class MainDashboardScreen extends React.Component {
     }
 
     render() {
-        console.log("before render chart", this.props);
         return (
             <Container fluid>
                 <Row style={{height: '100vh'}}>
                     <Col>
                         <Row style={{height: '30vh'}}>
-                            <VN30DerivativeChart ref={this.chartC3Ref} data={{chartData: this.props.PSOutbound}}/>
+                            <VN30DerivativeChart ref={this.chartC1Ref} data={{chartData: this.props.PSOutbound}}/>
                         </Row>
                         <Row style={{height: '30vh'}}>
-                            <VN30DerivativeChart ref={this.chartC3Ref} data={{chartData: this.props.PSOutbound}}/>
+                            <VN30DerivativeChart ref={this.chartC2Ref} data={{chartData: this.props.PSOutbound}}/>
                         </Row>
                         <Row style={{height: '30vh'}}>
                             <VN30DerivativeChart ref={this.chartC3Ref} data={{chartData: this.props.PSOutbound}}/>
@@ -53,10 +57,10 @@ class MainDashboardScreen extends React.Component {
                     </Col>
                     <Col>
                         <Row style={{height: '25vh'}}>
-                            <VN30DerivativeChart ref={this.chartC3Ref} data={{chartData: this.props.PSOutbound}}/>
+                            <VN30DerivativeChart ref={this.chartC4Ref} data={{chartData: this.props.PSOutbound}}/>
                         </Row>
                         <Row style={{height: '25vh'}}>
-                            <VN30DerivativeChart ref={this.chartC3Ref} data={{chartData: this.props.PSOutbound}}/>
+                            <VN30DerivativeChart ref={this.chartC5Ref} data={{chartData: this.props.PSOutbound}}/>
                         </Row>
                         <Row style={{height: '10vh'}}></Row>
                         <Row style={{height: '30vh'}}>
@@ -67,13 +71,13 @@ class MainDashboardScreen extends React.Component {
                     </Col>
                     <Col>
                         <Row style={{height: '30vh'}}>
-                            <VN30DerivativeChart ref={this.chartC3Ref} data={{chartData: this.props.PSOutbound}}/>
+                            <VN30DerivativeChart ref={this.chartC6Ref} data={{chartData: this.props.PSOutbound}}/>
                         </Row>
                         <Row style={{height: '30vh'}}>
-                            <VN30DerivativeChart ref={this.chartC3Ref} data={{chartData: this.props.PSOutbound}}/>
+                            <VN30DerivativeChart ref={this.chartC7Ref} data={{chartData: this.props.PSOutbound}}/>
                         </Row>
                         <Row style={{height: '30vh'}}>
-                            <VN30DerivativeChart ref={this.chartC3Ref} data={{chartData: this.props.PSOutbound}}/>
+                            <VN30DerivativeChart ref={this.chartC8Ref} data={{chartData: this.props.PSOutbound}}/>
                         </Row>
                     </Col>
                 </Row>
