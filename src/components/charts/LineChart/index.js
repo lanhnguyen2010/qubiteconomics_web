@@ -34,6 +34,7 @@ export default class LineChart extends BaseChart {
         tickColor: "red",
       },
       axisY: {
+        gridThickness: 0.2,
         crosshair: {
           enabled: true
         },
