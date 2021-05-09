@@ -190,9 +190,37 @@ const types = {
       }
 
       case types.FETCH_ArbitUnwind_SUCCESS: {
+        console.log("FETCH_ArbitUnwind_SUCCESS", ArbitUnwind);
         return {
           ...state,
-          ArbitUnwind: ArbitUnwind,
+          ArbitUnwind: ArbitUnwind.unwind.time.map((i, index) => {
+
+            let iTimeSplit = i.split(":")
+            return {
+              time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
+              radius: ArbitUnwind.unwind.radius[index],
+              label: ArbitUnwind.unwind.label[index],
+              x: ArbitUnwind.unwind.x[index],
+              y: ArbitUnwind.unwind.y[index],
+              num_lots: ArbitUnwind.unwind.num_lots[index]
+            }
+
+            //return {time: new Date(timeStamp/1000000 - 7*60*60*1000), price: BuySellNNOutbound.buySell.netNN[index]}
+          }).reverse(),
+          Arbit: ArbitUnwind.arbit.time.map((i, index) => {
+
+            let iTimeSplit = i.split(":")
+            return {
+              time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
+              radius: ArbitUnwind.arbit.radius[index],
+              label: ArbitUnwind.arbit.label[index],
+              x: ArbitUnwind.arbit.x[index],
+              y: ArbitUnwind.arbit.y[index],
+              num_lots: ArbitUnwind.arbit.num_lots[index]
+            }
+
+            //return {time: new Date(timeStamp/1000000 - 7*60*60*1000), price: BuySellNNOutbound.buySell.netNN[index]}
+          }).reverse(),
           ArbitUnwindError: null,
         };
       }

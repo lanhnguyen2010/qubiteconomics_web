@@ -32,7 +32,6 @@ export default class BuySellPressureChart extends LineChart {
     if (!chartData) chartData = [];
     this.chart.options.data[0].dataPoints = chartData.map(item => ({ x: item.time, y: item.buyPressure }));
     this.chart.options.data[1].dataPoints = chartData.map(item => ({ x: item.time, y: item.sellPressure }));
-    console.log("BuySellPressureChart", this.chart.options.data)
 
   }
 }

@@ -52,13 +52,13 @@ export default class LineChart extends BaseChart {
         tickLength: 2,
         tickColor: "red",
       },
-      axisY: {
+      axisY: [{
         gridThickness: 0.2,
         crosshair: {
           enabled: true
         },
         includeZero: false
-      },
+      }],
       data: [{
         type: "line",
         lineThickness: 1,

@@ -56,10 +56,10 @@ class MainDashboardScreen extends React.Component {
                             <VN30DerivativeChart ref={this.chartC1Ref} data={{chartData: this.props.PSOutbound}}/>
                         </Row>
                         <Row style={{height: '30vh'}}>
-                            <BuyupSelldownChart ref={this.chartC2Ref} data={{chartData: this.props.BusdOutbound}}/>
+                            <BuyupSelldownChart ref={this.chartC2Ref} data={{chartData: this.props.BusdOutbound, bubblesData: this.props.Arbit}}/>
                         </Row>
                         <Row style={{height: '30vh'}}>
-                            <NETBUSDChart ref={this.chartC3Ref} data={{chartData: this.props.BusdOutbound}}/>
+                            <NETBUSDChart ref={this.chartC3Ref} data={{chartData: this.props.BusdOutbound, bubblesData: this.props.ArbitUnwind}}/>
                         </Row>
                     </Col>
                     <Col>
@@ -115,7 +115,9 @@ const mapStateToProps = (state) => {
         PSOutbound: state.stockPrice.PSOutbound,
         BuySellNNOutbound: state.stockPrice.BuySellNNOutbound,
         SuuF1Outbound: state.stockPrice.SuuF1Outbound,
-        BusdOutbound: state.stockPrice.BusdOutbound
+        BusdOutbound: state.stockPrice.BusdOutbound,
+        ArbitUnwind: state.stockPrice.ArbitUnwind,
+        Arbit: state.stockPrice.Arbit
     }
 }
 

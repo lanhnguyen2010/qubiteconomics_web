@@ -8,7 +8,7 @@ CanvasJS.addColorSet("customColorSet1",
     [//colorSet Array
       "#4661EE",
       "#EC5657",
-      "#1BCDD1",
+      "green",
       "#8FAABB",
       "#B08BEB",
       "#3EA0DD",
