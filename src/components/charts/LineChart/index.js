@@ -75,9 +75,7 @@ export default class LineChart extends BaseChart {
         xValueType: "dateTime",
         yValueFormatString: "#,##0.00",
         dataPoints: this.dataPoints
-      }],
-
-      rangeChanged: () => this.syncViewports()
+      }]
     }
     return options;
   }
