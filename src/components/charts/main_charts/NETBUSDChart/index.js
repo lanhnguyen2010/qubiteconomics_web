@@ -20,13 +20,14 @@ export default class NETBUSDChart extends LineChart {
       type: "line",
       lineThickness: 1,
       showInLegend: true,
+      axisYIndex: 0,
       legendText: "SMA",
       xValueType: "dateTime",
       yValueFormatString: "#,##0.00",
       dataPoints: this.dataPoints
     })
     options.data.unshift({
-      type: "bubble",
+      type: "scatter",
       lineThickness: 1,
       showInLegend: true,
       axisYType: "secondary",
@@ -40,18 +41,13 @@ export default class NETBUSDChart extends LineChart {
       toolTipContent: "<b>{name}</b>",
       dataPoints: this.dataPoints
     })
-    options.axisY.unshift({
-      gridThickness: 0.2,
-      includeZero: false
-    });
     return options;
   }
   setDataPoints() {
     let bubblesData = this.props.data.bubblesData;
     if (!bubblesData) bubblesData = [];
 
-    this.chart.options.data[0].dataPoints = bubblesData.map(item => ({ x: item.time, y: item.y, name: item.label}));
-    //this.chart.options.data[0].dataPoints = bubblesData.map(item => ({ x: item.time, y: item.y, z: item.radius, name: item.label}));
+    this.chart.options.data[0].dataPoints = bubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius/2, name: item.label}));
 
     let chartData = this.props.data.chartData;
     if (!chartData) chartData = [];
