@@ -28,8 +28,15 @@ export default class BaseChart extends React.Component {
 
     this.otherCharts = [];
 
-    this.syncViewports = this.debounce(this.__syncViewports, 10);
-    this.dispatchEvents = this.debounce(this.__dispatchEvents, 10);
+    this.debouceTime = 5;
+    this.syncViewports = this.debounce(this.__syncViewports.bind(this), this.debouceTime);
+    this.onToolTipUpdated = this.debounce(this.__onToolTipUpdated.bind(this), this.debouceTime);
+    this.onToolTipHidden = this.debounce(this.__onToolTipHidden.bind(this), this.debouceTime);
+    this.onCrosshairXUpdated = this.debounce(this.__onCrosshairXUpdated.bind(this), this.debouceTime);
+    this.onCrosshairXHidden = this.debounce(this.__onCrosshairXHidden.bind(this), this.debouceTime);
+    this.onCrosshairYUpdated = this.debounce(this.__onCrosshairYUpdated.bind(this), this.debouceTime);
+    this.onCrosshairYHidden = this.debounce(this.__onCrosshairYHidden.bind(this), this.debouceTime);
+    this.onRangeChanged = this.debounce(this.__onRangeChanged.bind(this), this.debouceTime);
   }
 
   componentDidMount() {
@@ -80,10 +87,6 @@ export default class BaseChart extends React.Component {
     this.otherCharts.push(chart);
   }
 
-  syncHandler() {
-    this.syncViewports();
-  }
-
   __syncViewports(chartInterval) {
     var xMin = this.chart.axisX[0].viewportMinimum;
     var xMax = this.chart.axisX[0].viewportMaximum;
@@ -106,6 +109,85 @@ export default class BaseChart extends React.Component {
     for (var i = 0; i < this.otherCharts.length; i++) {
       let chart = this.otherCharts[i];
       chart.container.getElementsByClassName("canvasjs-chart-canvas")[1].dispatchEvent(event);
+    }
+  }
+
+  __onToolTipUpdated(event) {
+    for (var i = 0; i < this.otherCharts.length; i++) {
+      let chart = this.otherCharts[i];
+      chart.toolTip.showAtX(event.entries[0].xValue);
+    }
+  }
+
+  __onToolTipHidden(event) {
+    for (var i = 0; i < this.otherCharts.length; i++) {
+      let chart = this.otherCharts[i];
+      chart.toolTip.hide();
+    }
+  }
+
+  __onCrosshairXUpdated(event) {
+    for (var i = 0; i < this.otherCharts.length; i++) {
+      let chart = this.otherCharts[i];
+      if (!chart.axisX[0].crosshair) {
+        continue;
+      }
+      chart.axisX[0].crosshair.showAt(event.value);
+    }
+  }
+
+  __onCrosshairXHidden(event) {
+    for (var i = 0; i < this.otherCharts.length; i++) {
+      let chart = this.otherCharts[i];
+      if (!chart.axisX[0].crosshair) {
+        continue;
+      }
+      chart.axisX[0].crosshair.hide();
+    }
+  }
+
+  __onCrosshairYUpdated(event) {
+    var y = this.chart.axisY[0].convertValueToPixel(event.value);
+    var height = this.chart.bounds.y2 - this.chart.bounds.y1;
+    var yPercentage = y / height;
+
+    console.log(height, y, yPercentage);
+
+    for (var i = 0; i < this.otherCharts.length; i++) {
+      let chart = this.otherCharts[i];
+      if (!chart.axisY[0].crosshair) {
+        continue;
+      }
+      var cHeight = chart.bounds.y2 - chart.bounds.y1;
+      var cY = yPercentage * cHeight;
+      chart.axisY[0].crosshair.showAt(chart.axisY[0].convertPixelToValue(cY));
+    }
+  }
+
+  __onCrosshairYHidden(event) {
+    for (var i = 0; i < this.otherCharts.length; i++) {
+      let chart = this.otherCharts[i];
+      if (!chart.axisY[0].crosshair) {
+        continue;
+      }
+      chart.axisY[0].crosshair.hide();
+    }
+  }
+
+  __onRangeChanged(event) {
+    for (var i = 0; i < this.otherCharts.length; i++) {
+      let chart = this.otherCharts[i];
+      if (event.trigger === "reset") {
+        chart.options.axisX.viewportMinimum = chart.options.axisX.viewportMaximum = null;
+        chart.options.axisY.viewportMinimum = chart.options.axisY.viewportMaximum = null;
+        chart.render();
+      } else if (chart !== event.chart) {
+        chart.options.axisX.viewportMinimum = event.axisX[0].viewportMinimum;
+        chart.options.axisX.viewportMaximum = event.axisX[0].viewportMaximum;
+        chart.options.axisX.interval = event.axisX[0].interval;
+
+        chart.render();
+      }
     }
   }
 

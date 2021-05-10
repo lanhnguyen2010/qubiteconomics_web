@@ -21,6 +21,7 @@ export default class LineChart extends BaseChart {
       zoomEnabled: true,
       panEnabled: true,
       colorSet: "customColorSet1",
+      rangeChanged: this.onRangeChanged,
       legend: {
         horizontalAlign: "right", // "center" , "right"
         verticalAlign: "top",  // "top" , "bottom"
@@ -38,11 +39,15 @@ export default class LineChart extends BaseChart {
       },
       toolTip:{
         content:"{y}" ,
+        updated: this.onToolTipUpdated,
+        hidden: this.onToolTipHidden
       },
       axisX: {
         crosshair: {
           enabled: true,
-          snapToDataPoint: true
+          snapToDataPoint: true,
+          updated: this.onCrosshairXUpdated,
+          hidden: this.onCrosshairXHidden
         },
         valueFormatString: "HH:mm",
         interval: 5,
@@ -50,12 +55,15 @@ export default class LineChart extends BaseChart {
         includeZero: false,
 
         tickLength: 2,
-        tickColor: "red",
+        tickColor: "red"
       },
       axisY: [{
         gridThickness: 0.2,
         crosshair: {
-          enabled: true
+          enabled: true,
+          snapToDataPoint: true,
+          updated: this.onCrosshairYUpdated,
+          hidden: this.onCrosshairYHidden
         },
         includeZero: false
       }],
@@ -104,7 +112,7 @@ export default class LineChart extends BaseChart {
       var minuteDiffs = parseInt((newViewportMax - newViewportMin) / 1000 / 60);
 
       if (currentMinuteDiffs != minuteDiffs && minuteDiffs >= 20) {
-        chart.axisX[0].set("viewportMinimum", newViewportMin, false);
+        chart.axisX[0].set("viewportMinimum", newViewportMin);
         chart.axisX[0].set("viewportMaximum", newViewportMax);
 
         var chartInterval = 0;
@@ -124,28 +132,6 @@ export default class LineChart extends BaseChart {
         this.syncViewports(chartInterval);
       }
     });
-
-    ["mousemove", "mouseup", "mousedown", "mouseout"].forEach(evt => {
-      /*
-      this.chart.container.addEventListener(evt, (event) => {
-        this.dispatchEvents(this.createEvent(
-          event.type,
-          event.screenX + this.chart.get("width"),
-          event.screenY, 
-          event.clientX + this.chart.get("width"),
-          event.clientY
-        ));
-      });
-      */
-    });
-
-    setTimeout(() => {
-      var parentElement = this.chart.container.getElementsByClassName("canvasjs-chart-toolbar")[0];
-      var childElement = parentElement.getElementsByTagName("button")[0];
-      if (childElement.getAttribute("state") === "pan") {
-        childElement.click();
-      }
-    }, 1500)
   }
 
   setDataPoints()
@@ -156,7 +142,6 @@ export default class LineChart extends BaseChart {
   }
 
   setChartData() {
-
     this.setDataPoints();
     let chartData = this.props.data.chartData;
     if (!chartData) chartData = [];
@@ -166,7 +151,6 @@ export default class LineChart extends BaseChart {
 
       var minDate = new Date(chartData[chartData.length - 1].time);
       var maxDate = new Date(minDate.getTime() + (60 * 60000));
-      //console.log(minDate, maxDate);
 
       axisX.set("viewportMinimum", minDate);
       axisX.set("viewportMaximum", maxDate);
@@ -187,10 +171,14 @@ export default class LineChart extends BaseChart {
 
     this.chart.render();
 
-    /*
-    var chartCv = this.chart.container.getElementsByClassName("canvasjs-chart-canvas")[0];
-    var ctx = chartCv.getContext("2d");
-    ctx.fillRect(chartCv.width - 200, chartCv.height - 20, 200, 100);
-    */
+    if (!this.firstRender) {
+      this.firstRender = true;
+
+      var parentElement = this.chart.container.getElementsByClassName("canvasjs-chart-toolbar")[0];
+      var childElement = parentElement.getElementsByTagName("button")[0];
+      if (childElement.getAttribute("state") === "pan") {
+        childElement.click();
+      }
+    }
   }
 }
