@@ -16,6 +16,7 @@ export default class NETBUSDChart extends LineChart {
 
   getChartOptions(){
     let options = super.getChartOptions();
+    options.data[0].color = "green";
     options.data.push({
       type: "line",
       lineThickness: 1,
@@ -23,6 +24,7 @@ export default class NETBUSDChart extends LineChart {
       axisYIndex: 0,
       legendText: "SMA",
       xValueType: "dateTime",
+      color: "#6666ff",
       yValueFormatString: "#,##0.00",
       dataPoints: this.dataPoints
     })
@@ -35,7 +37,7 @@ export default class NETBUSDChart extends LineChart {
       fillOpacity: .7,
       axisYIndex: 1,
       xValueType: "dateTime",
-      color: "#6666ff",
+      color: "#ff6666",
       yValueFormatString: "#,##0.00",
       legendMarkerType: "circle",
       toolTipContent: "<b>{name}</b>",

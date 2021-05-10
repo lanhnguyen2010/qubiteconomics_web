@@ -47,7 +47,10 @@ export default class LineChart extends BaseChart {
           enabled: true,
           snapToDataPoint: true,
           updated: this.onCrosshairXUpdated,
-          hidden: this.onCrosshairXHidden
+          hidden: this.onCrosshairXHidden,
+          thickness: 0.5,
+          labelBackgroundColor: "",
+          labelFontColor: "orange",
         },
         valueFormatString: "HH:mm",
         interval: 5,
@@ -62,8 +65,11 @@ export default class LineChart extends BaseChart {
         crosshair: {
           enabled: true,
           snapToDataPoint: true,
+          labelBackgroundColor: "",
+          labelFontColor: "orange",
           updated: this.onCrosshairYUpdated,
-          hidden: this.onCrosshairYHidden
+          hidden: this.onCrosshairYHidden,
+          thickness: 0.5
         },
         includeZero: false
       }],
