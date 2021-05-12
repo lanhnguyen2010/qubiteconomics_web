@@ -1,5 +1,6 @@
 import { connect } from "react-redux";
 import React from "react";
+import _ from "lodash";
 
 import VN30DerivativeChart from "components/charts/main_charts/VN30DerivativeChart";
 import ForeignDerivativeChart from "components/charts/main_charts/ForeignDerivativeChart";
@@ -14,7 +15,6 @@ import NETBUSDChart from "components/charts/main_charts/NETBUSDChart";
 import {
   Container, Row, Col, Form
 } from 'react-bootstrap';
-
 class MainDashboardScreen extends React.Component {
 
   constructor(props) {
@@ -33,8 +33,9 @@ class MainDashboardScreen extends React.Component {
   }
 
   componentDidMount() {
-    const { fetchAllData } = this.props;
-    fetchAllData();
+    const { fetchAllData, settings } = this.props;
+    const timeDate = getTimeBody(settings);
+    fetchAllData(timeDate);
 
     for (var i = 0; i < this.chartRefs.length; i++) {
       for (var j = 0; j < this.chartRefs.length; j++) {
@@ -97,16 +98,25 @@ class MainDashboardScreen extends React.Component {
   }
 }
 
+const getTimeBody = (settings) => {
+  if (!settings) return null;
+  const date = settings.selectedDate
+  const range = settings.timeRange
+  const body = _.pickBy({ date: date, rangeTime: range});
+  return body;
+}
+
 const mapDispatchToProps = (dispatch) => {
   const { actions } = require("../../redux/StockPriceRedux");
+
   return {
-    fetchAllData: () => {
-      actions.fetchPSOutboundData(dispatch);
-      actions.fetchBusdOutboundData(dispatch);
-      actions.fetchBusdNNOutboundData(dispatch);
-      actions.fetchBuySellNNOutboundData(dispatch);
-      actions.fetchSuuF1OutboundData(dispatch);
-      actions.fetchArbitUnwindData(dispatch);
+    fetchAllData: (data) => {
+      actions.fetchPSOutboundData(dispatch, data);
+      actions.fetchBusdOutboundData(dispatch, data);
+      actions.fetchBusdNNOutboundData(dispatch, data);
+      actions.fetchBuySellNNOutboundData(dispatch, data);
+      actions.fetchSuuF1OutboundData(dispatch, data);
+      actions.fetchArbitUnwindData(dispatch, data);
     }
   }
 };
@@ -118,7 +128,8 @@ const mapStateToProps = (state) => {
     SuuF1Outbound: state.stockPrice.SuuF1Outbound,
     BusdOutbound: state.stockPrice.BusdOutbound,
     ArbitUnwind: state.stockPrice.ArbitUnwind,
-    Arbit: state.stockPrice.Arbit
+    Arbit: state.stockPrice.Arbit,
+    settings: state.settings
   }
 }
 

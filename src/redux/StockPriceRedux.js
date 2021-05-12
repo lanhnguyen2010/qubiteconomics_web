@@ -24,8 +24,8 @@ const types = {
   export const actions =  {
     fetchAllData: {},
 
-    fetchPSOutboundData: async (dispatch) => {
-      const ps = await StockAPI.fetchPSOutbound();
+    fetchPSOutboundData: async (dispatch, data) => {
+      const ps = await StockAPI.fetchPSOutbound(data);
       if (!ps.error) {
         dispatch(actions.fetchPSOutboundDataSuccess(ps))
       }
@@ -34,8 +34,8 @@ const types = {
       return { type: types.FETCH_PS_OUTBOUND_SUCCESS, PSOutbound };
     },
 
-    fetchBusdOutboundData: async (dispatch) => {
-      const busd = await StockAPI.fetchBusdOutbound();
+    fetchBusdOutboundData: async (dispatch, data) => {
+      const busd = await StockAPI.fetchBusdOutbound(data);
       if (!busd.error) {
         dispatch(actions.fetchBusdOutboundDataSuccess(busd));
       }
@@ -44,8 +44,8 @@ const types = {
       return { type: types.FETCH_BUSD_OUTBOUND_SUCCESS, BusdOutbound };
     },
 
-    fetchBuySellNNOutboundData: async (dispatch) => {
-      const buysellNN = await StockAPI.fetchBuySellNNOutbound();
+    fetchBuySellNNOutboundData: async (dispatch, data) => {
+      const buysellNN = await StockAPI.fetchBuySellNNOutbound(data);
       if (!buysellNN.error) {
         dispatch(actions.fetchBuySellNNOutboundDataSuccess(buysellNN));
       }
@@ -54,8 +54,8 @@ const types = {
       return { type: types.FETCH_BuySellNNOutbound_SUCCESS, BuySellNNOutbound };
     },
  
-    fetchBusdNNOutboundData: async (dispatch) => {
-      const busdNN = await StockAPI.fetchBusdNNOutbound();
+    fetchBusdNNOutboundData: async (dispatch, data) => {
+      const busdNN = await StockAPI.fetchBusdNNOutbound(data);
       if (!busdNN.error) {
         dispatch(actions.fetchBusdNNOutboundDataSuccess(busdNN));
       } 
@@ -64,8 +64,8 @@ const types = {
       return { type: types.FETCH_BusdNNOutbound_SUCCESS, BusdNNOutbound };
     },
 
-    fetchSuuF1OutboundData: async (dispatch) => {
-      const suuF1 = await StockAPI.fetchSuuF1Outbound();
+    fetchSuuF1OutboundData: async (dispatch, data) => {
+      const suuF1 = await StockAPI.fetchSuuF1Outbound(data);
       if (!suuF1.error) {
         dispatch(actions.fetchSuuF1OutboundDataSuccess(suuF1));
       }
@@ -74,10 +74,10 @@ const types = {
       return { type: types.FETCH_SuuF1Outbound_SUCCESS, SuuF1Outbound }
     },
 
-    fetchArbitUnwindData: async (dispatch) => {
-      const data = await StockAPI.fetchArbitUnwind();
-      if (!data.error) {
-        dispatch(actions.fetchArbitUnwindDataSuccess(data));
+    fetchArbitUnwindData: async (dispatch, data) => {
+      const response = await StockAPI.fetchArbitUnwind(data);
+      if (!response.error) {
+        dispatch(actions.fetchArbitUnwindDataSuccess(response));
       }
     },
     fetchArbitUnwindDataSuccess: (ArbitUnwind) => {

@@ -1,30 +1,31 @@
 import Constants from "common/Constants";
-import { request } from "services/request";
+import { request, requestPost } from "services/request";
 
 const StockAPI = {
-    fetchPSOutbound: async () => {
-        return await request(Constants.BASE_URL + Constants.PS_OUTBOUND_URL);
+    fetchPSOutbound: async (data) => {
+        return await requestPost(Constants.BASE_URL + Constants.PS_OUTBOUND_URL, data);
     },
 
-    fetchBusdOutbound: async () => {
-        return await request(Constants.BASE_URL + Constants.BUSD_OUTBOUND_URL);
+    fetchBusdOutbound: async (data) => {
+        return await requestPost(Constants.BASE_URL + Constants.BUSD_OUTBOUND_URL, data);
     },
 
-    fetchBuySellNNOutbound: async () => {
-        return await request(Constants.BASE_URL + Constants.BUYSELL_NN_OUTBOUND_URL);
+    fetchBuySellNNOutbound: async (data) => {
+        return await requestPost(Constants.BASE_URL + Constants.BUYSELL_NN_OUTBOUND_URL, data);
     },
 
-    fetchBusdNNOutbound: async () => {
-        return await request(Constants.BASE_URL + Constants.BUSD_NN_OUTBOUND_URL);
+    fetchBusdNNOutbound: async (data) => {
+        return await requestPost(Constants.BASE_URL + Constants.BUSD_NN_OUTBOUND_URL, data);
     },
 
-    fetchSuuF1Outbound: async () => {
-        return await request(Constants.BASE_URL + Constants.SUU_F1_OUTBOUND_URL);
+    fetchSuuF1Outbound: async (data) => {
+        return await requestPost(Constants.BASE_URL + Constants.SUU_F1_OUTBOUND_URL, data);
     },
 
-    fetchArbitUnwind: async () => {
-        return await request(Constants.BASE_URL + Constants.ARBIT_UNWIND_URL);
+    fetchArbitUnwind: async (data) => {
+        return await requestPost(Constants.BASE_URL + Constants.ARBIT_UNWIND_URL, data);
     }
 }
+
 
 export default StockAPI;
