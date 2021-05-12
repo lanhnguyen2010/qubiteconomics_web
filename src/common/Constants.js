@@ -1,5 +1,5 @@
 
-export default {
+const Const = {
     BASE_URL: 'http://207.148.116.128:5000',
 
     PS_OUTBOUND_URL: '/api/ps-outbound',
@@ -16,3 +16,5 @@ export default {
 
     ARBIT_UNWIND_URL:'/api/arbit-unwind-outbound',
 }
+
+export default Const;

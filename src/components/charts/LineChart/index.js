@@ -3,10 +3,6 @@ import BaseChart from "components/charts/BaseChart";
 import "./styles.css";
 export default class LineChart extends BaseChart {
 
-  constructor(props) {
-    super(props);
-  }
-
   getChartName() {
     return "";
   }
@@ -86,6 +82,31 @@ export default class LineChart extends BaseChart {
     return options;
   }
 
+  updateInterval() {
+    var axisX = this.chart.axisX[0];
+
+    var minViewport = axisX.get("viewportMinimum");
+    var maxViewport = axisX.get("viewportMaximum");
+    var minuteDiffs = parseInt((maxViewport - minViewport) / 1000 / 60);
+
+    var chartInterval = 0;
+    if (minuteDiffs <= 40) {
+      chartInterval = 3;
+    }
+    else if (minuteDiffs <= 60) {
+      chartInterval = 5;
+    }
+    else if (minuteDiffs <= 200) {
+      chartInterval = 10;
+    } else {
+      chartInterval = 20;
+    }
+
+    this.chart.axisX[0].set("interval", chartInterval);
+
+    return chartInterval;
+  }
+
   buildChart() {
     this.chart.container.addEventListener("wheel", (event) => {
       event.preventDefault();
@@ -115,23 +136,11 @@ export default class LineChart extends BaseChart {
 
       var minuteDiffs = parseInt((newViewportMax - newViewportMin) / 1000 / 60);
 
-      if (currentMinuteDiffs != minuteDiffs && minuteDiffs >= 20) {
+      if (currentMinuteDiffs !== minuteDiffs && minuteDiffs >= 20) {
         chart.axisX[0].set("viewportMinimum", newViewportMin);
         chart.axisX[0].set("viewportMaximum", newViewportMax);
 
-        var chartInterval = 0;
-        if (minuteDiffs <= 40) {
-          chartInterval = 3;
-        }
-        else if (minuteDiffs <= 60) {
-          chartInterval = 5;
-        }
-        else if (minuteDiffs <= 200) {
-          chartInterval = 10;
-        } else {
-          chartInterval = 20;
-        }
-        chart.axisX[0].set("interval", chartInterval);
+        var chartInterval = this.updateInterval();
 
         this.syncViewports(chartInterval);
       }
@@ -147,6 +156,7 @@ export default class LineChart extends BaseChart {
 
   setChartData() {
     this.setDataPoints();
+
     let chartData = this.props.data.chartData;
     if (!chartData) chartData = [];
     if (chartData.length)
@@ -170,7 +180,9 @@ export default class LineChart extends BaseChart {
           startValue: new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate(), 11, 30, 0),
           endValue: new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate(), 13, 0, 0)
         }]
-      })
+      });
+
+      this.updateInterval();
     }
 
     this.chart.render();

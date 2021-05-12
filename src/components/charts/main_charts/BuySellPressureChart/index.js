@@ -2,10 +2,6 @@ import LineChart from "components/charts/LineChart";
 
 export default class BuySellPressureChart extends LineChart {
 
-  constructor(props) {
-    super(props);
-  }
-
   getChartName() {
     return "BuySell Pressure";
   }

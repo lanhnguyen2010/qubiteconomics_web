@@ -2,9 +2,6 @@ import LineChart from "components/charts/LineChart";
 
 export default class NetBSChart extends LineChart {
 
-  constructor(props) {
-    super(props);
-  }
 
   getChartLegendText(){
     return "NetBS";
