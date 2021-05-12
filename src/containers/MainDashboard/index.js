@@ -39,7 +39,7 @@ class MainDashboardScreen extends React.Component {
 
     for (var i = 0; i < this.chartRefs.length; i++) {
       for (var j = 0; j < this.chartRefs.length; j++) {
-        if (i != j) {
+        if (i !== j) {
           this.chartRefs[i].current.registerOtherCharts(this.chartRefs[j].current.chart);
         }
       }

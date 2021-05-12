@@ -2,10 +2,6 @@ import LineChart from "components/charts/LineChart";
 
 export default class FBFSChart extends LineChart {
 
-  constructor(props) {
-    super(props);
-  }
-
   getChartName() {
     return "";
   }

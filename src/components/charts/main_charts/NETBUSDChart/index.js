@@ -2,10 +2,6 @@ import LineChart from "components/charts/LineChart";
 
 export default class NETBUSDChart extends LineChart {
 
-  constructor(props) {
-    super(props);
-  }
-
   getChartName() {
     return "NET BUSD";
   }

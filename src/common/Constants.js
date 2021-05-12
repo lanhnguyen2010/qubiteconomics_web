@@ -1,6 +1,6 @@
 
-export default {
-    BASE_URL: 'http://0.0.0.0:5000/',
+const Const = {
+    BASE_URL: 'http://207.148.116.128:5000',
 
     PS_OUTBOUND_URL: '/api/ps-outbound',
     // buy updateLocale, sell down
@@ -16,3 +16,5 @@ export default {
 
     ARBIT_UNWIND_URL:'/api/arbit-unwind-outbound',
 }
+
+export default Const;
