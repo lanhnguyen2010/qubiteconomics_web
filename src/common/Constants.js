@@ -1,6 +1,6 @@
 
 export default {
-    BASE_URL: '',
+    BASE_URL: 'http://207.148.116.128:5000',
 
     PS_OUTBOUND_URL: '/api/ps-outbound',
     // buy updateLocale, sell down
