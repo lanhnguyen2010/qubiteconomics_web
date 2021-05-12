@@ -65,10 +65,10 @@ class MainDashboardScreen extends React.Component {
             </Row>
           </Col>
           <Col>
-            <Row style={{ height: '25vh' }}>
+            <Row style={{ height: '30vh' }}>
               <ForeignDerivativeChart ref={this.chartC4Ref} data={{ chartData: this.props.BuySellNNOutbound }} />
             </Row>
-            <Row style={{ height: '25vh' }}>
+            <Row style={{ height: '30vh' }}>
               <BuySellPressureChart ref={this.chartC5Ref} data={{ chartData: this.props.BuySellNNOutbound }} />
             </Row>
             <Row style={{ height: '10vh' }}></Row>
