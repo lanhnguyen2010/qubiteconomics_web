@@ -28,52 +28,35 @@ export default class BaseChart extends React.Component {
 
     this.otherCharts = [];
 
-    this.debouceTime = 5;
-    this.syncViewports = this.debounce(this.__syncViewports.bind(this), this.debouceTime);
-    this.onToolTipUpdated = this.debounce(this.__onToolTipUpdated.bind(this), this.debouceTime);
-    this.onToolTipHidden = this.debounce(this.__onToolTipHidden.bind(this), this.debouceTime);
-    this.onCrosshairXUpdated = this.debounce(this.__onCrosshairXUpdated.bind(this), this.debouceTime);
-    this.onCrosshairXHidden = this.debounce(this.__onCrosshairXHidden.bind(this), this.debouceTime);
-    this.onCrosshairYUpdated = this.debounce(this.__onCrosshairYUpdated.bind(this), this.debouceTime);
-    this.onCrosshairYHidden = this.debounce(this.__onCrosshairYHidden.bind(this), this.debouceTime);
-    this.onRangeChanged = this.debounce(this.__onRangeChanged.bind(this), this.debouceTime);
+    this.syncViewports = this.debounce(this.__syncViewports.bind(this), 100);
+
+    this.onToolTipUpdated = this.debounce(this.__onToolTipUpdated.bind(this), 5);
+    this.onToolTipHidden = this.debounce(this.__onToolTipHidden.bind(this), 5);
+
+    /*
+    this.onCrosshairXUpdated = this.__onCrosshairXUpdated.bind(this);
+    this.onCrosshairXHidden = this.__onCrosshairXHidden.bind(this);
+    this.onCrosshairYUpdated = this.__onCrosshairYUpdated.bind(this);
+    this.onCrosshairYHidden = this.__onCrosshairYHidden.bind(this);
+    */
+    this.onCrosshairXUpdated = this.debounce(this.__onCrosshairXUpdated.bind(this), 5);
+    this.onCrosshairXHidden = this.debounce(this.__onCrosshairXHidden.bind(this), 5);
+    this.onCrosshairYUpdated = this.debounce(this.__onCrosshairYUpdated.bind(this), 5);
+    this.onCrosshairYHidden = this.debounce(this.__onCrosshairYHidden.bind(this), 5);
+
+    this.onRangeChanged = this.debounce(this.__onRangeChanged.bind(this), 100);
   }
 
   componentDidMount() {
-    this.__initChart();
-    this.__initChartBehavior();
-
     this.buildChart();
     this.setChartData();
-
-    this.bindResizeEvents();
-    this.addTooltip();
   }
-
-  shouldComponentUpdate(nextProps, nextState) {
-		//Check if Chart-options has changed and determine if component has to be updated
-		return !(nextProps.options === this.getChartOptions());
-	}
 
   componentDidUpdate() {
     this.setChartData();
   }
 
-  __initChart() {
-    // this.chart = am4core.create(this.chartContainerRef.current, this.getChartType());
-    //this.chart.dateFormatter.inputDateFormat = "HH:mm:ss";
-  }
-
-  __initChartBehavior() {
-    // this.chart.cursor = new am4charts.XYCursor();
-    // this.chart.cursor.behavior = "panX";
-  }
-
   getChartOptions() {
-  }
-
-  getChartType() {
-    // return am4charts.XYChart;
   }
 
   buildChart() {
@@ -82,10 +65,12 @@ export default class BaseChart extends React.Component {
   setChartData(){
   }
 
-  bindResizeEvents() {
+  getChartName() {
+    return "";
   }
 
-  addTooltip() {
+  getChartLegendText() {
+    return ""
   }
 
   registerOtherCharts(chart) {
@@ -156,8 +141,6 @@ export default class BaseChart extends React.Component {
     var y = this.chart.axisY[0].convertValueToPixel(event.value);
     var height = this.chart.bounds.y2 - this.chart.bounds.y1;
     var yPercentage = y / height;
-
-    console.log(height, y, yPercentage);
 
     for (var i = 0; i < this.otherCharts.length; i++) {
       let chart = this.otherCharts[i];

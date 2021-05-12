@@ -3,13 +3,6 @@ import BaseChart from "components/charts/BaseChart";
 import "./styles.css";
 export default class LineChart extends BaseChart {
 
-  getChartName() {
-    return "";
-  }
-
-  getChartLegendText(){
-    return ""
-  }
   getChartOptions() {
     const options = {
       theme: "light1",
@@ -42,7 +35,6 @@ export default class LineChart extends BaseChart {
       axisX: {
         crosshair: {
           enabled: true,
-          snapToDataPoint: true,
           updated: this.onCrosshairXUpdated,
           hidden: this.onCrosshairXHidden,
           thickness: 0.5,
@@ -61,7 +53,6 @@ export default class LineChart extends BaseChart {
         gridThickness: 0.2,
         crosshair: {
           enabled: true,
-          snapToDataPoint: true,
           labelBackgroundColor: "",
           labelFontColor: "orange",
           updated: this.onCrosshairYUpdated,
