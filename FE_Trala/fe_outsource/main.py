@@ -16,7 +16,7 @@ app = Flask(__name__)
 cors = CORS(app)
 
 # Main
-PORT = 5025
+PORT = 5000
 PS_OUTBOUND_URL = "/api/ps-outbound"
 BUYSELL_NN_OUTBOUND_URL = "/api/bs-nn-outbound"
 # Suu BUSD
