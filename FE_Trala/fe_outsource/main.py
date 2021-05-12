@@ -1,8 +1,10 @@
 import json
 from flask import Flask, request, abort, jsonify
 from process import compute_busd,compute_busd_nn,compute_f1_dashboard,compute_vn30_dashboard,compute_arbit_unwind, compute_ps
+from flask_cors import CORS
 
 app = Flask(__name__)
+cors = CORS(app)
 
 # Main
 ENDPOINT_PORT = 5025
