@@ -23,9 +23,10 @@ export default class LineChart extends BaseChart {
         verticalAlign: "top",  // "top" , "bottom"
         fontSize: 9,
         fontWeight: "normal",
-        itemclick: function (e) {
+        itemclick: (e) => {
           e.dataSeries.visible = !(typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible);
           e.chart.render();
+          this.swithToPanMode(e.chart);
         }
       },
       title: {
@@ -186,15 +187,6 @@ export default class LineChart extends BaseChart {
     }
 
     this.chart.render();
-
-    if (!this.firstRender) {
-      this.firstRender = true;
-
-      var parentElement = this.chart.container.getElementsByClassName("canvasjs-chart-toolbar")[0];
-      var childElement = parentElement.getElementsByTagName("button")[0];
-      if (childElement.getAttribute("state") === "pan") {
-        childElement.click();
-      }
-    }
+    this.swithToPanMode(this.chart);
   }
 }

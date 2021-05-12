@@ -107,6 +107,7 @@ export default class BaseChart extends React.Component {
       }
 
       chart.render();
+      this.swithToPanMode(chart);
     }
   }
 
@@ -185,15 +186,21 @@ export default class BaseChart extends React.Component {
       if (event.trigger === "reset") {
         chart.options.axisX.viewportMinimum = chart.options.axisX.viewportMaximum = null;
         chart.options.axisY.viewportMinimum = chart.options.axisY.viewportMaximum = null;
-        chart.render();
       } else if (chart !== event.chart) {
         chart.options.axisX.viewportMinimum = event.axisX[0].viewportMinimum;
         chart.options.axisX.viewportMaximum = event.axisX[0].viewportMaximum;
         chart.options.axisX.interval = event.axisX[0].interval;
-
-        chart.render();
       }
+
+      chart.render();
+      this.swithToPanMode(chart);
     }
+  }
+
+  swithToPanMode(chart) {
+    var parentElement = chart.container.getElementsByClassName("canvasjs-chart-toolbar")[0];
+    var childElement = parentElement.getElementsByTagName("button")[0];
+    if (childElement.getAttribute("state") === "pan") childElement.click();
   }
 
   createEvent(type, screenX, screenY, clientX, clientY){
