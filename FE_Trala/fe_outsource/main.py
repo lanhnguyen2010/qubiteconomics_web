@@ -9,8 +9,11 @@ from process import (
     compute_ps,
 )
 from bson.json_util import loads, dumps
+from flask_cors import CORS
+
 
 app = Flask(__name__)
+cors = CORS(app)
 
 # Main
 PORT = 5025

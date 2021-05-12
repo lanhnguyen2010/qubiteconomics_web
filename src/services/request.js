@@ -8,7 +8,9 @@
 export const request = async (url, data = {}) => {
     try {
         console.log("request ", url)
-        const response = await fetch(url, data)
+        const response = await fetch(url, {
+            method: 'POST'
+        })
         console.log("response: ", response);
         return await response.json();
     } catch (err) {
