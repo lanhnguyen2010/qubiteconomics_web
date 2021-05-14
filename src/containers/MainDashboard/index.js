@@ -51,44 +51,43 @@ class MainDashboardScreen extends React.Component {
 
   render() {
     return (
-      <Container fluid>
-        <Row style={{ height: '100vh' }}>
-          <Col>
-            <Row style={{ height: '30vh' }}>
+      <Container fluid style={{backgroundColor: '#e6e7ec', overflow:'hidden'}}>
+        <Row style={{ height: '100vh'}}>
+          <Col style={{paddingLeft: 20}}>
+            <Row style={{ height: '30vh', paddingTop: 10 }}>
               <VN30DerivativeChart ref={this.chartC1Ref} data={{ chartData: this.props.PSOutbound }} />
             </Row>
-            <Row style={{ height: '30vh' }}>
+            <Row style={{ height: '30vh', paddingTop: 10 }}>
               <BuyupSelldownChart ref={this.chartC2Ref} data={{ chartData: this.props.BusdOutbound, bubblesData: this.props.Arbit }} />
             </Row>
-            <Row style={{ height: '30vh' }}>
+            <Row style={{ height: '30vh', paddingTop: 10 }}>
               <NETBUSDChart ref={this.chartC3Ref} data={{ chartData: this.props.BusdOutbound, bubblesData: this.props.ArbitUnwind }} />
             </Row>
           </Col>
-          <Col>
-            <Row style={{ height: '30vh' }}>
+          <Col style={{paddingLeft: 20, paddingRight: 20}}>
+            <Row style={{ height: '30vh', paddingTop: 10 }}>
               <ForeignDerivativeChart ref={this.chartC4Ref} data={{ chartData: this.props.BuySellNNOutbound }} />
             </Row>
-            <Row style={{ height: '30vh' }}>
+            <Row style={{ height: '30vh', paddingTop: 10 }}>
               <BuySellPressureChart ref={this.chartC5Ref} data={{ chartData: this.props.BuySellNNOutbound }} />
             </Row>
-            <Row style={{ height: '10vh' }}></Row>
-            <Row style={{ height: '30vh' }}>
+            <Row style={{ height: '30vh', paddingTop: 10 }}>
               <Col></Col>
               <Col> <Form.Control type="date"></Form.Control></Col>
               <Col></Col>
             </Row>
           </Col>
-          <Col>
-            <Row style={{ height: '25vh' }}>
+          <Col style={{paddingLeft: 20}}>
+            <Row style={{ height: '25vh', paddingTop: 10 }}>
               <SuuF1Chart ref={this.chartC6Ref} data={{ chartData: this.props.SuuF1Outbound }} />
             </Row>
-            <Row style={{ height: '25vh' }}>
+            <Row style={{ height: '25vh', paddingTop: 10 }}>
               <FBFSChart ref={this.chartC7Ref} data={{ chartData: this.props.SuuF1Outbound }} />
             </Row>
-            <Row style={{ height: '25vh' }}>
+            <Row style={{ height: '25vh', paddingTop: 10 }}>
               <F1BidVAskVChart ref={this.chartC8Ref} data={{ chartData: this.props.SuuF1Outbound }} />
             </Row>
-            <Row style={{ height: '25vh' }}>
+            <Row style={{ height: '25vh', paddingTop: 10 }}>
               <NetBSChart ref={this.chartC9Ref} data={{ chartData: this.props.SuuF1Outbound }} />
             </Row>
           </Col>
