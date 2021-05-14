@@ -24,7 +24,8 @@ export default class LineChart extends BaseChart {
       },
       title: {
         text: this.getChartName(),
-        fontSize: 14,
+        fontSize: 12,
+        fontFamily:'Oswald',
         horizontalAlign: "left"
       },
       toolTip:{
@@ -40,37 +41,40 @@ export default class LineChart extends BaseChart {
           updated: this.onCrosshairXUpdated,
           hidden: this.onCrosshairXHidden,
           thickness: 0.5,
-          labelBackgroundColor: "",
-          labelFontColor: "orange",
         },
         valueFormatString: "HH:mm",
         interval: 5,
         intervalType: "minute",
         includeZero: false,
-        labelFontSize: 8,
-
-        tickLength: 2,
-        tickColor: "red"
+        labelFontSize: 6,
+        lineThickness: 0.4,
+        tickLength: 0,
+        margin: 10,
       },
       axisY: [{
         gridThickness: 0.1,
+        lineThickness: 0.4,
+        tickLength: 0,
         crosshair: {
           enabled: true,
-          labelBackgroundColor: "",
-          labelFontColor: "orange",
+          shared: true,
           updated: this.onCrosshairYUpdated,
           hidden: this.onCrosshairYHidden,
           thickness: 0.5
         },
         includeZero: false,
-        labelFontSize: 8
+        labelFontSize: 6
 
       }],
       axisY2:{
-        labelFontSize: 8,
+        tickLength:0,
+        labelFontSize: 6,
         gridThickness: 0.1,
+        lineThickness: 0.4,
       },
       data: [{
+        hoveredMarkerSize: 0.5,
+        markerSize: 0,
         type: "line",
         lineThickness: 1,
         showInLegend: true,

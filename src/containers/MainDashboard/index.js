@@ -11,10 +11,12 @@ import F1BidVAskVChart from "components/charts/main_charts/F1BidVAskVChart";
 import NetBSChart from "components/charts/main_charts/NetBSChart";
 import BuyupSelldownChart from "components/charts/main_charts/BuyupSelldownChart";
 import NETBUSDChart from "components/charts/main_charts/NETBUSDChart";
+import style from "./index.css"
 
 import {
   Container, Row, Col, Form
 } from 'react-bootstrap';
+import {fromArray} from "@amcharts/amcharts4/.internal/core/utils/Iterator";
 class MainDashboardScreen extends React.Component {
 
   constructor(props) {
@@ -65,7 +67,7 @@ class MainDashboardScreen extends React.Component {
             </Row>
           </Col>
           <Col style={{paddingLeft: 20, paddingRight: 20}}>
-            <Row style={{ height: '30vh', paddingTop: 10 }}>
+            <Row style={{ height: '30vh', paddingTop: 10, borderRadius: 16 }}>
               <ForeignDerivativeChart ref={this.chartC4Ref} data={{ chartData: this.props.BuySellNNOutbound }} />
             </Row>
             <Row style={{ height: '30vh', paddingTop: 10 }}>
