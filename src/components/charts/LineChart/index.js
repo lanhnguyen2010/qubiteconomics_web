@@ -29,6 +29,8 @@ export default class LineChart extends BaseChart {
       },
       toolTip:{
         content:"{y}" ,
+        fontSize: 10,
+        backgroundColor: "#f4d5a6",
         updated: this.onToolTipUpdated,
         hidden: this.onToolTipHidden
       },
@@ -45,12 +47,13 @@ export default class LineChart extends BaseChart {
         interval: 5,
         intervalType: "minute",
         includeZero: false,
+        labelFontSize: 8,
 
         tickLength: 2,
         tickColor: "red"
       },
       axisY: [{
-        gridThickness: 0.2,
+        gridThickness: 0.1,
         crosshair: {
           enabled: true,
           labelBackgroundColor: "",
@@ -59,8 +62,14 @@ export default class LineChart extends BaseChart {
           hidden: this.onCrosshairYHidden,
           thickness: 0.5
         },
-        includeZero: false
+        includeZero: false,
+        labelFontSize: 8
+
       }],
+      axisY2:{
+        labelFontSize: 8,
+        gridThickness: 0.1,
+      },
       data: [{
         type: "line",
         lineThickness: 1,

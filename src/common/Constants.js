@@ -1,6 +1,6 @@
 
 const Const = {
-    BASE_URL: 'http://207.148.116.128:5000',
+    BASE_URL: 'http://45.119.214.155:5025',
 
     PS_OUTBOUND_URL: '/api/ps-outbound',
     // buy updateLocale, sell down

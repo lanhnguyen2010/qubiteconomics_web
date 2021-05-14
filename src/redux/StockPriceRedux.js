@@ -109,7 +109,7 @@ const types = {
           ...state,
           PSOutbound: PSOutbound.map((i) => {
             return {price: i.price, time: new Date(2021, 1, 1, parseInt(i.hour), parseInt(i.minute), parseInt(i.second))}
-          }),
+          }).reverse(),
           PSOutboundError: null,
         };
       }
@@ -184,7 +184,7 @@ const types = {
               time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2]))
             }
 
-          }),
+          }).reverse(),
           SuuF1OutboundError: null,
         };
       }
