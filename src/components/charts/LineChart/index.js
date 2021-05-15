@@ -111,7 +111,7 @@ export default class LineChart extends BaseChart {
       chartInterval = 5;
     }
     else if (minuteDiffs <= 60) {
-      chartInterval = 10;
+      chartInterval = 20;
     }
     else if (minuteDiffs <= 120) {
       chartInterval = 15;

@@ -97,8 +97,10 @@ class MainDashboardScreen extends React.Component {
             <Row style={{ height: '30vh', paddingTop: 10 }}>
               <BuySellPressureChart ref={this.chartC5Ref} data={{ chartData: this.props.BuySellNNOutbound }} />
             </Row>
-            <Row style={{ height: '10vh', paddingTop: 10 }}>
-              <Col style={{ textAlign: 'center' }}><DatePicker selected={this.selectedDate} onChange={date => this.onDatePicked(date)} /></Col>
+            <Row style={{paddingTop: 10, paddingBottom: 10 }}>
+              <Col>Date:</Col>
+              <Col><DatePicker selected={this.selectedDate} onChange={date => this.onDatePicked(date)} /></Col>
+              <Col></Col>
             </Row>
             <Row style={{ height: '36vh', width: '33vw', paddingTop: 10, overflow: 'auto' }}>
               <ChartInfo />
