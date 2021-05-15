@@ -115,8 +115,6 @@ const types = {
       }
 
       case types.FETCH_BUSD_OUTBOUND_SUCCESS: {
-        console.log("FETCH_BUSD_OUTBOUND_SUCCESS ", BusdOutbound)
-
         return {
           ...state,
           BusdOutbound: BusdOutbound.BUSD.time.map((i, index) => {
@@ -190,7 +188,6 @@ const types = {
       }
 
       case types.FETCH_ArbitUnwind_SUCCESS: {
-        console.log("FETCH_ArbitUnwind_SUCCESS", ArbitUnwind);
         return {
           ...state,
           ArbitUnwind: ArbitUnwind.unwind.time.map((i, index) => {

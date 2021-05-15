@@ -26,7 +26,6 @@ class CanvasJSChart extends React.Component {
     componentDidUpdate() {
         //Update Chart Options & Render
         this.chart.options = this.props.options;
-        this.chart.render();
     }
     componentWillUnmount() {
         //Destroy chart and remove reference
@@ -64,7 +63,6 @@ class CanvasJSStockChart extends React.Component {
     componentDidUpdate() {
         //Update Chart Options & Render
         this.stockChart.options = this.props.options;
-        this.stockChart.render();
     }
     componentWillUnmount() {
         //Destroy chart and remove reference

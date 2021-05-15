@@ -12,6 +12,7 @@ import NetBSChart from "components/charts/main_charts/NetBSChart";
 import BuyupSelldownChart from "components/charts/main_charts/BuyupSelldownChart";
 import NETBUSDChart from "components/charts/main_charts/NETBUSDChart";
 import DatePicker from "react-datepicker";
+import ChartInfo from "components/widgets/ChartInfo/index";
 
 import "react-datepicker/dist/react-datepicker.css";
 import style from "./index.css"
@@ -45,9 +46,10 @@ class MainDashboardScreen extends React.Component {
     this.fetchData();
 
     for (var i = 0; i < this.chartRefs.length; i++) {
+      this.chartRefs[i].current.setIndex(i + 1);
       for (var j = 0; j < this.chartRefs.length; j++) {
         if (i !== j) {
-          this.chartRefs[i].current.registerOtherCharts(this.chartRefs[j].current.chart);
+          this.chartRefs[i].current.registerOtherCharts(this.chartRefs[j]);
         }
       }
     }
@@ -82,29 +84,34 @@ class MainDashboardScreen extends React.Component {
               <VN30DerivativeChart ref={this.chartC1Ref} data={{ chartData: this.props.PSOutbound }} />
             </Row>
             <Row style={{ height: '30vh', paddingTop: 10 }}>
-              <BuyupSelldownChart ref={this.chartC2Ref} data={{ chartData: this.props.BusdOutbound, bubblesData: this.props.Arbit }} />
+              <BuyupSelldownChart ref={this.chartC4Ref} data={{ chartData: this.props.BusdOutbound, bubblesData: this.props.Arbit }} />
             </Row>
             <Row style={{ height: '30vh', paddingTop: 10 }}>
-              <NETBUSDChart ref={this.chartC3Ref} data={{ chartData: this.props.BusdOutbound, bubblesData: this.props.ArbitUnwind }} />
+              <NETBUSDChart ref={this.chartC7Ref} data={{ chartData: this.props.BusdOutbound, bubblesData: this.props.ArbitUnwind }} />
             </Row>
           </Col>
           <Col style={{paddingLeft: 20, paddingRight: 20}}>
             <Row style={{ height: '30vh', paddingTop: 10, borderRadius: 16 }}>
-              <ForeignDerivativeChart ref={this.chartC4Ref} data={{ chartData: this.props.BuySellNNOutbound }} />
+              <ForeignDerivativeChart ref={this.chartC2Ref} data={{ chartData: this.props.BuySellNNOutbound }} />
             </Row>
             <Row style={{ height: '30vh', paddingTop: 10 }}>
               <BuySellPressureChart ref={this.chartC5Ref} data={{ chartData: this.props.BuySellNNOutbound }} />
             </Row>
-            <Row style={{ height: '30vh', paddingTop: 10 }}>
+            <Row style={{ height: '3vh', paddingTop: 10 }}>
+              <Col></Col>
               <Col><DatePicker selected={this.selectedDate} onChange={date => this.onDatePicked(date)} /></Col>
+              <Col></Col>
+            </Row>
+            <Row style={{ height: '36vh', width: '33vw', paddingTop: 10, overflow: 'auto' }}>
+              <ChartInfo />
             </Row>
           </Col>
           <Col style={{paddingLeft: 20}}>
             <Row style={{ height: '25vh', paddingTop: 10 }}>
-              <SuuF1Chart ref={this.chartC6Ref} data={{ chartData: this.props.SuuF1Outbound }} />
+              <SuuF1Chart ref={this.chartC3Ref} data={{ chartData: this.props.SuuF1Outbound }} />
             </Row>
             <Row style={{ height: '25vh', paddingTop: 10 }}>
-              <FBFSChart ref={this.chartC7Ref} data={{ chartData: this.props.SuuF1Outbound }} />
+              <FBFSChart ref={this.chartC6Ref} data={{ chartData: this.props.SuuF1Outbound }} />
             </Row>
             <Row style={{ height: '25vh', paddingTop: 10 }}>
               <F1BidVAskVChart ref={this.chartC8Ref} data={{ chartData: this.props.SuuF1Outbound }} />

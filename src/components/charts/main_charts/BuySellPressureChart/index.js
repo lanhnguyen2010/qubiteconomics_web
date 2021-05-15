@@ -18,16 +18,16 @@ export default class BuySellPressureChart extends LineChart {
       showInLegend: true,
       legendText: "sell Pressure",
       xValueType: "dateTime",
-      yValueFormatString: "#,##0.00",
-      dataPoints: this.dataPoints
+      yValueFormatString: "#,##0.00"
     })
     return options;
   }
+
   setDataPoints() {
     let chartData = this.props.data.chartData;
     if (!chartData) chartData = [];
-    this.chart.options.data[0].dataPoints = chartData.map(item => ({ x: item.time, y: item.buyPressure }));
-    this.chart.options.data[1].dataPoints = chartData.map(item => ({ x: item.time, y: item.sellPressure }));
 
+    this.dataPoints[0] = chartData.map(item => ({ x: item.time, y: item.buyPressure }));
+    this.dataPoints[1] = chartData.map(item => ({ x: item.time, y: item.sellPressure }));
   }
 }

@@ -18,8 +18,7 @@ export default class BuyupSelldownChart extends LineChart {
       showInLegend: true,
       legendText: "SD",
       xValueType: "dateTime",
-      yValueFormatString: "#,##0.00",
-      dataPoints: this.dataPoints
+      yValueFormatString: "#,##0.00"
     });
     options.data.unshift({
       type: "scatter",
@@ -33,21 +32,21 @@ export default class BuyupSelldownChart extends LineChart {
       color: "#6666ff",
       yValueFormatString: "#,##0.00",
       legendMarkerType: "circle",
-      toolTipContent: "<b>{name}</b>",
-      dataPoints: this.dataPoints
+      toolTipContent: "<b>{name}</b>"
     })
     return options;
   }
-  setDataPoints() {
 
+  setDataPoints() {
     let bubblesData = this.props.data.bubblesData;
     if (!bubblesData) bubblesData = [];
 
-    this.chart.options.data[0].dataPoints = bubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius/2, name: item.label}));
+    this.dataPoints[0] = bubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius/2, name: item.label}));
 
     let chartData = this.props.data.chartData;
     if (!chartData) chartData = [];
-    this.chart.options.data[1].dataPoints = chartData.map(item => ({ x: item.time, y: item.BU }));
-    this.chart.options.data[2].dataPoints = chartData.map(item => ({ x: item.time, y: item.SD }));
+
+    this.dataPoints[1] = chartData.map(item => ({ x: item.time, y: item.buyPressure }));
+    this.dataPoints[2] = chartData.map(item => ({ x: item.time, y: item.sellPressure }));
   }
 }

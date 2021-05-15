@@ -14,6 +14,7 @@ export default class NetBSChart extends LineChart {
   setDataPoints() {
     let chartData = this.props.data.chartData;
     if (!chartData) chartData = [];
-    this.chart.options.data[0].dataPoints = chartData.map(item => ({ x: item.time, y: item.NetBS }));
+
+    this.dataPoints[0] = chartData.map(item => ({ x: item.time, y: item.NetBS }));
   }
 }

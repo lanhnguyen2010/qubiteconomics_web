@@ -17,7 +17,6 @@ export const request = async (url, data = {}) => {
 
 export const requestPost = async (url, data = {}) => {
     try {
-        console.log("request ", url, data)
         var headers = {
             "Content-Type": "application/json"
           }

@@ -1,0 +1,18 @@
+.variable-row,
+.object-content {
+    display: inline-block;
+}
+
+.react-json-view {
+    font-size: 13px;
+    line-height: 17px;
+}
+
+.object-key-val,
+.variable-row {
+    padding: 0 5px 0 20px !important;
+}
+
+.object-content .variable-row:first-child::after {
+    content: ",";
+}

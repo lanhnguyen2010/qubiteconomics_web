@@ -10,7 +10,7 @@ export default class LineChart extends BaseChart {
       zoomEnabled: true,
       panEnabled: true,
       colorSet: "customColorSet1",
-      rangeChanged: this.onRangeChanged,
+      rangeChanging: this.onRangeChanged,
       legend: {
         horizontalAlign: "right", // "center" , "right"
         verticalAlign: "top",  // "top" , "bottom"
@@ -18,10 +18,10 @@ export default class LineChart extends BaseChart {
         fontWeight: "normal",
         itemclick: (e) => {
           e.dataSeries.visible = !(typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible);
-          e.chart.render();
-          this.swithToPanMode(e.chart);
+          this.renderChart();
         }
       },
+      normalized: true,
       title: {
         text: this.getChartName(),
         fontSize: 10,
@@ -80,8 +80,7 @@ export default class LineChart extends BaseChart {
         showInLegend: true,
         legendText: this.getChartLegendText(),
         xValueType: "dateTime",
-        yValueFormatString: "#,##0.00",
-        dataPoints: this.dataPoints
+        yValueFormatString: "#,##0.00"
       }]
     }
     return options;
@@ -95,8 +94,11 @@ export default class LineChart extends BaseChart {
     var minuteDiffs = parseInt((maxViewport - minViewport) / 1000 / 60);
 
     var chartInterval = 0;
-    if (minuteDiffs <= 40) {
-      chartInterval = 3;
+    if (minuteDiffs <= 5) {
+      chartInterval = 1;
+    }
+    else if (minuteDiffs <= 30) {
+      chartInterval = 2;
     }
     else if (minuteDiffs <= 60) {
       chartInterval = 5;
@@ -107,7 +109,7 @@ export default class LineChart extends BaseChart {
       chartInterval = 20;
     }
 
-    this.chart.axisX[0].set("interval", chartInterval);
+    this.chart.options.axisX.interval = chartInterval;
 
     return chartInterval;
   }
@@ -141,43 +143,44 @@ export default class LineChart extends BaseChart {
 
       var minuteDiffs = parseInt((newViewportMax - newViewportMin) / 1000 / 60);
 
-      if (currentMinuteDiffs !== minuteDiffs && minuteDiffs >= 20) {
-        chart.axisX[0].set("viewportMinimum", newViewportMin);
-        chart.axisX[0].set("viewportMaximum", newViewportMax);
-
+      if (currentMinuteDiffs !== minuteDiffs && minuteDiffs >= 5) {
+        chart.options.axisX.viewportMinimum = newViewportMin;
+        chart.options.axisX.viewportMaximum = newViewportMax;
         var chartInterval = this.updateInterval();
 
         this.syncViewports(chartInterval);
+        this.renderChart();
       }
     });
   }
 
-  setDataPoints()
-  {
+  setDataPoints() {
     let chartData = this.props.data.chartData;
     if (!chartData) chartData = [];
-    this.chart.options.data[0].dataPoints = chartData.map(item => ({ x: item.time, y: item.price }));
+
+    this.dataPoints[0] = chartData.map(item => ({ x: item.time, y: item.price }));
   }
 
   setChartData() {
     this.setDataPoints();
+    this.moveDataPointsToChart(this.dataPoints);
 
-    let chartData = this.props.data.chartData;
-    if (!chartData) chartData = [];
-    if (chartData.length)
+    if (this.dataPoints.length && this.dataPoints[0].length)
     {
-      var axisX = this.chart.axisX[0];
+      var chartData = this.dataPoints[0];
 
-      var minDate = new Date(chartData[chartData.length - 1].time);
+      this.minDateTimestamp = chartData[chartData.length - 1].x.getTime();
+      this.maxDateTimestamp = chartData[0].x.getTime();
+
+      var minDate = new Date(this.minDateTimestamp);
       var maxDate = new Date(minDate.getTime() + (60 * 60000));
+      if (maxDate.getTime() > this.maxDateTimestamp) maxDate = new Date(this.maxDateTimestamp);
 
-      axisX.set("viewportMinimum", minDate);
-      axisX.set("viewportMaximum", maxDate);
+      var axisX = this.chart.options.axisX;
+      axisX.viewportMinimum = minDate;
+      axisX.viewportMaximum = maxDate;
 
-      this.minDateTimestamp = chartData[chartData.length - 1].time.getTime();
-      this.maxDateTimestamp = chartData[0].time.getTime();
-
-      axisX.set("scaleBreaks", {
+      axisX.scaleBreaks = {
         customBreaks: [{
           lineThickness: 0,
           collapsibleThreshold: "0%",
@@ -185,21 +188,15 @@ export default class LineChart extends BaseChart {
           startValue: new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate(), 11, 30, 0),
           endValue: new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate(), 13, 0, 0)
         }]
-      });
+      };
 
-      this.updateInterval();
-      if (this.chart.data && this.chart.data[0]){
-        let dataY = this.chart.data[0].dataPoints.map(i => i.y);
-        let maxY = Math.max(...dataY);
-        if(maxY > 0 && maxY <1000){
-          this.chart.axisY[0].margin = 80;
-        }
-
-      }
+      this.renderChart();
     }
 
+    this.filterData = false;
+    this.renderChart();
+    this.filterData = true;
 
-    this.chart.render();
-    this.swithToPanMode(this.chart);
+    this.updateChartsInfo(true);
   }
 }

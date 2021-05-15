@@ -17,8 +17,7 @@ export default class F1BidVAskVChart extends LineChart {
       lineThickness: 1,
       legendText: "AskV",
       xValueType: "dateTime",
-      yValueFormatString: "#,##0.00",
-      dataPoints: this.dataPoints
+      yValueFormatString: "#,##0.00"
     })
     options.data.push({
       type: "line",
@@ -26,8 +25,7 @@ export default class F1BidVAskVChart extends LineChart {
       lineThickness: 1,
       legendText: "NetBA",
       xValueType: "dateTime",
-      yValueFormatString: "#,##0.00",
-      dataPoints: this.dataPoints
+      yValueFormatString: "#,##0.00"
     })
     options.data.push({
       type: "line",
@@ -35,8 +33,7 @@ export default class F1BidVAskVChart extends LineChart {
       lineThickness: 1,
       legendText: "SMA",
       xValueType: "dateTime",
-      yValueFormatString: "#,##0.00",
-      dataPoints: this.dataPoints
+      yValueFormatString: "#,##0.00"
     })
 
     return options;
@@ -44,9 +41,10 @@ export default class F1BidVAskVChart extends LineChart {
   setDataPoints() {
     let chartData = this.props.data.chartData;
     if (!chartData) chartData = [];
-    this.chart.options.data[0].dataPoints = chartData.map(item => ({ x: item.time, y: item.BidV }));
-    this.chart.options.data[1].dataPoints = chartData.map(item => ({ x: item.time, y: item.AskV}));
-    this.chart.options.data[2].dataPoints = chartData.map(item => ({ x: item.time, y: item.NetBA }));
-    this.chart.options.data[3].dataPoints = chartData.map(item => ({ x: item.time, y: item.SMA }));
+
+    this.dataPoints[0] = chartData.map(item => ({ x: item.time, y: item.BidV }));
+    this.dataPoints[1] = chartData.map(item => ({ x: item.time, y: item.AskV}));
+    this.dataPoints[2] = chartData.map(item => ({ x: item.time, y: item.NetBA }));
+    this.dataPoints[3] = chartData.map(item => ({ x: item.time, y: item.SMA }));
   }
 }

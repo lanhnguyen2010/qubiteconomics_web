@@ -18,15 +18,16 @@ export default class FBFSChart extends LineChart {
       showInLegend: true,
       legendText: "FS",
       xValueType: "dateTime",
-      yValueFormatString: "#,##0.00",
-      dataPoints: this.dataPoints
+      yValueFormatString: "#,##0.00"
     })
     return options;
   }
+
   setDataPoints() {
     let chartData = this.props.data.chartData;
     if (!chartData) chartData = [];
-    this.chart.options.data[0].dataPoints = chartData.map(item => ({ x: item.time, y: item.foreignerBuyVolume }));
-    this.chart.options.data[1].dataPoints = chartData.map(item => ({ x: item.time, y: item.foreignerSellVolume }));
+
+    this.dataPoints[0] = chartData.map(item => ({ x: item.time, y: item.foreignerBuyVolume }));
+    this.dataPoints[1] = chartData.map(item => ({ x: item.time, y: item.foreignerSellVolume }));
   }
 }
