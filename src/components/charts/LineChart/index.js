@@ -35,7 +35,10 @@ export default class LineChart extends BaseChart {
       toolTip:{
         content:"{y}" ,
         fontSize: fontSize,
-        backgroundColor: "#f4d5a6",
+        fontWeight: 'normal',
+        animationEnabled: false,
+        backgroundColor: "transparent",
+        borderThickness: 0,
         updated: this.onToolTipUpdated,
         hidden: this.onToolTipHidden
       },
@@ -197,6 +200,14 @@ export default class LineChart extends BaseChart {
       this.renderChart();
     }
 
+    if (this.chart.data && this.chart.data[0]){
+      let dataY = this.chart.data[0].dataPoints.map(i => i.y);
+      let maxY = Math.max(...dataY);
+      if(maxY > 0 && maxY <1000){
+        this.chart.axisY[0].set("margin", 8);
+      }
+    }
+    
     this.filterData = false;
     this.renderChart();
     this.filterData = true;
