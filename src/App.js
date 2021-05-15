@@ -19,7 +19,7 @@ const AppStateLess = () => (
 
 const App = lifecycle({
   componentDidMount() {
-
+      document.title = "Stock chart"
   }
 })(AppStateLess);
 

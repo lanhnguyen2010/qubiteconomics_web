@@ -192,7 +192,6 @@ export default class LineChart extends BaseChart {
         let dataY = this.chart.data[0].dataPoints.map(i => i.y);
         let maxY = Math.max(...dataY);
         if(maxY > 0 && maxY <1000){
-          console.log(maxY)
           this.chart.axisY[0].margin = 80;
         }
 

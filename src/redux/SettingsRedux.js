@@ -7,6 +7,7 @@ const types = {
   export const actions =  {
 
     updateSelectedDate: (selectedDate) => {
+      console.log('updateSelectedDate', selectedDate)
         return { type: types.UPDATE_SELETED_DATE, selectedDate }
     },
     updateTimeRange: (timeRange) => {
@@ -23,6 +24,8 @@ const types = {
     const { type, selectedDate, timeRange } = action;
     switch (type) {
       case types.UPDATE_SELETED_DATE: {
+        console.log('set date', selectedDate)
+
         return {
           ...state,
           selectedDate: selectedDate,

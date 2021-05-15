@@ -11,12 +11,15 @@ import F1BidVAskVChart from "components/charts/main_charts/F1BidVAskVChart";
 import NetBSChart from "components/charts/main_charts/NetBSChart";
 import BuyupSelldownChart from "components/charts/main_charts/BuyupSelldownChart";
 import NETBUSDChart from "components/charts/main_charts/NETBUSDChart";
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
 import style from "./index.css"
 
 import {
   Container, Row, Col, Form
 } from 'react-bootstrap';
-import {fromArray} from "@amcharts/amcharts4/.internal/core/utils/Iterator";
+
 class MainDashboardScreen extends React.Component {
 
   constructor(props) {
@@ -35,9 +38,9 @@ class MainDashboardScreen extends React.Component {
   }
 
   componentDidMount() {
-    const { fetchAllData, settings } = this.props;
-    const timeDate = getTimeBody(settings);
-    fetchAllData(timeDate);
+    console.log("mount")
+
+    this.fetchData();
 
     for (var i = 0; i < this.chartRefs.length; i++) {
       for (var j = 0; j < this.chartRefs.length; j++) {
@@ -46,9 +49,23 @@ class MainDashboardScreen extends React.Component {
         }
       }
     }
+
   }
 
   componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  onDatePicked(date) {
+    this.props.setDate(date);
+    this.fetchData();
+  }
+
+  fetchData() {
+    const { fetchAllData, settings } = this.props;
+    console.log("settings", settings);
+    const timeDate = getTimeBody(settings);
+    fetchAllData(timeDate);
   }
 
   render() {
@@ -74,9 +91,7 @@ class MainDashboardScreen extends React.Component {
               <BuySellPressureChart ref={this.chartC5Ref} data={{ chartData: this.props.BuySellNNOutbound }} />
             </Row>
             <Row style={{ height: '30vh', paddingTop: 10 }}>
-              <Col></Col>
-              <Col> <Form.Control type="date"></Form.Control></Col>
-              <Col></Col>
+              <Col><DatePicker onChange={date => this.onDatePicked(date)} /></Col>
             </Row>
           </Col>
           <Col style={{paddingLeft: 20}}>
@@ -103,12 +118,13 @@ const getTimeBody = (settings) => {
   if (!settings) return null;
   const date = settings.selectedDate
   const range = settings.timeRange
-  const body = _.pickBy({ day: '', endTime: range});
+  const body = _.pickBy({ day: date, endTime: range});
   return body;
 }
 
 const mapDispatchToProps = (dispatch) => {
   const { actions } = require("../../redux/StockPriceRedux");
+  const SettingsRedux  = require("../../redux/SettingsRedux");
 
   return {
     fetchAllData: (data) => {
@@ -118,6 +134,10 @@ const mapDispatchToProps = (dispatch) => {
       actions.fetchBuySellNNOutboundData(dispatch, data);
       actions.fetchSuuF1OutboundData(dispatch, data);
       actions.fetchArbitUnwindData(dispatch, data);
+    },
+    setDate:(data) => {
+      const formatDate = data.toISOString().slice(0, 10).replaceAll('-','_')
+      SettingsRedux.actions.updateSelectedDate(formatDate)
     }
   }
 };
