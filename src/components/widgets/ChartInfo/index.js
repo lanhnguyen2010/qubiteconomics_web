@@ -12,15 +12,39 @@ export default class ChartInfo extends React.Component {
     this.state = {
       charts: [] // {name, from, to}
     };
+
+    this.pendingChanges = [];
+    this.pendingChangesTime = null;
   }
 
   componentDidMount() {
     ChartInfoEventBus.on("setValue", (data) => {
-      this.setState(prevState => {
-        const charts = [...prevState.charts];
-        charts[data.index] = data.info;
-        return { charts };
-      });
+      this.pendingChanges.push(data);
+      this.pendingChangesTime = new Date();
+    });
+
+    setInterval(() => {
+      if (this.pendingChangesTime && new Date().getTime() - this.pendingChangesTime.getTime() > 200) {
+        this.updateState();
+        this.pendingChangesTime = null;
+      }
+    }, 200);
+  }
+
+  updateState() {
+    if (!this.pendingChanges.length) return;
+
+    var changes = this.pendingChanges;
+    this.pendingChanges = [];
+
+    this.setState(prevState => {
+      const charts = [...prevState.charts];
+
+      changes.forEach(chart => {
+        charts[chart.index] = chart.info;
+      })
+
+      return { charts };
     });
   }
 
@@ -44,8 +68,8 @@ export default class ChartInfo extends React.Component {
     })
 
     return (
-      // <ReactJson src={info} name={null} iconStyle={"triangle"} displayObjectSize={false} displayDataTypes={false} displayArrayKey={false} />
-      <pre>{JSON.stringify(info)}</pre>
+      // <pre>{stringify(info, {maxLength: 80})}</pre>
+      <ReactJson src={info} name={null} iconStyle={"triangle"} displayObjectSize={false} displayDataTypes={false} displayArrayKey={false} />
     )
   }
 }

@@ -2,7 +2,6 @@ import React from "react";
 import ChartInfoEventBus from "components/widgets/ChartInfo/Event";
 
 import CanvasJSReact from 'lib/canvasjs.stock.react';
-import { TransferWithinAStationOutlined } from "@material-ui/icons";
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 const CanvasJS = CanvasJSReact.CanvasJS;
 
