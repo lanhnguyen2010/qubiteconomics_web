@@ -2,23 +2,40 @@ import LineChart from "components/charts/LineChart";
 
 export default class NETBUSDChart extends LineChart {
 
-  getChartName() {
-    return "NET BUSD";
+  initChartInfo() {
+    return {
+      key: "netBUSD",
+      name: "NET BUSD",
+      legends: [
+        {
+          key: "unwind",
+          name: "Unwind",
+          filter: false
+        },
+        {
+          key: "netBUSD",
+          name: "Net BUSD",
+        },
+        {
+          key: "SMA",
+          name: "SMA"
+        }
+      ]
+    }
   }
 
-  getChartLegendText() {
-    return "Net BUSD";
-  }
+  initChartOptions(options) {
+    options = super.initChartOptions(options);
 
-  getChartOptions(){
-    let options = super.getChartOptions();
+    options.data[0].legendText = this.chartInfo.legends[1].name
     options.data[0].color = "green";
+
     options.data.push({
       type: "line",
       lineThickness: 1,
       showInLegend: true,
       axisYIndex: 0,
-      legendText: "SMA",
+      legendText: this.chartInfo.legends[2].name,
       xValueType: "dateTime",
       color: "#6666ff",
       yValueFormatString: "#,##0.00"
@@ -28,7 +45,7 @@ export default class NETBUSDChart extends LineChart {
       lineThickness: 1,
       showInLegend: true,
       axisYType: "secondary",
-      legendText: "unwind",
+      legendText: this.chartInfo.legends[0].name,
       fillOpacity: .7,
       axisYIndex: 1,
       xValueType: "dateTime",
@@ -40,17 +57,18 @@ export default class NETBUSDChart extends LineChart {
     return options;
   }
 
-  setDataPoints() {
+  updateData() {
     let bubblesData = this.props.data.bubblesData;
-    if (!bubblesData) bubblesData = [];
-
-    this.dataPoints[0] = bubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius/2, name: item.label}));
-    this.dataPointsConfigs[0] = { filter: false };
-
     let chartData = this.props.data.chartData;
-    if (!chartData) chartData = [];
+    if (!bubblesData || !bubblesData.length || !chartData || !chartData.length) return;
 
-    this.dataPoints[1] = chartData.map(item => ({ x: item.time, y: item.NetBUSD }));
-    this.dataPoints[2] = chartData.map(item => ({ x: item.time, y: item.SMA }));
+    var reversedbubblesData = [...bubblesData].reverse();
+    var reversedData = [...chartData].reverse();
+
+    this.chart.updateData([
+      reversedbubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius / 2, name: item.label})),
+      reversedData.map(item => ({ x: item.time, y: item.NetBUSD })),
+      reversedData.map(item => ({ x: item.time, y: item.SMA }))
+    ])
   }
 }

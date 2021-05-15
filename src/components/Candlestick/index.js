@@ -48,11 +48,4 @@ export default class Candlestick extends BaseChart {
 
   addTooltip() {
   }
-
-  setChartData() {
-    // this.chartSeries.setData(this.props.data.priceData);
-    // this.volumeSeries.setData(this.props.data.volumeData);
-
-    this.chart.data = this.generateDummyData(false);
-  }
 }

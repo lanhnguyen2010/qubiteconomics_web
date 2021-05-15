@@ -1,6 +1,9 @@
 import { connect } from "react-redux";
 import React from "react";
 import _ from "lodash";
+import "react-datepicker/dist/react-datepicker.css";
+import { Container, Row, Col, Form } from 'react-bootstrap';
+import CanvasJSReact from 'lib/canvasjs.stock.react';
 
 import VN30DerivativeChart from "components/charts/main_charts/VN30DerivativeChart";
 import ForeignDerivativeChart from "components/charts/main_charts/ForeignDerivativeChart";
@@ -14,12 +17,23 @@ import NETBUSDChart from "components/charts/main_charts/NETBUSDChart";
 import DatePicker from "react-datepicker";
 import ChartInfo from "components/widgets/ChartInfo/index";
 
-import "react-datepicker/dist/react-datepicker.css";
-import style from "./index.css"
+import "./index.css";
 
-import {
-  Container, Row, Col, Form
-} from 'react-bootstrap';
+const CanvasJS = CanvasJSReact.CanvasJS;
+CanvasJS.addColorSet("customColorSet1",
+[
+  //colorSet Array
+  "#4661EE",
+  "#EC5657",
+  "green",
+  "#8FAABB",
+  "#B08BEB",
+  "#3EA0DD",
+  "#F5A52A",
+  "#23BFAA",
+  "#FAA586",
+  "#EB8CC6",
+]);
 
 class MainDashboardScreen extends React.Component {
 
@@ -37,23 +51,11 @@ class MainDashboardScreen extends React.Component {
     this.chartRefs.push(this.chartC8Ref = React.createRef());
     this.chartRefs.push(this.chartC9Ref = React.createRef());
     this.selectedDate = new Date();
-
   }
 
   componentDidMount() {
-    console.log("mount")
-
+    this.chartRefs.forEach((ref, index) => ref.current.configureChartRelation("DB01", index));
     this.fetchData();
-
-    for (var i = 0; i < this.chartRefs.length; i++) {
-      this.chartRefs[i].current.setIndex(i + 1);
-      for (var j = 0; j < this.chartRefs.length; j++) {
-        if (i !== j) {
-          this.chartRefs[i].current.registerOtherCharts(this.chartRefs[j]);
-        }
-      }
-    }
-
   }
 
   componentWillUnmount() {

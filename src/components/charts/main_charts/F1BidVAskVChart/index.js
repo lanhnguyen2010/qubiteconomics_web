@@ -2,20 +2,39 @@ import LineChart from "components/charts/LineChart";
 
 export default class F1BidVAskVChart extends LineChart {
 
-  getChartName() {
-    return "";
+  initChartInfo() {
+    return {
+      key: "F1BidVAskV",
+      name: "F1 BidV AskV, Selldown",
+      legends: [
+        {
+          key: "BidV",
+          name: "BidV"
+        },
+        {
+          key: "AskV",
+          name: "AskV"
+        },
+        {
+          key: "NetBA",
+          name: "NetBA"
+        },
+        {
+          key: "SMA",
+          name: "SMA"
+        }
+      ]
+    }
   }
 
-  getChartOptions(){
-    let options = super.getChartOptions();
-    options.data[0].showInLegend = true;
-    options.data[0].legendText = "BidV";
+  initChartOptions(options) {
+    options = super.initChartOptions(options);
 
     options.data.push({
       type: "line",
       showInLegend: true,
       lineThickness: 1,
-      legendText: "AskV",
+      legendText: this.chartInfo.legends[1].name,
       xValueType: "dateTime",
       yValueFormatString: "#,##0.00"
     })
@@ -23,7 +42,7 @@ export default class F1BidVAskVChart extends LineChart {
       type: "line",
       showInLegend: true,
       lineThickness: 1,
-      legendText: "NetBA",
+      legendText: this.chartInfo.legends[2].name,
       xValueType: "dateTime",
       yValueFormatString: "#,##0.00"
     })
@@ -31,20 +50,23 @@ export default class F1BidVAskVChart extends LineChart {
       type: "line",
       showInLegend: true,
       lineThickness: 1,
-      legendText: "SMA",
+      legendText: this.chartInfo.legends[3].name,
       xValueType: "dateTime",
       yValueFormatString: "#,##0.00"
     })
-
     return options;
   }
-  setDataPoints() {
-    let chartData = this.props.data.chartData;
-    if (!chartData) chartData = [];
 
-    this.dataPoints[0] = chartData.map(item => ({ x: item.time, y: item.BidV }));
-    this.dataPoints[1] = chartData.map(item => ({ x: item.time, y: item.AskV}));
-    this.dataPoints[2] = chartData.map(item => ({ x: item.time, y: item.NetBA }));
-    this.dataPoints[3] = chartData.map(item => ({ x: item.time, y: item.SMA }));
+  updateData() {
+    let chartData = this.props.data.chartData;
+    if (!chartData || !chartData.length) return;
+
+    var revesedData = [...chartData].reverse();
+    this.chart.updateData([
+      revesedData.map(item => ({ x: item.time, y: item.BidV })),
+      revesedData.map(item => ({ x: item.time, y: item.AskV })),
+      revesedData.map(item => ({ x: item.time, y: item.NetBA })),
+      revesedData.map(item => ({ x: item.time, y: item.SMA }))
+    ])
   }
 }
