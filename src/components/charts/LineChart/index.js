@@ -24,7 +24,7 @@ export default class LineChart extends BaseChart {
       },
       title: {
         text: this.getChartName(),
-        fontSize: 12,
+        fontSize: 10,
         fontFamily:'Oswald',
         horizontalAlign: "left"
       },
