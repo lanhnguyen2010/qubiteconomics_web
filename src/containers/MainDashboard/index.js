@@ -116,7 +116,7 @@ class MainDashboardScreen extends React.Component {
             <Row style={{ height: '25vh', paddingTop: 10 }}>
               <F1BidVAskVChart ref={this.chartC8Ref} data={{ chartData: this.props.SuuF1Outbound }} />
             </Row>
-            <Row style={{ height: '25vh', paddingTop: 10 }}>
+            <Row style={{ height: '25vh', paddingTop: 10, paddingBottom: 10 }}>
               <NetBSChart ref={this.chartC9Ref} data={{ chartData: this.props.SuuF1Outbound }} />
             </Row>
           </Col>

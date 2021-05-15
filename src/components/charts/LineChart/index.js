@@ -4,6 +4,10 @@ import "./styles.css";
 export default class LineChart extends BaseChart {
 
   getChartOptions() {
+
+    var fontSize = 11;
+    var labelFontSize = 10;
+
     const options = {
       theme: "light1",
       animationEnabled: true,
@@ -14,7 +18,7 @@ export default class LineChart extends BaseChart {
       legend: {
         horizontalAlign: "right", // "center" , "right"
         verticalAlign: "top",  // "top" , "bottom"
-        fontSize: 9,
+        fontSize: fontSize,
         fontWeight: "normal",
         itemclick: (e) => {
           e.dataSeries.visible = !(typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible);
@@ -24,13 +28,13 @@ export default class LineChart extends BaseChart {
       normalized: true,
       title: {
         text: this.getChartName(),
-        fontSize: 10,
+        fontSize: fontSize,
         fontFamily:'Oswald',
         horizontalAlign: "left"
       },
       toolTip:{
         content:"{y}" ,
-        fontSize: 10,
+        fontSize: fontSize,
         backgroundColor: "#f4d5a6",
         updated: this.onToolTipUpdated,
         hidden: this.onToolTipHidden
@@ -46,7 +50,7 @@ export default class LineChart extends BaseChart {
         interval: 5,
         intervalType: "minute",
         includeZero: false,
-        labelFontSize: 6,
+        labelFontSize: labelFontSize,
         lineThickness: 0.4,
         tickLength: 0,
         margin: 10,
@@ -63,12 +67,12 @@ export default class LineChart extends BaseChart {
           thickness: 0.5
         },
         includeZero: false,
-        labelFontSize: 6
+        labelFontSize: labelFontSize
 
       }],
       axisY2:{
         tickLength:0,
-        labelFontSize: 6,
+        labelFontSize: labelFontSize,
         gridThickness: 0.1,
         lineThickness: 0.4,
       },
