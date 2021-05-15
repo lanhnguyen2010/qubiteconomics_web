@@ -104,13 +104,19 @@ export default class LineChart extends BaseChart {
     else if (minuteDiffs <= 30) {
       chartInterval = 2;
     }
-    else if (minuteDiffs <= 60) {
+    else if (minuteDiffs <= 40) {
       chartInterval = 5;
     }
-    else if (minuteDiffs <= 200) {
+    else if (minuteDiffs <= 60) {
       chartInterval = 10;
-    } else {
+    }
+    else if (minuteDiffs <= 120) {
+      chartInterval = 15;
+    }
+    else if (minuteDiffs <= 240) {
       chartInterval = 20;
+    } else {
+      chartInterval = 30;
     }
 
     this.chart.options.axisX.interval = chartInterval;
