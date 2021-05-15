@@ -103,7 +103,7 @@ const getTimeBody = (settings) => {
   if (!settings) return null;
   const date = settings.selectedDate
   const range = settings.timeRange
-  const body = _.pickBy({ day: date, rangeTime: range});
+  const body = _.pickBy({ day: '', endTime: range});
   return body;
 }
 
