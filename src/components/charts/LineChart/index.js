@@ -206,7 +206,7 @@ export default class LineChart extends BaseChart {
       this.renderChart();
     }
 
-    if (this.chart.data && this.chart.data[0]){
+    if (this.chart.data && this.chart.data[0] && this.chart.data[0].dataPoints){
       let dataY = this.chart.data[0].dataPoints.map(i => i.y);
       let maxY = Math.max(...dataY);
       if(maxY > 0 && maxY <1000){
