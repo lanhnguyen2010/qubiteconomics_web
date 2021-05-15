@@ -52,6 +52,7 @@ export default class BaseChart extends React.Component {
 
     // Original data points
     this.dataPoints = [];
+    this.dataPointsConfigs = [];
 
     this.filterData = true;
   }
@@ -317,8 +318,10 @@ export default class BaseChart extends React.Component {
           if (done) break;
           filteredDPs.push(dps[i]);
 
-          if (dps[i].x.getTime() >= maxX && dps[i].x.getTime() < minX) {
-            if (showFullInRange) {
+          var filter = !this.dataPointsConfigs[dpsIndex] || this.dataPointsConfigs[dpsIndex].filter !== false;
+
+          if (dps[i].x.getTime() <= maxX && dps[i].x.getTime() >= minX) {
+            if (!filter || showFullInRange) {
               i++;
             } else {
               i += step;

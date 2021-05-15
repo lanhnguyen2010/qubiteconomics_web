@@ -45,6 +45,7 @@ export default class NETBUSDChart extends LineChart {
     if (!bubblesData) bubblesData = [];
 
     this.dataPoints[0] = bubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius/2, name: item.label}));
+    this.dataPointsConfigs[0] = { filter: false };
 
     let chartData = this.props.data.chartData;
     if (!chartData) chartData = [];

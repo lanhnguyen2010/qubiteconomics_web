@@ -214,9 +214,7 @@ export default class LineChart extends BaseChart {
       }
     }
     
-    this.filterData = false;
     this.renderChart();
-    this.filterData = true;
 
     this.updateChartsInfo(true);
   }

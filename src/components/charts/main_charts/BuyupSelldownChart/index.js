@@ -42,11 +42,12 @@ export default class BuyupSelldownChart extends LineChart {
     if (!bubblesData) bubblesData = [];
 
     this.dataPoints[0] = bubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius/2, name: item.label}));
+    this.dataPointsConfigs[0] = { filter: false };
 
     let chartData = this.props.data.chartData;
     if (!chartData) chartData = [];
 
-    this.dataPoints[1] = chartData.map(item => ({ x: item.time, y: item.buyPressure }));
-    this.dataPoints[2] = chartData.map(item => ({ x: item.time, y: item.sellPressure }));
+    this.dataPoints[1] = chartData.map(item => ({ x: item.time, y: item.BU }));
+    this.dataPoints[2] = chartData.map(item => ({ x: item.time, y: item.SD }));
   }
 }
