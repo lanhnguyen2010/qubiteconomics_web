@@ -35,6 +35,8 @@ class MainDashboardScreen extends React.Component {
     this.chartRefs.push(this.chartC7Ref = React.createRef());
     this.chartRefs.push(this.chartC8Ref = React.createRef());
     this.chartRefs.push(this.chartC9Ref = React.createRef());
+    this.selectedDate = new Date();
+
   }
 
   componentDidMount() {
@@ -56,8 +58,9 @@ class MainDashboardScreen extends React.Component {
     clearInterval(this.interval);
   }
 
-  onDatePicked(date) {
-    this.props.setDate(date);
+  async onDatePicked(date) {
+    this.selectedDate = date;
+    await this.props.setDate(date);
     this.fetchData();
   }
 
@@ -69,6 +72,8 @@ class MainDashboardScreen extends React.Component {
   }
 
   render() {
+    const { settings } = this.props;
+    const currentDate = settings? (settings.selectedDate? settings.selectedDate : "") : "";
     return (
       <Container fluid style={{backgroundColor: '#e6e7ec', overflow:'hidden'}}>
         <Row style={{ height: '100vh'}}>
@@ -91,7 +96,7 @@ class MainDashboardScreen extends React.Component {
               <BuySellPressureChart ref={this.chartC5Ref} data={{ chartData: this.props.BuySellNNOutbound }} />
             </Row>
             <Row style={{ height: '30vh', paddingTop: 10 }}>
-              <Col><DatePicker onChange={date => this.onDatePicked(date)} /></Col>
+              <Col><DatePicker selected={this.selectedDate} onChange={date => this.onDatePicked(date)} /></Col>
             </Row>
           </Col>
           <Col style={{paddingLeft: 20}}>
@@ -137,7 +142,7 @@ const mapDispatchToProps = (dispatch) => {
     },
     setDate:(data) => {
       const formatDate = data.toISOString().slice(0, 10).replaceAll('-','_')
-      SettingsRedux.actions.updateSelectedDate(formatDate)
+      SettingsRedux.actions.updateSelectedDate(dispatch, formatDate)
     }
   }
 };

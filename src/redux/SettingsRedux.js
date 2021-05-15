@@ -6,12 +6,12 @@ const types = {
   
   export const actions =  {
 
-    updateSelectedDate: (selectedDate) => {
+    updateSelectedDate: (dispatch, selectedDate) => {
       console.log('updateSelectedDate', selectedDate)
-        return { type: types.UPDATE_SELETED_DATE, selectedDate }
+        dispatch({ type: types.UPDATE_SELETED_DATE, selectedDate })
     },
-    updateTimeRange: (timeRange) => {
-        return { type: types.UPDATE_TIME_RANGE, timeRange }
+    updateTimeRange: (dispatch, timeRange) => {
+        dispatch({ type: types.UPDATE_TIME_RANGE, timeRange })
     }
   };
   
@@ -25,7 +25,6 @@ const types = {
     switch (type) {
       case types.UPDATE_SELETED_DATE: {
         console.log('set date', selectedDate)
-
         return {
           ...state,
           selectedDate: selectedDate,
