@@ -38,7 +38,6 @@ export default class LineChart extends BaseChart {
           contentFormatter: function (e) {
             let tooltip = '<div style="font-size: 10px;">';
             if (e.entries) {
-                //console.log(e.entries[0].dataSeries.legendText, e.entries)
                 for (var i = 0; i < e.entries.length; i++) {
                     if(e.entries[i].dataPoint) {
                         if(e.entries[i].dataSeries.visible) {
