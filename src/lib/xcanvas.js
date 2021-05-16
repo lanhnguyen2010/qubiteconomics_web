@@ -322,8 +322,9 @@ class XCanvasJS {
     dataPointsList.forEach(dps => this.dataPoints.push(dps));
 
     this.dataPoints.forEach((dps, index) => {
-      try {
-        this.chart.options.data[index].dataPoints = dps;
+      if (!dps.length) return;
+
+      this.chart.options.data[index].dataPoints = dps;
 
         var minDpsTime = dps[0].x.getTime();
         var maxDpsTime = dps[dps.length - 1].x.getTime();
@@ -335,7 +336,6 @@ class XCanvasJS {
           if (this.minDpsTime > minDpsTime) this.minDpsTime = minDpsTime;
           if (this.maxDpsTime < maxDpsTime) this.maxDpsTime = maxDpsTime;
         }
-      } catch (e){}
     });
 
     var minDisplayTime = this.minDpsTime;
@@ -369,22 +369,20 @@ class XCanvasJS {
   appendData(dataPointsList) {
     if (!dataPointsList || !dataPointsList.length) return;
 
-    try {
-      // Append data
-      dataPointsList.forEach((dps, index) => {
-        this.dataPoints[index].push(...dps);
-        this.chart.options.data[index].dataPoints = this.dataPoints[index];
+    // Append data
+    dataPointsList.forEach((dps, index) => {
+      if (!dps.length) return;
 
-        var maxDpstime = dps[dps.length - 1].x.getTime();
-        if (index === 0) {
-          this.maxDpsTime = maxDpstime;
-        } else {
-          if (this.maxDpsTime < maxDpstime) this.maxDpsTime = maxDpstime;
-        }
-      });
-    } catch (e) {
-      
-    }
+      this.dataPoints[index].push(...dps);
+      this.chart.options.data[index].dataPoints = this.dataPoints[index];
+
+      var maxDpstime = dps[dps.length - 1].x.getTime();
+      if (index === 0) {
+        this.maxDpsTime = maxDpstime;
+      } else {
+        if (this.maxDpsTime < maxDpstime) this.maxDpsTime = maxDpstime;
+      }
+    });
   }
 
   setViewport(minTime, maxTime) {
@@ -503,11 +501,11 @@ class XCanvasJS {
     this.dataPoints.forEach((dps, dpsIndex) => {
       let filteredDPs = [];
       let done = false;
+      var filter = this.chartInfo.legends[dpsIndex].filter !== false;
+
       for (var i = 0; i < dps.length;) {
         if (done) break;
         filteredDPs.push(dps[i]);
-
-        var filter = !this.chartInfo.legends[dpsIndex].filter !== false;
 
         if (dps[i].x.getTime() <= maxX && dps[i].x.getTime() >= minX) {
           if (!filter || showFullInRange) {

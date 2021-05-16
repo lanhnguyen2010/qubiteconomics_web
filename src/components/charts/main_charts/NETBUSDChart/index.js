@@ -14,7 +14,7 @@ export default class NETBUSDChart extends LineChart {
         },
         {
           key: "netBUSD",
-          name: "Net BUSD",
+          name: "Net BUSD"
         },
         {
           key: "SMA",
