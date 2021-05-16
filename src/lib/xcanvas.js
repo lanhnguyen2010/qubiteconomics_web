@@ -19,8 +19,11 @@ class XCanvasJSManager {
   constructor() {
     this.chartsManager = [];
 
-    this.minTimestamp = 0;
-    this.maxTimestamp = 0;
+    this.minViewportTime = 0;
+    this.maxViewportTime = 0;
+    this.atRightSide = true;
+
+    this.ready = false;
   }
 
   register(mgr) {
@@ -28,13 +31,29 @@ class XCanvasJSManager {
   }
 
   setViewport(minTime, maxTime) {
-    if (this.minTimestamp < minTime) this.minTimestamp = minTime;
-    if (this.maxTimestamp < maxTime) this.maxTimestamp = maxTime;
-    this.chartsManager.forEach(mgr => mgr.setViewport(minTime, maxTime));
+    if (!this.minViewportTime || this.minViewportTime !== minTime) this.minViewportTime = parseInt(minTime);
+    if (!this.maxViewportTime || this.maxViewportTime !== maxTime) this.maxViewportTime = parseInt(maxTime);
+    this.chartsManager.forEach(mgr => mgr.setViewport(this.minViewportTime, this.maxViewportTime));
+  }
+
+  setAtRightSide(value) {
+    this.atRightSide = value;
+  }
+
+  getMaxDpsTime() {
+    return Math.max(...this.chartsManager.map(mgr => mgr.maxDpsTime));
+  }
+
+  shift() {
+    if (this.atRightSide) {
+      let maxDpsTime = this.getMaxDpsTime();
+      let diff = maxDpsTime - this.maxViewportTime;
+      this.setViewport(this.minViewportTime + diff, maxDpsTime);
+    }
   }
 
   calculateInterval() {
-    var minuteDiffs = parseInt((this.maxTimestamp - this.minTimestamp) / 1000 / 60);
+    var minuteDiffs = parseInt((this.maxViewportTime - this.minViewportTime) / 1000 / 60);
     var interval = 0;
     if (minuteDiffs <= 5) {
       interval = 1;
@@ -62,41 +81,41 @@ class XCanvasJSManager {
   fireChartInfoChangesEvent(specificChartIndex) {
   }
 
-  showTooltipXAt(xValue) {
+  showTooltipXAt(triggerIndex, xValue) {
     this.chartsManager.forEach(mgr => { 
-      if (mgr.chart.toolTip.enabled) {
+      if (mgr.getIndex() != triggerIndex && mgr.chart.toolTip.enabled) {
         mgr.chart.toolTip.showAtX(xValue)
       }
     });
   }
 
-  hideTooltipX() {
+  hideTooltipX(triggerIndex) {
     this.chartsManager.forEach(mgr => {
-      if (mgr.chart.toolTip.enabled) {
+      if (mgr.getIndex() != triggerIndex && mgr.chart.toolTip.enabled) {
         mgr.chart.toolTip.hide();
       }
     });
   }
 
-  showCrosshairXAt(xValue) {
+  showCrosshairXAt(triggerIndex, xValue) {
     this.chartsManager.forEach(mgr => {
-      if (mgr.chart.axisX[0].crosshair) {
+      if (mgr.getIndex() != triggerIndex && mgr.chart.axisX[0].crosshair) {
         mgr.chart.axisX[0].crosshair.showAt(xValue);
       }
     });
   }
 
-  hideCrosshairX() {
+  hideCrosshairX(triggerIndex) {
     this.chartsManager.forEach(mgr => {
-      if (mgr.chart.axisX[0].crosshair) {
+      if (mgr.getIndex() != triggerIndex && mgr.chart.axisX[0].crosshair) {
         mgr.chart.axisX[0].crosshair.hide();
       }
     });
   }
 
-  showCrosshairYAt(yPercentage) {
+  showCrosshairYAt(triggerIndex, yPercentage) {
     this.chartsManager.forEach(mgr => {
-      if (mgr.chart.axisY[0].crosshair) {
+      if (mgr.getIndex() != triggerIndex && mgr.chart.axisY[0].crosshair) {
         var cHeight = mgr.chart.bounds.y2 - mgr.chart.bounds.y1;
         var cY = yPercentage * cHeight;
         mgr.chart.axisY[0].crosshair.showAt(mgr.chart.axisY[0].convertPixelToValue(cY));
@@ -104,9 +123,9 @@ class XCanvasJSManager {
     });
   }
 
-  hideCrosshairY() {
+  hideCrosshairY(triggerIndex) {
     this.chartsManager.forEach(mgr => {
-      if (mgr.chart.axisY[0].crosshair) {
+      if (mgr.getIndex() != triggerIndex && mgr.chart.axisY[0].crosshair) {
         mgr.chart.axisY[0].crosshair.hide();
       }
     });
@@ -116,6 +135,19 @@ class XCanvasJSManager {
     this.chartsManager.forEach(mgr => {
       mgr.renderChart(forceRender, notifyChanges);
     });
+  }
+
+  fireReadyEvent() {
+    if (this.isReady()) {
+      this.renderCharts(true, true);
+    }
+  }
+
+  isReady() {
+    if (!this.ready) {
+      this.ready = this.chartsManager.every(mgr => mgr.ready);
+    }
+    return this.ready;
   }
 }
 
@@ -130,6 +162,11 @@ class XCanvasJS {
   constructor() {
     this.event = new EventBus();
     this.dataPoints = [];
+
+    this.minDpsTime = 0;
+    this.maxDpsTime = 0;
+
+    this.ready = false;
   }
 
   init(chart, chartInfo, chartOptions) {
@@ -196,13 +233,14 @@ class XCanvasJS {
         newViewportMax = currentViewportMax + interval;
       }
 
-      if (newViewportMin < this.minDateTimestamp) newViewportMin = this.minDateTimestamp;
-      if (newViewportMax > this.currentViewportMax) newViewportMax = this.currentViewportMax;
+      if (newViewportMin < this.minDpsTime) newViewportMin = this.minDpsTime;
+      if (newViewportMax > this.maxDpsTime) newViewportMax = this.maxDpsTime;
 
       var minuteDiffs = parseInt((newViewportMax - newViewportMin) / 1000 / 60);
 
       if (currentMinuteDiffs !== minuteDiffs && minuteDiffs >= 5) {
         this.getManager().setViewport(newViewportMin, newViewportMax);
+        this.getManager().setAtRightSide(newViewportMax == this.maxDpsTime);
         this.getManager().calculateInterval();
       }
 
@@ -234,39 +272,34 @@ class XCanvasJS {
   }
 
   updateData(dataPointsList) {
-    if (!dataPointsList || !dataPointsList.length) {
-      return;
-    }
-    
+    if (!dataPointsList || !dataPointsList.length) return;
+
     this.dataPoints = [];
     dataPointsList.forEach(dps => this.dataPoints.push(dps));
-
-    let minXTime = null;
-    let maxXTime = null;
 
     this.dataPoints.forEach((dps, index) => {
       this.chart.options.data[index].dataPoints = dps;
 
-      var currentMinXTime = dps[0].x.getTime();
-      var currentMaxXTime = dps[dps.length - 1].x.getTime();
+      var minDpsTime = dps[0].x.getTime();
+      var maxDpsTime = dps[dps.length - 1].x.getTime();
 
       if (index === 0) {
-        minXTime = currentMinXTime;
-        maxXTime = currentMaxXTime;
+        this.minDpsTime = minDpsTime;
+        this.maxDpsTime = maxDpsTime;
       } else {
-        if (minXTime > currentMinXTime) minXTime = currentMinXTime;
-        if (maxXTime < currentMaxXTime) maxXTime = currentMaxXTime;
+        if (this.minDpsTime > minDpsTime) this.minDpsTime = minDpsTime;
+        if (this.maxDpsTime < maxDpsTime) this.maxDpsTime = maxDpsTime;
       }
     });
 
-    var minDisplayTime = maxXTime - (60 * 60000);
-    var maxDisplayTime = maxXTime;
-    if (minDisplayTime < minXTime) minDisplayTime = minXTime;
+    var minDisplayTime = this.maxDpsTime - (60 * 60000);
+    var maxDisplayTime = this.maxDpsTime;
+    if (minDisplayTime < this.minDpsTime) minDisplayTime = this.minDpsTime;
 
     this.getManager().setViewport(minDisplayTime, maxDisplayTime);
     this.getManager().calculateInterval();
 
-    var date = new Date(maxXTime);
+    var date = new Date(this.maxDpsTime);
     this.chart.options.axisX.scaleBreaks = {
       customBreaks: [{
         lineThickness: 0,
@@ -285,17 +318,24 @@ class XCanvasJS {
       }
     }
 
-    this.renderChart(true, true);
+    if (!this.ready) this.getManager().fireReadyEvent(this.getIndex());
   }
 
   appendData(dataPointsList) {
-    if (dataPointsList) {
-      for (var i = 0; i < dataPointsList.length; i++) {
-        if (this.dataPoints && this.dataPoints[i]) {
-          this.dataPoints[i].push(...dataPointsList[i])
-        }
+    if (!dataPointsList || !dataPointsList.length) return;
+
+    // Append data
+    dataPointsList.forEach((dps, index) => {
+      this.dataPoints[index].push(...dps);
+      this.chart.options.data[index].dataPoints = this.dataPoints[index];
+
+      var maxDpstime = dps[dps.length - 1].x.getTime();
+      if (index === 0) {
+        this.maxDpsTime = maxDpstime;
+      } else {
+        if (this.maxDpsTime < maxDpstime) this.maxDpsTime = maxDpstime;
       }
-    }
+    });
   }
 
   setViewport(minTime, maxTime) {
@@ -332,9 +372,7 @@ class XCanvasJS {
     let xMax = this.chart.axisX[0].viewportMaximum;
 
     this.chart.legend.dataSeries.forEach(legend => {
-      if (!legend.dataPoints.length) {
-        return;
-      }
+      if (!legend.dataPoints || !legend.dataPoints.length) return;
 
       var fromY = 0;
       var toY = 0;
@@ -477,34 +515,35 @@ class XCanvasJS {
   }
 
   onToolTipUpdated(event) {
-    this.getManager().showTooltipXAt(event.entries[0].xValue);
+    this.getManager().showTooltipXAt(this.getIndex(), event.entries[0].xValue);
   }
 
   onToolTipHidden() {
-    this.getManager().hideTooltipX();
+    this.getManager().hideTooltipX(this.getIndex());
   }
 
   onCrosshairXUpdated(event) {
-    this.getManager().showCrosshairXAt(event.value);
+    this.getManager().showCrosshairXAt(this.getIndex(), event.value);
   }
 
   onCrosshairXHidden() {
-    this.getManager().hideCrosshairX();
+    this.getManager().hideCrosshairX(this.getIndex());
   }
 
   onCrosshairYUpdated(event) {
     var y = this.chart.axisY[0].convertValueToPixel(event.value);
     var height = this.chart.bounds.y2 - this.chart.bounds.y1;
     var yPercentage = y / height;
-    this.getManager().showCrosshairYAt(yPercentage);
+    this.getManager().showCrosshairYAt(this.getIndex(), yPercentage);
   }
 
   onCrosshairYHidden() {
-    this.getManager().hideCrosshairY();
+    this.getManager().hideCrosshairY(this.getIndex());
   }
 
   onRangeChanged(event) {
     this.getManager().setViewport(event.axisX[0].viewportMinimum, event.axisX[0].viewportMaximum);
+    this.getManager().setAtRightSide(event.axisX[0].viewportMaximum == this.maxDpsTime);
     this.getManager().renderCharts(false, true);
   }
 

@@ -5,7 +5,7 @@ import _ from "lodash";
 import "react-datepicker/dist/react-datepicker.css";
 import { Container, Row, Col, Form } from 'react-bootstrap';
 import CanvasJSReact from 'lib/canvasjs.stock.react';
-import {XCanvasJSManager} from 'lib/xcanvas';
+import { XCanvasJSManager } from 'lib/xcanvas';
 
 import VN30DerivativeChart from "components/charts/main_charts/VN30DerivativeChart";
 import ForeignDerivativeChart from "components/charts/main_charts/ForeignDerivativeChart";
@@ -96,17 +96,14 @@ class MainDashboardScreen extends React.Component {
       PSData.push(ps.map((i) => {
         return {y: i.price, x: new Date(2021, 1, 1, parseInt(i.hour), parseInt(i.minute), parseInt(i.second))}
       }))
+
       let chartManager = XCanvasJSManager.getInstance("DB01");
+
       this.chartRefs[0].current.chart.appendData(PSData);
-      //console.log("maxCurrentTime:" , currentTime)
-      //console.log("maxDisplayCurrentTime:" , moment(chartManager.maxTimestamp).format('HH:mm:ss'))
 
-      if (moment(chartManager.maxTimestamp).format('HH:mm:ss') === currentTime) {
-        this.chartRefs[0].current.chart.setViewport(moment(chartManager.minTimestamp), moment(maxCurrentTime).add(10, 'minutes'))
-      }
-      this.chartRefs[0].current.chart.renderChart();
+      chartManager.shift();
+      chartManager.renderCharts(false, true);
     }
-
   }
 
   async onDatePicked(date) {
