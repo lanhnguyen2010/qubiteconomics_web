@@ -137,10 +137,8 @@ class XCanvasJSManager {
     });
   }
 
-  fireReadyEvent() {
-    if (this.isReady()) {
-      this.renderCharts(true, true);
-    }
+  fireReadyEvent(index) {
+    this.chartsManager[index].renderChart(true, true);
   }
 
   isReady() {
