@@ -26,6 +26,20 @@ const DataParser = {
         }
         return outData;
     },
+    parseVN30Index: (data) => {
+        let outData = []
+        if (data && data.VN30Index && data.VN30Index.timestamp && data.VN30Index.timestamp.length) {
+            outData = data.VN30Index.timestamp.map((i, index) => {
+                let time = new Date(i * 1000);
+                return {
+                    last: data.VN30Index.last[index],
+                    time: new Date(2021, 1, 1, time.getHours() - 7, time.getMinutes(), time.getSeconds()),
+                }
+
+            }) ;
+        }
+        return outData;
+    },
     parseBuySellNNOutbound: (data) =>{
         let outData = []
         if (data && data.buySell && data.buySell.time.length) {

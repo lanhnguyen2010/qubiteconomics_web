@@ -123,7 +123,7 @@ class MainDashboardScreen extends React.Component {
       const suuF1 = await StockAPI.fetchSuuF1Outbound(requestBody);
       const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
 
-      this.VN30DerivativeChartRef.current.appendData(DataParser.parsePSOutbound(ps));
+      this.VN30DerivativeChartRef.current.appendData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(busd)});
       this.BuyupSelldownChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbit(arbitUnwind)});
       this.NETBUSDChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
       this.ForeignDerivativeChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
@@ -170,7 +170,7 @@ class MainDashboardScreen extends React.Component {
         <Row style={styles.rowContainer}>
           <Col style={{paddingLeft: 20}}>
             <Row style={styles.rowCol1}>
-              <VN30DerivativeChart ref={this.VN30DerivativeChartRef} data={{ chartData: this.props.PSOutbound }} />
+              <VN30DerivativeChart ref={this.VN30DerivativeChartRef} data={{PS: this.props.PSOutbound, VNIndex30:this.props.VNIndex30}} />
             </Row>
             <Row style={styles.rowCol1}>
               <BuyupSelldownChart ref={this.BuyupSelldownChartRef} data={{ chartData: this.props.BusdOutbound, bubblesData: this.props.Arbit }} />
@@ -251,6 +251,7 @@ const mapStateToProps = (state) => {
     BusdOutbound: state.stockPrice.BusdOutbound,
     ArbitUnwind: state.stockPrice.ArbitUnwind,
     Arbit: state.stockPrice.Arbit,
+    VNIndex30: state.stockPrice.VNIndex30,
     settings: state.settings
   }
 }

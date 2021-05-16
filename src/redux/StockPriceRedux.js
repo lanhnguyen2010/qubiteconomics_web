@@ -117,6 +117,7 @@ const types = {
         return {
           ...state,
           BusdOutbound: DataParser.parseBusdOutbound(BusdOutbound),
+          VNIndex30: DataParser.parseVN30Index(BusdOutbound),
           BusdOutboundError: null,
         };
       }
