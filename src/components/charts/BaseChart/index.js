@@ -44,14 +44,14 @@ export default class BaseChart extends React.Component {
   updateData() {
   }
 
-  appendData(){
-
+  appendData() {
   }
 
   initChartOptions(options) {
     options = _.merge(options, {
       theme: "light1",
       animationEnabled: true,
+      animationDuration: 1500,
       zoomEnabled: true,
       panEnabled: true,
       colorSet: "customColorSet1",
@@ -71,10 +71,6 @@ export default class BaseChart extends React.Component {
 
   setIndex(index) {
     this.chart.setIndex(index);
-  }
-
-  registerOtherCharts(ref) {
-    this.chart.otherChartRefs.push(ref);
   }
 
   render() {
