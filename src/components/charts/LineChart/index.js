@@ -29,7 +29,8 @@ export default class LineChart extends BaseChart {
           fontWeight: 'normal',
           animationEnabled: false,
           backgroundColor: "transparent",
-          borderThickness: 0
+          borderThickness: 0,
+          shared: true
         },
         axisX: {
           valueFormatString: "HH:mm",

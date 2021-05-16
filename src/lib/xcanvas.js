@@ -139,7 +139,6 @@ class XCanvasJS {
           this.renderChart();
         }
       },
-      normalized: true,
       toolTip:{
         updated: (event) => this.onToolTipUpdated(event),
         hidden: (event) => this.onToolTipHidden(event)
