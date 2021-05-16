@@ -13,7 +13,7 @@ export default class VN30DerivativeChart extends LineChart {
         },
         {
           key: "PS",
-          name: "Phat sinh"
+          name: "Phai sinh"
         }
       ]
     }
@@ -35,13 +35,14 @@ export default class VN30DerivativeChart extends LineChart {
 
   updateData() {
     let chartData = this.props.data;
-    console.log(chartData)
-    if (!chartData || !chartData.PS || !chartData.PS || !chartData.VNIndex30) return;
+    if (!chartData || !chartData.PS || !chartData.VNIndex30) return;
 
-    this.chart.updateData([
+    var data = [
       chartData.PS.map(item => ({ x: item.time, y: item.price })),
       chartData.VNIndex30.map(item => ({ x: item.time, y: item.last }))
-    ])
+    ]
+
+    this.chart.updateData(data)
   }
 
 }

@@ -556,6 +556,7 @@ class XCanvasJS {
 
       for (var i = 0; i < dps.length;) {
         if (done) break;
+
         filteredDPs.push(dps[i]);
 
         if (dps[i].x.getTime() <= maxX && dps[i].x.getTime() >= minX) {
