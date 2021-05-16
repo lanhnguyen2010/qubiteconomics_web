@@ -70,7 +70,7 @@ export default class LineChart extends BaseChart {
         },
         axisY: [{
           gridThickness: 0.1,
-          lineThickness: 0.4,
+          lineThickness: 0,
           tickLength: 0,
           labelFontSize: labelFontSize,
           labelFontFamily: fontFamily
@@ -79,7 +79,8 @@ export default class LineChart extends BaseChart {
           tickLength:0,
           labelFontSize: labelFontSize,
           gridThickness: 0.1,
-          lineThickness: 0.4,
+          lineThickness: 0,
+          labelFontFamily: fontFamily
         },
         data: [{
           hoveredMarkerSize: 0.5,
