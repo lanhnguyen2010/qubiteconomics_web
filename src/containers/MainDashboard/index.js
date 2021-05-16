@@ -70,7 +70,6 @@ class MainDashboardScreen extends React.Component {
 
   fetchData() {
     const { fetchAllData, settings } = this.props;
-    console.log("settings", settings);
     const timeDate = getTimeBody(settings);
     fetchAllData(timeDate);
   }

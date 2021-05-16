@@ -278,8 +278,6 @@ class XCanvasJS {
       }
     }
 
-    console.log(this.chartInfo, this.chartOptions);
-
     this.renderChart(true, true);
   }
 
@@ -338,7 +336,6 @@ class XCanvasJS {
       }
 
       for (i = length - 1; i >= 0; i--) {
-      
         if (legend.dataPoints[i].x <= xMax) {
           toY = legend.dataPoints[i].y;
           break;
@@ -396,10 +393,6 @@ class XCanvasJS {
       for (var i = 0; i < dps.length;) {
         if (done) break;
         filteredDPs.push(dps[i]);
-
-        if (!this.chartInfo.legends[dpsIndex]) {
-          console.log(this.chartInfo, dpsIndex, this.dataPoints);
-        }
 
         var filter = !this.chartInfo.legends[dpsIndex].filter !== false;
 
