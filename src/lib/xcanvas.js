@@ -47,8 +47,7 @@ class XCanvasJSManager {
   shift() {
     if (this.atRightSide) {
       let maxDpsTime = this.getMaxDpsTime();
-      let diff = maxDpsTime - this.maxViewportTime;
-      this.setViewport(this.minViewportTime + diff, maxDpsTime);
+      this.setViewport(this.minViewportTime, maxDpsTime);
     }
   }
 
@@ -225,8 +224,9 @@ class XCanvasJS {
       legend: {
         itemclick: (e) => {
           e.dataSeries.visible = !(typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible);
-          this.renderChart();
-        }
+          this.renderChart(true);
+        },
+        cursor: "pointer"
       },
       axisX: {
         crosshair: {
@@ -336,9 +336,8 @@ class XCanvasJS {
       }
     });
 
-    var minDisplayTime = this.maxDpsTime - (60 * 60000);
+    var minDisplayTime = this.minDpsTime;
     var maxDisplayTime = this.maxDpsTime;
-    if (minDisplayTime < this.minDpsTime) minDisplayTime = this.minDpsTime;
 
     this.getManager().setViewport(minDisplayTime, maxDisplayTime);
     this.getManager().calculateInterval();
@@ -393,6 +392,18 @@ class XCanvasJS {
     if (!axisX.viewportMaximum || axisX.viewportMaximum.getTime() !== maxTime) {
       this.hasPendingChanges = true;
       axisX.viewportMaximum = new Date(maxTime);
+
+      this.dataPoints.forEach((dps, index) => {
+        if (dps[dps.length - 1].x.getTime() < maxTime) {
+          // Append an empty point to sync the time-range
+          var emptyPoint = {...dps[dps.length - 1]};
+          emptyPoint.x = new Date(maxTime);
+          emptyPoint.y = null;
+          dps.push(emptyPoint);
+
+          this.chart.options.data[index].dataPoints = this.dataPoints[index];
+        }
+      });
     }
   }
 
