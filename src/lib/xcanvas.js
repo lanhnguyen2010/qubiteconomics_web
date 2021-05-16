@@ -330,13 +330,15 @@ class XCanvasJS {
       var length = legend.dataPoints.length;
       var i;
 
-      for (i = length - 1; i >= 0; i--) {
+      for (i = 0; i < length; i++) {
         if (legend.dataPoints[i].x >= xMin) {
           fromY = legend.dataPoints[i].y;
           break;
         }
       }
-      for (i = 0; i < length; i++) {
+
+      for (i = length - 1; i >= 0; i--) {
+      
         if (legend.dataPoints[i].x <= xMax) {
           toY = legend.dataPoints[i].y;
           break;
