@@ -322,18 +322,20 @@ class XCanvasJS {
     dataPointsList.forEach(dps => this.dataPoints.push(dps));
 
     this.dataPoints.forEach((dps, index) => {
-      this.chart.options.data[index].dataPoints = dps;
+      try {
+        this.chart.options.data[index].dataPoints = dps;
 
-      var minDpsTime = dps[0].x.getTime();
-      var maxDpsTime = dps[dps.length - 1].x.getTime();
+        var minDpsTime = dps[0].x.getTime();
+        var maxDpsTime = dps[dps.length - 1].x.getTime();
 
-      if (index === 0) {
-        this.minDpsTime = minDpsTime;
-        this.maxDpsTime = maxDpsTime;
-      } else {
-        if (this.minDpsTime > minDpsTime) this.minDpsTime = minDpsTime;
-        if (this.maxDpsTime < maxDpsTime) this.maxDpsTime = maxDpsTime;
-      }
+        if (index === 0) {
+          this.minDpsTime = minDpsTime;
+          this.maxDpsTime = maxDpsTime;
+        } else {
+          if (this.minDpsTime > minDpsTime) this.minDpsTime = minDpsTime;
+          if (this.maxDpsTime < maxDpsTime) this.maxDpsTime = maxDpsTime;
+        }
+      } catch (e){}
     });
 
     var minDisplayTime = this.minDpsTime;
@@ -367,18 +369,24 @@ class XCanvasJS {
   appendData(dataPointsList) {
     if (!dataPointsList || !dataPointsList.length) return;
 
-    // Append data
-    dataPointsList.forEach((dps, index) => {
-      this.dataPoints[index].push(...dps);
-      this.chart.options.data[index].dataPoints = this.dataPoints[index];
+    try {
 
-      var maxDpstime = dps[dps.length - 1].x.getTime();
-      if (index === 0) {
-        this.maxDpsTime = maxDpstime;
-      } else {
-        if (this.maxDpsTime < maxDpstime) this.maxDpsTime = maxDpstime;
-      }
-    });
+
+      // Append data
+      dataPointsList.forEach((dps, index) => {
+        this.dataPoints[index].push(...dps);
+        this.chart.options.data[index].dataPoints = this.dataPoints[index];
+
+        var maxDpstime = dps[dps.length - 1].x.getTime();
+        if (index === 0) {
+          this.maxDpsTime = maxDpstime;
+        } else {
+          if (this.maxDpsTime < maxDpstime) this.maxDpsTime = maxDpstime;
+        }
+      });
+    } catch (e) {
+      
+    }
   }
 
   setViewport(minTime, maxTime) {
