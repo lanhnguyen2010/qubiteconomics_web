@@ -38,13 +38,20 @@ export default class LineChart extends BaseChart {
           contentFormatter: function (e) {
             let tooltip = '<div style="font-size: 10px;">';
             if (e.entries) {
+                //console.log(e.entries[0].dataSeries.legendText, e.entries)
                 for (var i = 0; i < e.entries.length; i++) {
                     if(e.entries[i].dataPoint) {
-                        if(!e.entries[i].dataSeries.color){
-                            e.entries[i].dataSeries.color = '#4661EE';
+                        if(e.entries[i].dataSeries.visible) {
+                            if (!e.entries[i].dataSeries.color) {
+                                e.entries[i].dataSeries.color = '#4661EE';
+                            }
+                            let label = e.entries[i].dataPoint.y.toFixed(2)
+                            if (e.entries[i].dataPoint.name){
+                                label = e.entries[i].dataPoint.name;
+                            }
+                            let div = '<div style="padding-right: 5px; display: inline-block; color:' + e.entries[i].dataSeries.color + '">' + label + '</div>'
+                            tooltip = tooltip.concat(div);
                         }
-                        let div = '<div style="padding-right: 5px; display: inline-block; color:' + e.entries[i].dataSeries.color + '">' + e.entries[i].dataPoint.y.toFixed(2) + '</div>'
-                        tooltip = tooltip.concat(div);
                     }
                 }
             }

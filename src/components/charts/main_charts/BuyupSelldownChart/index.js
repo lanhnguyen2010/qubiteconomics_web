@@ -49,7 +49,6 @@ export default class BuyupSelldownChart extends LineChart {
       color: "#6666ff",
       yValueFormatString: "#,##0.00",
       legendMarkerType: "circle",
-      toolTipContent: "<b>{name}</b>"
     })
     return options;
   }
