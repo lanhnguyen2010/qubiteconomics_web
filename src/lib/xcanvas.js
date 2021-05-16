@@ -370,8 +370,6 @@ class XCanvasJS {
     if (!dataPointsList || !dataPointsList.length) return;
 
     try {
-
-
       // Append data
       dataPointsList.forEach((dps, index) => {
         this.dataPoints[index].push(...dps);
