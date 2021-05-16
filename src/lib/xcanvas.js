@@ -63,11 +63,19 @@ class XCanvasJSManager {
   }
 
   showTooltipXAt(xValue) {
-    this.chartsManager.forEach(mgr => mgr.chart.toolTip.showAtX(xValue));
+    this.chartsManager.forEach(mgr => { 
+      if (mgr.chart.toolTip.enabled) {
+        mgr.chart.toolTip.showAtX(xValue)
+      }
+    });
   }
 
   hideTooltipX() {
-    this.chartsManager.forEach(mgr => mgr.chart.toolTip.hide());
+    this.chartsManager.forEach(mgr => {
+      if (mgr.chart.toolTip.enabled) {
+        mgr.chart.toolTip.hide();
+      }
+    });
   }
 
   showCrosshairXAt(xValue) {
