@@ -44,6 +44,10 @@ export default class BaseChart extends React.Component {
   updateData() {
   }
 
+  appendData(){
+
+  }
+
   initChartOptions(options) {
     options = _.merge(options, {
       theme: "light1",

@@ -100,4 +100,12 @@ console.log(this.initChartInfo().name, chartData)
     ])
   }
 
+  appendData(data) {
+      if (data){
+          this.chart.appendData([
+              data.map(item => ({ x: item.time, y: item.price }))
+          ])
+      }
+  }
+
 }
