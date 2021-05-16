@@ -83,7 +83,9 @@ class XCanvasJSManager {
 
   showTooltipXAt(triggerIndex, xValue) {
     this.chartsManager.forEach(mgr => { 
-      if (mgr.getIndex() != triggerIndex && mgr.chart.toolTip.enabled) {
+      if (mgr.getIndex() === triggerIndex) return;
+
+      if (mgr.chart.toolTip.enabled) {
         mgr.chart.toolTip.showAtX(xValue)
       }
     });
@@ -91,7 +93,9 @@ class XCanvasJSManager {
 
   hideTooltipX(triggerIndex) {
     this.chartsManager.forEach(mgr => {
-      if (mgr.getIndex() != triggerIndex && mgr.chart.toolTip.enabled) {
+      if (mgr.getIndex() === triggerIndex) return;
+
+      if (mgr.chart.toolTip.enabled) {
         mgr.chart.toolTip.hide();
       }
     });
@@ -99,7 +103,9 @@ class XCanvasJSManager {
 
   showCrosshairXAt(triggerIndex, xValue) {
     this.chartsManager.forEach(mgr => {
-      if (mgr.getIndex() != triggerIndex && mgr.chart.axisX[0].crosshair) {
+      if (mgr.getIndex() === triggerIndex) return;
+
+      if (mgr.chart.axisX[0].crosshair) {
         mgr.chart.axisX[0].crosshair.showAt(xValue);
       }
     });
@@ -107,7 +113,9 @@ class XCanvasJSManager {
 
   hideCrosshairX(triggerIndex) {
     this.chartsManager.forEach(mgr => {
-      if (mgr.getIndex() != triggerIndex && mgr.chart.axisX[0].crosshair) {
+      if (mgr.getIndex() === triggerIndex) return;
+
+      if (mgr.chart.axisX[0].crosshair) {
         mgr.chart.axisX[0].crosshair.hide();
       }
     });
@@ -115,7 +123,9 @@ class XCanvasJSManager {
 
   showCrosshairYAt(triggerIndex, yPercentage) {
     this.chartsManager.forEach(mgr => {
-      if (mgr.getIndex() != triggerIndex && mgr.chart.axisY[0].crosshair) {
+      if (mgr.getIndex() === triggerIndex) return;
+
+      if (mgr.chart.axisY[0].crosshair) {
         var cHeight = mgr.chart.bounds.y2 - mgr.chart.bounds.y1;
         var cY = yPercentage * cHeight;
         mgr.chart.axisY[0].crosshair.showAt(mgr.chart.axisY[0].convertPixelToValue(cY));
@@ -125,7 +135,9 @@ class XCanvasJSManager {
 
   hideCrosshairY(triggerIndex) {
     this.chartsManager.forEach(mgr => {
-      if (mgr.getIndex() != triggerIndex && mgr.chart.axisY[0].crosshair) {
+      if (mgr.getIndex() === triggerIndex) return;
+
+      if (mgr.chart.axisY[0].crosshair) {
         mgr.chart.axisY[0].crosshair.hide();
       }
     });
@@ -137,8 +149,8 @@ class XCanvasJSManager {
     });
   }
 
-  fireReadyEvent(index) {
-    this.chartsManager[index].renderChart(true, true);
+  fireReadyEvent(triggerIndex) {
+    this.chartsManager[triggerIndex].renderChart(true, true);
   }
 
   isReady() {
@@ -146,6 +158,40 @@ class XCanvasJSManager {
       this.ready = this.chartsManager.every(mgr => mgr.ready);
     }
     return this.ready;
+  }
+
+  dispatchEvent(triggerIndex, event, customEventType) {
+    var orgZone = event.target.getBoundingClientRect();
+    var diffX = event.clientX - orgZone.x;
+    var diffY = event.clientY - orgZone.y;
+
+    this.chartsManager.forEach(mgr => {
+      if (mgr.getIndex() === triggerIndex) return;
+
+      var zone = mgr.chart.container.getElementsByClassName("canvasjs-chart-canvas")[1];
+      var chartZone = zone.getBoundingClientRect();
+
+      zone.dispatchEvent(this.createEvent(
+        customEventType || event.type,
+        event.screenX,
+        event.screenY,
+        chartZone.x + diffX,
+        chartZone.y + diffY
+      ));
+    });
+  }
+
+  createEvent(type, screenX, screenY, clientX, clientY) {
+    var event = new MouseEvent(type, {
+      view: window,
+      bubbles: false,
+      cancelable: true,
+      screenX: screenX,
+      screenY: screenY,
+      clientX: clientX,
+      clientY: clientY
+    });
+    return event;
   }
 }
 
@@ -182,15 +228,9 @@ class XCanvasJS {
           this.renderChart();
         }
       },
-      toolTip:{
-        updated: (event) => this.onToolTipUpdated(event),
-        hidden: (event) => this.onToolTipHidden(event)
-      },
       axisX: {
         crosshair: {
           enabled: true,
-          updated: (event) => this.onCrosshairXUpdated(event),
-          hidden: (event) => this.onCrosshairXHidden(event),
           thickness: 0.5,
         }
       },
@@ -198,8 +238,6 @@ class XCanvasJS {
         crosshair: {
           enabled: true,
           shared: true,
-          updated: (event) => this.onCrosshairYUpdated(event),
-          hidden: (event) => this.onCrosshairYHidden(event),
           thickness: 0.5
         }
       }],
@@ -238,23 +276,31 @@ class XCanvasJS {
 
       if (currentMinuteDiffs !== minuteDiffs && minuteDiffs >= 5) {
         this.getManager().setViewport(newViewportMin, newViewportMax);
-        this.getManager().setAtRightSide(newViewportMax == this.maxDpsTime);
+        this.getManager().setAtRightSide(newViewportMax === this.maxDpsTime);
         this.getManager().calculateInterval();
       }
 
       this.getManager().renderCharts(false, true);
+      this.getManager().dispatchEvent(-1, event, "mousemove");
     });
+
+    ["mousemove", "mouseup", "mousedown", "mouseout"].forEach(evtName => {
+      this.chart.container.addEventListener(evtName, (event) => {
+        this.getManager().dispatchEvent(this.getIndex(), event);
+      });
+    })
   }
 
   configureChartRelation(id, index) {
     this.relationId = id;
     this.index = index;
 
-    this.getManager().register(this);
+    this.manager = XCanvasJSManager.getInstance(this.relationId);
+    this.manager.register(this);
   }
 
   getManager() {
-    return XCanvasJSManager.getInstance(this.relationId);
+    return this.manager;
   }
 
   getIndex() {
@@ -483,19 +529,6 @@ class XCanvasJS {
     }
   }
 
-  createEvent(type, screenX, screenY, clientX, clientY) {
-    var event = new MouseEvent(type, {
-      view: window,
-      bubbles: false,
-      cancelable: true,
-      screenX: screenX,
-      screenY: screenY,
-      clientX: clientX,
-      clientY: clientY
-    });
-    return event;
-  }
-
   fireChartInfoChangesEvent() {
     this.event.dispatch("setValue", {
       index: this.getIndex(),
@@ -503,61 +536,10 @@ class XCanvasJS {
     });
   }
 
-  dispatchEvents(event) {
-    /*
-    for (var i = 0; i < this.otherChartRefs.length; i++) {
-      let chart = this.otherChartRefs[i].current.chart;
-      chart.container.getElementsByClassName("canvasjs-chart-canvas")[1].dispatchEvent(event);
-    }
-    */
-  }
-
-  onToolTipUpdated(event) {
-    this.getManager().showTooltipXAt(this.getIndex(), event.entries[0].xValue);
-  }
-
-  onToolTipHidden() {
-    this.getManager().hideTooltipX(this.getIndex());
-  }
-
-  onCrosshairXUpdated(event) {
-    this.getManager().showCrosshairXAt(this.getIndex(), event.value);
-  }
-
-  onCrosshairXHidden() {
-    this.getManager().hideCrosshairX(this.getIndex());
-  }
-
-  onCrosshairYUpdated(event) {
-    var y = this.chart.axisY[0].convertValueToPixel(event.value);
-    var height = this.chart.bounds.y2 - this.chart.bounds.y1;
-    var yPercentage = y / height;
-    this.getManager().showCrosshairYAt(this.getIndex(), yPercentage);
-  }
-
-  onCrosshairYHidden() {
-    this.getManager().hideCrosshairY(this.getIndex());
-  }
-
   onRangeChanged(event) {
-    this.getManager().setViewport(event.axisX[0].viewportMinimum, event.axisX[0].viewportMaximum);
-    this.getManager().setAtRightSide(event.axisX[0].viewportMaximum == this.maxDpsTime);
-    this.getManager().renderCharts(false, true);
-  }
-
-  debounce(func, wait, immediate) {
-    var timeout;
-    return function () {
-      var context = this, args = arguments;
-      var later = function () {
-        timeout = null;
-        if (!immediate) func.apply(context, args);
-      };
-      var callNow = immediate && !timeout;
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-      if (callNow) func.apply(context, args);
-    };
+    this.manager.setViewport(event.axisX[0].viewportMinimum, event.axisX[0].viewportMaximum);
+    this.manager.setAtRightSide(event.axisX[0].viewportMaximum === this.maxDpsTime);
+    this.manager.renderCharts(false, true);
   }
 }
 
