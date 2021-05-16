@@ -183,7 +183,8 @@ class MainDashboardScreen extends React.Component {
               <Col>
             <Row>
               <DatePicker style={{ fontFamily: 'Roboto,sans-serif'}} selected={this.selectedDate} onChange={date => this.onDatePicked(date)} maxDate={new Date()}
-                          dateFormat="yyyy/MM/dd"/>
+                          dateFormat="yyyy/MM/dd" dayClassName={date => date.getDay() === 0 ? 'disabled-date' : undefined}
+              />
             </Row>
             <Row style={styles.chartInfoContainer}>
                 <ChartInfo />
