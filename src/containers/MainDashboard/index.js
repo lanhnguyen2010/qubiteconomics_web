@@ -39,6 +39,7 @@ CanvasJS.addColorSet("customColorSet1",
   "#EB8CC6",
 ]);
 
+const interval = 10000
 const styles = {
   container: {
     backgroundColor: '#e6e7ec',
@@ -83,6 +84,10 @@ class MainDashboardScreen extends React.Component {
   componentDidMount() {
     this.chartRefs.forEach((ref, index) => ref.current.configureChartRelation("DB01", index));
     this.fetchData();
+    if (this.interval){
+      clearInterval(this.interval);
+    }
+    this.interval = setInterval(this.updateChart, interval);
   }
 
   componentWillUnmount() {
@@ -93,7 +98,6 @@ class MainDashboardScreen extends React.Component {
 
   updateChart = async ()=> {
     const { fetchAllData, settings } = this.props;
-    //console.log("updateChart: ", this.chartRefs[0].current.chart.dataPoints)
 
     if (this.chartRefs && this.chartRefs[0].current && this.chartRefs[0].current.chart && this.chartRefs[0].current.chart.dataPoints && this.chartRefs[0].current.chart.dataPoints[0]){
       let timeRange = this.chartRefs[0].current.chart.dataPoints[0].map(i => i.x);
@@ -103,9 +107,9 @@ class MainDashboardScreen extends React.Component {
       let currentTime = moment(maxCurrentTime).format('HH:mm:ss');
       let fakeEndTime = moment(maxCurrentTime).add(10, 'minutes').format('HH:mm:ss');
       let requestBody = {
-        day: '2021_05_14',
+        day: currentDate,
         startTime: currentTime,
-        endTime: fakeEndTime
+        endTime: ''
       }
 
       const ps = await StockAPI.fetchPSOutbound(requestBody);
@@ -115,8 +119,8 @@ class MainDashboardScreen extends React.Component {
       const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
 
       this.VN30DerivativeChartRef.current.appendData(DataParser.parsePSOutbound(ps));
-      this.BuyupSelldownChartRef.current.appendData({charData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbit(arbitUnwind)});
-      this.NETBUSDChartRef.current.appendData({charData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
+      this.BuyupSelldownChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbit(arbitUnwind)});
+      this.NETBUSDChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
       this.ForeignDerivativeChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
       this.BuySellPressureChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
       this.SuuF1ChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
@@ -136,11 +140,11 @@ class MainDashboardScreen extends React.Component {
     const dateString = moment(date).format('yyyy_MM_DD')
     await this.props.setDate(dateString);
     this.fetchData();
-    if (dateString === moment().add(-2, 'days').format('yyyy_MM_DD')){
+    if (dateString === moment().format('yyyy_MM_DD')){
       if (this.interval){
         clearInterval(this.interval);
       }
-      this.interval = setInterval(this.updateChart, 5000);
+      this.interval = setInterval(this.updateChart, interval);
     }
     else if (this.interval){
       clearInterval(this.interval);
@@ -212,7 +216,7 @@ const getTimeBody = (settings) => {
   if (!settings) return null;
   const date = settings.selectedDate
   const range = settings.timeRange
-  const body = _.pickBy({ day: date, endTime: "10:30:00"});
+  const body = _.pickBy({ day: date, endTime: ""});
   return body;
 }
 

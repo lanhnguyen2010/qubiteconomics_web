@@ -68,7 +68,6 @@ export default class BuyupSelldownChart extends LineChart {
   }
 
   appendData(data) {
-    console.log('append data', data)
     if (data && data.bubblesData && data.chartData){
       this.chart.appendData([
         data.bubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius/2, name: item.label})),

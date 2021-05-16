@@ -1,7 +1,7 @@
 const DataParser = {
     parsePSOutbound: (data) => {
         let outData = []
-        if (data) {
+        if (data && data.length) {
             outData = data.map((i) => {
                 return {price: i.price, time: new Date(2021, 1, 1, parseInt(i.hour), parseInt(i.minute), parseInt(i.second))}
             }) 
@@ -11,7 +11,7 @@ const DataParser = {
 
     parseBusdOutbound: (data) => {
         let outData = []
-        if (data) {
+        if (data && data.BUSD && data.BUSD.time && data.BUSD.time.length) {
             outData = data.BUSD.time.map((i, index) => {
                 let iTimeSplit = i.split(":")
                 return {
@@ -28,7 +28,7 @@ const DataParser = {
     },
     parseBuySellNNOutbound: (data) =>{
         let outData = []
-        if (data) {
+        if (data && data.buySell && data.buySell.time.length) {
             outData = data.buySell.time.map((i, index) => {
 
                 let iTimeSplit = i.split(":")
@@ -44,10 +44,9 @@ const DataParser = {
     },
     parseSuuF1Outbound: (data) =>{
         let outData = []
-        if (data) {
+        if (data && data.length) {
             outData = data.map((i) => {
 
-                //TODO timestamp not working
                 let iTimeSplit = i.time.split(":")
                 return {
                     price: i.last,
@@ -67,7 +66,7 @@ const DataParser = {
 
     parseArbitUnwind: (data) => {
         let outData = []
-        if (data) {
+        if (data && data.unwind && data.unwind.time && data.arbit.time.length) {
             outData = data.unwind.time.map((i, index) => {
 
                 let iTimeSplit = i.split(":")
@@ -88,7 +87,7 @@ const DataParser = {
 
     parseArbit:(data) => {
         let outData = []
-        if (data) {
+        if (data && data.arbit && data.arbit.time && data.arbit.time.length) {
             outData = data.arbit.time.map((i, index) => {
 
                 let iTimeSplit = i.split(":")
