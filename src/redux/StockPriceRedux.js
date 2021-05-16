@@ -1,5 +1,6 @@
 
 import StockAPI from 'services/StockAPI';
+import DataParser from 'common/DataParser';
 
 const types = {
     FETCH_PS_OUTBOUND_SUCCESS: "FETCH_PS_OUTBOUND_SUCCESS",
@@ -107,9 +108,7 @@ const types = {
       case types.FETCH_PS_OUTBOUND_SUCCESS: {
         return {
           ...state,
-          PSOutbound: PSOutbound.map((i) => {
-            return {price: i.price, time: new Date(2021, 1, 1, parseInt(i.hour), parseInt(i.minute), parseInt(i.second))}
-          }).reverse(),
+          PSOutbound: DataParser.parsePSOutbound(PSOutbound),
           PSOutboundError: null,
         };
       }
@@ -117,20 +116,7 @@ const types = {
       case types.FETCH_BUSD_OUTBOUND_SUCCESS: {
         return {
           ...state,
-          BusdOutbound: BusdOutbound.BUSD.time.map((i, index) => {
-
-            //TODO timestamp not working
-            let iTimeSplit = i.split(":")
-            return {
-              SD: BusdOutbound.BUSD.SD[index],
-              BU: BusdOutbound.BUSD.BU[index],
-              NetBUSD: BusdOutbound.BUSD.Net[index],
-              SMA: BusdOutbound.BUSD.SMA[index],
-              time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
-            }
-
-            //return {time: new Date(timeStamp/1000000 - 7*60*60*1000), price: BuySellNNOutbound.buySell.netNN[index]}
-          }).reverse(),
+          BusdOutbound: DataParser.parseBusdOutbound(BusdOutbound),
           BusdOutboundError: null,
         };
       }
@@ -138,19 +124,7 @@ const types = {
       case types.FETCH_BuySellNNOutbound_SUCCESS: {
         return {
           ...state,
-          BuySellNNOutbound: BuySellNNOutbound.buySell.time.map((i, index) => {
-
-            //TODO timestamp not working
-            let iTimeSplit = i.split(":")
-            return {
-              price: BuySellNNOutbound.buySell.netNN[index],
-              time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
-              buyPressure: BuySellNNOutbound.buySell.buyPressure[index],
-              sellPressure: BuySellNNOutbound.buySell.sellPressure[index]
-            }
-
-            //return {time: new Date(timeStamp/1000000 - 7*60*60*1000), price: BuySellNNOutbound.buySell.netNN[index]}
-          }).reverse(),
+          BuySellNNOutbound: DataParser.parseBuySellNNOutbound(BuySellNNOutbound),
           BuySellNNOutboundError: null,
         };
       }
@@ -166,23 +140,7 @@ const types = {
       case types.FETCH_SuuF1Outbound_SUCCESS: {
         return {
           ...state,
-          SuuF1Outbound: SuuF1Outbound.map((i) => {
-
-            //TODO timestamp not working
-            let iTimeSplit = i.time.split(":")
-            return {
-              price: i.last,
-              foreignerBuyVolume: i.foreignerBuyVolume,
-              foreignerSellVolume: i.foreignerSellVolume,
-              BidV: i.totalBidVolume,
-              AskV  : i.totalOfferVolume,
-              NetBA : i.Net_BA,
-              SMA : i.SMA,
-              NetBS : i['Net_BU&SD2'],
-              time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2]))
-            }
-
-          }).reverse(),
+          SuuF1Outbound: DataParser.parseSuuF1Outbound(SuuF1Outbound),
           SuuF1OutboundError: null,
         };
       }
@@ -190,34 +148,8 @@ const types = {
       case types.FETCH_ArbitUnwind_SUCCESS: {
         return {
           ...state,
-          ArbitUnwind: ArbitUnwind.unwind.time.map((i, index) => {
-
-            let iTimeSplit = i.split(":")
-            return {
-              time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
-              radius: ArbitUnwind.unwind.radius[index],
-              label: ArbitUnwind.unwind.label[index],
-              x: ArbitUnwind.unwind.x[index],
-              y: ArbitUnwind.unwind.y[index],
-              num_lots: ArbitUnwind.unwind.num_lots[index]
-            }
-
-            //return {time: new Date(timeStamp/1000000 - 7*60*60*1000), price: BuySellNNOutbound.buySell.netNN[index]}
-          }).reverse(),
-          Arbit: ArbitUnwind.arbit.time.map((i, index) => {
-
-            let iTimeSplit = i.split(":")
-            return {
-              time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
-              radius: ArbitUnwind.arbit.radius[index],
-              label: ArbitUnwind.arbit.label[index],
-              x: ArbitUnwind.arbit.x[index],
-              y: ArbitUnwind.arbit.y[index],
-              num_lots: ArbitUnwind.arbit.num_lots[index]
-            }
-
-            //return {time: new Date(timeStamp/1000000 - 7*60*60*1000), price: BuySellNNOutbound.buySell.netNN[index]}
-          }).reverse(),
+          ArbitUnwind: DataParser.parseArbitUnwind(ArbitUnwind),
+          Arbit: DataParser.parseArbit(ArbitUnwind),
           ArbitUnwindError: null,
         };
       }

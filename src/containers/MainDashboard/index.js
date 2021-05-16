@@ -82,10 +82,6 @@ class MainDashboardScreen extends React.Component {
   componentDidMount() {
     this.chartRefs.forEach((ref, index) => ref.current.configureChartRelation("DB01", index));
     this.fetchData();
-    if (this.interval){
-      clearInterval(this.interval);
-    }
-    this.interval = setInterval(this.updateChart, 5000);
   }
 
   componentWillUnmount() {
@@ -110,7 +106,14 @@ class MainDashboardScreen extends React.Component {
         startTime: currentTime,
         endTime: fakeEndTime
       }
+
       const ps = await StockAPI.fetchPSOutbound(requestBody);
+      const busd = await StockAPI.fetchBusdOutbound(requestBody);
+      const buysellNN = await StockAPI.fetchBuySellNNOutbound(requestBody);
+      const busdNN = await StockAPI.fetchBusdNNOutbound(requestBody);
+      const suuF1 = await StockAPI.fetchSuuF1Outbound(requestBody);
+      const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
+
       //TODO append to chart
       let PSData = [];
       PSData.push(ps.map((i) => {
@@ -120,6 +123,7 @@ class MainDashboardScreen extends React.Component {
       let chartManager = XCanvasJSManager.getInstance("DB01");
 
       this.chartRefs[0].current.chart.appendData(PSData);
+
 
       chartManager.shift();
       chartManager.renderCharts(false, true);
@@ -135,7 +139,7 @@ class MainDashboardScreen extends React.Component {
       if (this.interval){
         clearInterval(this.interval);
       }
-      this.interval = setInterval(this.updateChart, 5000);
+      //this.interval = setInterval(this.updateChart, 5000);
     }
     else if (this.interval){
       clearInterval(this.interval);

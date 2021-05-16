@@ -62,6 +62,7 @@ export default class BuyupSelldownChart extends LineChart {
     var revesedbubbleData = [...bubblesData].reverse();
     var revesedData = [...chartData].reverse();
 
+    console.log(chartData)
     this.chart.updateData([
       revesedbubbleData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius/2, name: item.label})),
       revesedData.map(item => ({ x: item.time, y: item.BU })),
