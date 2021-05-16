@@ -83,7 +83,14 @@ class MainDashboardScreen extends React.Component {
 
   componentDidMount() {
     this.chartRefs.forEach((ref, index) => ref.current.configureChartRelation("DB01", index));
-    const dateString = moment().format('yyyy_MM_DD')
+    let currentDate = moment();
+
+    if (currentDate.day() === 0 ||currentDate.day() === 6){
+      currentDate.add(-2, 'day')
+      this.selectedDate = new Date(currentDate);
+    }
+    const dateString = currentDate.format('yyyy_MM_DD')
+
     this.fetchData(dateString);
   }
 
@@ -183,7 +190,7 @@ class MainDashboardScreen extends React.Component {
               <Col>
             <Row>
               <DatePicker style={{ fontFamily: 'Roboto,sans-serif'}} selected={this.selectedDate} onChange={date => this.onDatePicked(date)} maxDate={new Date()}
-                          dateFormat="yyyy/MM/dd" dayClassName={date => date.getDay() === 0 ? 'disabled-date' : undefined}
+                          dateFormat="yyyy/MM/dd" dayClassName={date => date.getDay() === 0 || date.getDay() === 6 ? 'disabled-date' : undefined}
               />
             </Row>
             <Row style={styles.chartInfoContainer}>
