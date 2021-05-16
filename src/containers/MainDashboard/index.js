@@ -49,14 +49,14 @@ const styles = {
     height: '100vh'
   },
   rowCol1: {
-    height: '30vh', 
+    height: '33vh', 
     paddingTop: 10 
   },
   rowCol3: {
-    height: '25vh', paddingTop: 10 
+    height: '24.8vh', paddingTop: 10 
   },
   chartInfoContainer: {
-    height: '30vh', width: '33vw', marginTop: 10, overflow: 'auto' 
+    height: '28vh', width: '33vw', marginTop: 10, overflow: 'auto' 
   }
 }
 

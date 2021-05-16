@@ -40,11 +40,17 @@ export default class LineChart extends BaseChart {
             if (e.entries) {
                 for (var i = 0; i < e.entries.length; i++) {
                     if(e.entries[i].dataPoint) {
-                        if(!e.entries[i].dataSeries.color){
-                            e.entries[i].dataSeries.color = '#4661EE';
+                        if(e.entries[i].dataSeries.visible) {
+                            if (!e.entries[i].dataSeries.color) {
+                                e.entries[i].dataSeries.color = '#4661EE';
+                            }
+                            let label = e.entries[i].dataPoint.y.toFixed(2)
+                            if (e.entries[i].dataPoint.name){
+                                label = e.entries[i].dataPoint.name;
+                            }
+                            let div = '<div style="padding-right: 5px; display: inline-block; color:' + e.entries[i].dataSeries.color + '">' + label + '</div>'
+                            tooltip = tooltip.concat(div);
                         }
-                        let div = '<div style="padding-right: 5px; display: inline-block; color:' + e.entries[i].dataSeries.color + '">' + e.entries[i].dataPoint.y.toFixed(2) + '</div>'
-                        tooltip = tooltip.concat(div);
                     }
                 }
             }
@@ -64,7 +70,7 @@ export default class LineChart extends BaseChart {
         },
         axisY: [{
           gridThickness: 0.1,
-          lineThickness: 0.4,
+          lineThickness: 0,
           tickLength: 0,
           labelFontSize: labelFontSize,
           labelFontFamily: fontFamily
@@ -73,7 +79,8 @@ export default class LineChart extends BaseChart {
           tickLength:0,
           labelFontSize: labelFontSize,
           gridThickness: 0.1,
-          lineThickness: 0.4
+          lineThickness: 0,
+          labelFontFamily: fontFamily
         },
         data: [{
           hoveredMarkerSize: 0.5,

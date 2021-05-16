@@ -52,7 +52,6 @@ export default class NETBUSDChart extends LineChart {
       color: "#ff6666",
       yValueFormatString: "#,##0.00",
       legendMarkerType: "circle",
-      toolTipContent: "<b>{name}</b>"
     })
     return options;
   }
