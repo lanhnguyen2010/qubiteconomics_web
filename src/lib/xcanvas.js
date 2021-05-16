@@ -289,6 +289,13 @@ class XCanvasJS {
   }
 
   appendData(dataPointsList) {
+    if (dataPointsList) {
+      for (var i = 0; i < dataPointsList.length; i++) {
+        if (this.dataPoints && this.dataPoints[i]) {
+          this.dataPoints[i].push(...dataPointsList[i])
+        }
+      }
+    }
   }
 
   setViewport(minTime, maxTime) {
