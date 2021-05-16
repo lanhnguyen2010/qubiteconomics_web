@@ -148,8 +148,26 @@ class XCanvasJSManager {
     });
   }
 
-  fireReadyEvent(triggerIndex) {
-    this.chartsManager[triggerIndex].renderChart(true, true);
+  fireReadyEvent() {
+    if (this.isReady()) {
+      let maxWidth1 = 0;
+      this.chartsManager.forEach(mgr => {
+        if (mgr.chart.axisY[0]) {
+          var width1 = mgr.chart.axisY[0].bounds.x2 - mgr.chart.axisY[0].bounds.x1;
+          if (maxWidth1 < width1) maxWidth1 = width1;
+        }
+      });
+  
+      this.chartsManager.forEach(mgr => {
+        if (maxWidth1 > 0) {
+          var diff = maxWidth1;
+          if (mgr.chart.axisY[0]) {
+            var diff = maxWidth1 - mgr.chart.axisY[0].bounds.x2;
+          }
+          if (diff > 0) mgr.chart.axisY[0].set("margin", diff);
+        }
+      });
+    }
   }
 
   isReady() {
@@ -160,22 +178,31 @@ class XCanvasJSManager {
   }
 
   dispatchEvent(triggerIndex, event, customEventType) {
-    var orgZone = event.target.getBoundingClientRect();
-    var diffX = event.clientX - orgZone.x;
-    var diffY = event.clientY - orgZone.y;
+    var orgChart = this.chartsManager[triggerIndex].chart;
+    var oriElBounds =  event.target.getBoundingClientRect();
+    var orgChartBoundsY = orgChart.axisY[0].bounds; // y1(top), x2 (left), height
+
+    var xValue = orgChart.axisX[0].convertPixelToValue(parseInt(event.clientX - oriElBounds.x));
+    var ratioY = (event.clientY - oriElBounds.y - orgChartBoundsY.y1) * 1.0 / orgChartBoundsY.height;
 
     this.chartsManager.forEach(mgr => {
       if (mgr.getIndex() === triggerIndex) return;
 
       var zone = mgr.chart.container.getElementsByClassName("canvasjs-chart-canvas")[1];
-      var chartZone = zone.getBoundingClientRect();
+      var elBounds = zone.getBoundingClientRect();
+
+      var chartBoundsY = mgr.chart.axisY[0].bounds;
+      var chartClientY = elBounds.y + (chartBoundsY.height * ratioY);
+
+      var clientX = elBounds.x + mgr.chart.axisX[0].convertValueToPixel(xValue);
+      var clientY = chartClientY + chartBoundsY.y1;
 
       zone.dispatchEvent(this.createEvent(
         customEventType || event.type,
         event.screenX,
         event.screenY,
-        chartZone.x + diffX,
-        chartZone.y + diffY
+        clientX,
+        clientY
       ));
     });
   }
@@ -284,7 +311,7 @@ class XCanvasJS {
       this.getManager().dispatchEvent(-1, event, "mousemove");
     });
 
-    ["mousemove", "mouseup", "mousedown", "mouseout"].forEach(evtName => {
+    ["mousemove", "mouseout"].forEach(evtName => {
       this.chart.container.addEventListener(evtName, (event) => {
         this.getManager().dispatchEvent(this.getIndex(), event);
       });
@@ -355,15 +382,9 @@ class XCanvasJS {
       }]
     };
 
-    if (this.chart.data && this.chart.data[0] && this.chart.data[0].dataPoints){
-      let dataY = this.chart.data[0].dataPoints.map(i => i.y);
-      let maxY = Math.max(...dataY);
-      if(maxY > 0 && maxY <1000){
-        this.chart.axisY[0].set("margin", 8);
-      }
-    }
+    if (!this.ready) { this.ready = true; this.getManager().fireReadyEvent(this.getIndex()); }
 
-    if (!this.ready) this.getManager().fireReadyEvent(this.getIndex());
+    this.renderChart(true, true);
   }
 
   appendData(dataPointsList) {
