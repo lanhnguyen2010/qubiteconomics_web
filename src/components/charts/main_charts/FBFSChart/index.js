@@ -37,10 +37,17 @@ export default class FBFSChart extends LineChart {
     let chartData = this.props.data.chartData;
     if (!chartData || !chartData.length) return;
 
-    var revesedData = [...chartData].reverse();
     this.chart.updateData([
-      revesedData.map(item => ({ x: item.time, y: item.foreignerBuyVolume })),
-      revesedData.map(item => ({ x: item.time, y: item.foreignerSellVolume }))
+      chartData.map(item => ({ x: item.time, y: item.foreignerBuyVolume })),
+      chartData.map(item => ({ x: item.time, y: item.foreignerSellVolume }))
+    ])
+  }
+
+  appendData(data) {
+    if (!data || !data.length) return;
+    this.chart.appendData([
+      data.map(item => ({ x: item.time, y: item.foreignerBuyVolume })),
+      data.map(item => ({ x: item.time, y: item.foreignerSellVolume }))
     ])
   }
 }

@@ -19,9 +19,15 @@ export default class NetBSChart extends LineChart {
     let chartData = this.props.data.chartData;
     if (!chartData || !chartData.length) return;
 
-    var revesedData = [...chartData].reverse();
     this.chart.updateData([
-      revesedData.map(item => ({ x: item.time, y: item.NetBS }))
+      chartData.map(item => ({ x: item.time, y: item.NetBS }))
+    ])
+  }
+
+  appendData(data) {
+    if (!data || !data.length) return;
+    this.chart.appendData([
+      data.map(item => ({ x: item.time, y: item.NetBS }))
     ])
   }
 }

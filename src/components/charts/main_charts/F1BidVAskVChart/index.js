@@ -61,12 +61,21 @@ export default class F1BidVAskVChart extends LineChart {
     let chartData = this.props.data.chartData;
     if (!chartData || !chartData.length) return;
 
-    var revesedData = [...chartData].reverse();
     this.chart.updateData([
-      revesedData.map(item => ({ x: item.time, y: item.BidV })),
-      revesedData.map(item => ({ x: item.time, y: item.AskV })),
-      revesedData.map(item => ({ x: item.time, y: item.NetBA })),
-      revesedData.map(item => ({ x: item.time, y: item.SMA }))
+      chartData.map(item => ({ x: item.time, y: item.BidV })),
+      chartData.map(item => ({ x: item.time, y: item.AskV })),
+      chartData.map(item => ({ x: item.time, y: item.NetBA })),
+      chartData.map(item => ({ x: item.time, y: item.SMA }))
+    ])
+  }
+  appendData(data) {
+    if (!data || !data.length) return;
+
+    this.chart.appendData([
+      data.map(item => ({ x: item.time, y: item.BidV })),
+      data.map(item => ({ x: item.time, y: item.AskV })),
+      data.map(item => ({ x: item.time, y: item.NetBA })),
+      data.map(item => ({ x: item.time, y: item.SMA }))
     ])
   }
 }

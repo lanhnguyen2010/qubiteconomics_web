@@ -37,11 +37,18 @@ export default class BuySellPressureChart extends LineChart {
     let chartData = this.props.data.chartData;
     if (!chartData || !chartData.length) return;
 
-    var revesedData = [...chartData].reverse();
-
     this.chart.updateData([
-      revesedData.map(item => ({ x: item.time, y: item.buyPressure })),
-      revesedData.map(item => ({ x: item.time, y: item.sellPressure }))
+      chartData.map(item => ({ x: item.time, y: item.buyPressure })),
+      chartData.map(item => ({ x: item.time, y: item.sellPressure }))
+    ])
+  }
+
+  appendData(data) {
+    if (!data || !data.length) return;
+
+    this.chart.appendData([
+      data.map(item => ({ x: item.time, y: item.buyPressure })),
+      data.map(item => ({ x: item.time, y: item.sellPressure }))
     ])
   }
 }

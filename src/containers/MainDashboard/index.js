@@ -19,6 +19,7 @@ import NETBUSDChart from "components/charts/main_charts/NETBUSDChart";
 import DatePicker from "react-datepicker";
 import ChartInfo from "components/widgets/ChartInfo/index";
 import StockAPI from 'services/StockAPI';
+import DataParser from 'common/DataParser';
 
 import "./index.css";
 
@@ -64,15 +65,15 @@ class MainDashboardScreen extends React.Component {
     super(props);
 
     this.chartRefs = [];
-    this.chartRefs.push(this.chartC1Ref = React.createRef());
-    this.chartRefs.push(this.chartC2Ref = React.createRef());
-    this.chartRefs.push(this.chartC3Ref = React.createRef());
-    this.chartRefs.push(this.chartC4Ref = React.createRef());
-    this.chartRefs.push(this.chartC5Ref = React.createRef());
-    this.chartRefs.push(this.chartC6Ref = React.createRef());
-    this.chartRefs.push(this.chartC7Ref = React.createRef());
-    this.chartRefs.push(this.chartC8Ref = React.createRef());
-    this.chartRefs.push(this.chartC9Ref = React.createRef());
+    this.chartRefs.push(this.VN30DerivativeChartRef = React.createRef());
+    this.chartRefs.push(this.ForeignDerivativeChartRef = React.createRef());
+    this.chartRefs.push(this.SuuF1ChartRef = React.createRef());
+    this.chartRefs.push(this.BuyupSelldownChartRef = React.createRef());
+    this.chartRefs.push(this.BuySellPressureChartRef = React.createRef());
+    this.chartRefs.push(this.FBFSChartRef = React.createRef());
+    this.chartRefs.push(this.NETBUSDChartRef = React.createRef());
+    this.chartRefs.push(this.F1BidVAskVChartRef = React.createRef());
+    this.chartRefs.push(this.NetBSChartRef = React.createRef());
     this.selectedDate = new Date();
     this.updateChart = this.updateChart.bind(this);
     this.interval = null;
@@ -110,20 +111,20 @@ class MainDashboardScreen extends React.Component {
       const ps = await StockAPI.fetchPSOutbound(requestBody);
       const busd = await StockAPI.fetchBusdOutbound(requestBody);
       const buysellNN = await StockAPI.fetchBuySellNNOutbound(requestBody);
-      const busdNN = await StockAPI.fetchBusdNNOutbound(requestBody);
       const suuF1 = await StockAPI.fetchSuuF1Outbound(requestBody);
       const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
 
-      //TODO append to chart
-      let PSData = [];
-      PSData.push(ps.map((i) => {
-        return {y: i.price, x: new Date(2021, 1, 1, parseInt(i.hour), parseInt(i.minute), parseInt(i.second))}
-      }))
+      this.VN30DerivativeChartRef.current.appendData(DataParser.parsePSOutbound(ps));
+      this.BuyupSelldownChartRef.current.appendData({charData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbit(arbitUnwind)});
+      this.NETBUSDChartRef.current.appendData({charData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
+      this.ForeignDerivativeChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
+      this.BuySellPressureChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
+      this.SuuF1ChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
+      this.FBFSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
+      this.F1BidVAskVChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
+      this.NetBSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
 
       let chartManager = XCanvasJSManager.getInstance("DB01");
-
-      this.chartRefs[0].current.chart.appendData(PSData);
-
 
       chartManager.shift();
       chartManager.renderCharts(false, true);
@@ -139,7 +140,7 @@ class MainDashboardScreen extends React.Component {
       if (this.interval){
         clearInterval(this.interval);
       }
-      //this.interval = setInterval(this.updateChart, 5000);
+      this.interval = setInterval(this.updateChart, 5000);
     }
     else if (this.interval){
       clearInterval(this.interval);
@@ -159,21 +160,21 @@ class MainDashboardScreen extends React.Component {
         <Row style={styles.rowContainer}>
           <Col style={{paddingLeft: 20}}>
             <Row style={styles.rowCol1}>
-              <VN30DerivativeChart ref={this.chartC1Ref} data={{ chartData: this.props.PSOutbound }} />
+              <VN30DerivativeChart ref={this.VN30DerivativeChartRef} data={{ chartData: this.props.PSOutbound }} />
             </Row>
             <Row style={styles.rowCol1}>
-              <BuyupSelldownChart ref={this.chartC4Ref} data={{ chartData: this.props.BusdOutbound, bubblesData: this.props.Arbit }} />
+              <BuyupSelldownChart ref={this.BuyupSelldownChartRef} data={{ chartData: this.props.BusdOutbound, bubblesData: this.props.Arbit }} />
             </Row>
             <Row style={styles.rowCol1}>
-              <NETBUSDChart ref={this.chartC7Ref} data={{ chartData: this.props.BusdOutbound, bubblesData: this.props.ArbitUnwind }} />
+              <NETBUSDChart ref={this.NETBUSDChartRef} data={{ chartData: this.props.BusdOutbound, bubblesData: this.props.ArbitUnwind }} />
             </Row>
           </Col>
           <Col style={{paddingLeft: 25, paddingRight: 25}}>
             <Row style={styles.rowCol1}>
-              <ForeignDerivativeChart ref={this.chartC2Ref} data={{ chartData: this.props.BuySellNNOutbound }} />
+              <ForeignDerivativeChart ref={this.ForeignDerivativeChartRef} data={{ chartData: this.props.BuySellNNOutbound }} />
             </Row>
             <Row style={styles.rowCol1}>
-              <BuySellPressureChart ref={this.chartC5Ref} data={{ chartData: this.props.BuySellNNOutbound }} />
+              <BuySellPressureChart ref={this.BuySellPressureChartRef} data={{ chartData: this.props.BuySellNNOutbound }} />
             </Row>
             <Row style={styles.rowCol1}>
               <Col>
@@ -189,16 +190,16 @@ class MainDashboardScreen extends React.Component {
           </Col>
           <Col style={{paddingRight: 21}}>
             <Row style={styles.rowCol3}>
-              <SuuF1Chart ref={this.chartC3Ref} data={{ chartData: this.props.SuuF1Outbound }} />
+              <SuuF1Chart ref={this.SuuF1ChartRef} data={{ chartData: this.props.SuuF1Outbound }} />
             </Row>
             <Row style={styles.rowCol3}>
-              <FBFSChart ref={this.chartC6Ref} data={{ chartData: this.props.SuuF1Outbound }} />
+              <FBFSChart ref={this.FBFSChartRef} data={{ chartData: this.props.SuuF1Outbound }} />
             </Row>
             <Row style={styles.rowCol3}>
-              <F1BidVAskVChart ref={this.chartC8Ref} data={{ chartData: this.props.SuuF1Outbound }} />
+              <F1BidVAskVChart ref={this.F1BidVAskVChartRef} data={{ chartData: this.props.SuuF1Outbound }} />
             </Row>
             <Row style={styles.rowCol3}>
-              <NetBSChart ref={this.chartC9Ref} data={{ chartData: this.props.SuuF1Outbound }} />
+              <NetBSChart ref={this.NetBSChartRef} data={{ chartData: this.props.SuuF1Outbound }} />
             </Row>
           </Col>
         </Row>

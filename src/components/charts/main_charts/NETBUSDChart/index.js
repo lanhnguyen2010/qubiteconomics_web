@@ -62,13 +62,23 @@ export default class NETBUSDChart extends LineChart {
     let chartData = this.props.data.chartData;
     if (!bubblesData || !bubblesData.length || !chartData || !chartData.length) return;
 
-    var reversedbubblesData = [...bubblesData].reverse();
-    var reversedData = [...chartData].reverse();
-
     this.chart.updateData([
-      reversedbubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius / 2, name: item.label})),
-      reversedData.map(item => ({ x: item.time, y: item.NetBUSD })),
-      reversedData.map(item => ({ x: item.time, y: item.SMA }))
+      bubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius / 2, name: item.label})),
+      chartData.map(item => ({ x: item.time, y: item.NetBUSD })),
+      chartData.map(item => ({ x: item.time, y: item.SMA }))
+    ])
+  }
+
+  appendData(data) {
+    if (!data) return;
+    let bubblesData = data.bubblesData;
+    let chartData = data.chartData;
+    if (!bubblesData || !bubblesData.length || !chartData || !chartData.length) return;
+
+    this.chart.appendData([
+      bubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius / 2, name: item.label})),
+      chartData.map(item => ({ x: item.time, y: item.NetBUSD })),
+      chartData.map(item => ({ x: item.time, y: item.SMA }))
     ])
   }
 }

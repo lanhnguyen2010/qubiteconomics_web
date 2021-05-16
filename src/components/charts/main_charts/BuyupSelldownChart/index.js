@@ -59,14 +59,22 @@ export default class BuyupSelldownChart extends LineChart {
     let chartData = this.props.data.chartData;
     if (!bubblesData || !bubblesData.length || !chartData || !chartData.length) return;
 
-    var revesedbubbleData = [...bubblesData].reverse();
-    var revesedData = [...chartData].reverse();
 
-    console.log(chartData)
     this.chart.updateData([
-      revesedbubbleData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius/2, name: item.label})),
-      revesedData.map(item => ({ x: item.time, y: item.BU })),
-      revesedData.map(item => ({ x: item.time, y: item.SD }))
+      bubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius/2, name: item.label})),
+      chartData.map(item => ({ x: item.time, y: item.BU })),
+      chartData.map(item => ({ x: item.time, y: item.SD }))
     ])
+  }
+
+  appendData(data) {
+    console.log('append data', data)
+    if (data && data.bubblesData && data.chartData){
+      this.chart.appendData([
+        data.bubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius/2, name: item.label})),
+        data.chartData.map(item => ({ x: item.time, y: item.BU })),
+        data.chartData.map(item => ({ x: item.time, y: item.SD }))
+      ])
+    }
   }
 }

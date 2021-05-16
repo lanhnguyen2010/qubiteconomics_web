@@ -4,7 +4,7 @@ const DataParser = {
         if (data) {
             outData = data.map((i) => {
                 return {price: i.price, time: new Date(2021, 1, 1, parseInt(i.hour), parseInt(i.minute), parseInt(i.second))}
-            }).reverse()
+            }) 
         }
         return outData;
     },
@@ -22,7 +22,7 @@ const DataParser = {
                     time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
                 }
 
-            }).reverse();
+            }) ;
         }
         return outData;
     },
@@ -38,7 +38,7 @@ const DataParser = {
                     buyPressure: data.buySell.buyPressure[index],
                     sellPressure: data.buySell.sellPressure[index]
                 }
-            }).reverse();
+            }) ;
         }
         return outData;
     },
@@ -60,7 +60,7 @@ const DataParser = {
                     NetBS : i['Net_BU&SD2'],
                     time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2]))
                 }
-            }).reverse();
+            }) ;
         }
         return outData;
     },
@@ -81,7 +81,7 @@ const DataParser = {
                 }
 
                 //return {time: new Date(timeStamp/1000000 - 7*60*60*1000), price: BuySellNNOutbound.buySell.netNN[index]}
-            }).reverse();
+            }) ;
         }
         return outData;
     },
@@ -101,7 +101,7 @@ const DataParser = {
                     num_lots: data.arbit.num_lots[index]
                 }
 
-            }).reverse();
+            }) ;
         }
         return outData;
     },
