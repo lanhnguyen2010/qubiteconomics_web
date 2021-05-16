@@ -83,15 +83,13 @@ class MainDashboardScreen extends React.Component {
 
   componentDidMount() {
     this.chartRefs.forEach((ref, index) => ref.current.configureChartRelation("DB01", index));
-    this.fetchData();
-    if (this.interval){
-      clearInterval(this.interval);
-    }
-    this.interval = setInterval(this.updateChart, interval);
+    const dateString = moment().format('yyyy_MM_DD')
+    this.fetchData(dateString);
   }
 
   componentWillUnmount() {
     if (this.interval) {
+
       clearInterval(this.interval);
     }
   }
@@ -139,26 +137,27 @@ class MainDashboardScreen extends React.Component {
     this.selectedDate = date;
     const dateString = moment(date).format('yyyy_MM_DD')
     await this.props.setDate(dateString);
-    this.fetchData();
-    if (dateString === moment().format('yyyy_MM_DD')){
+    this.fetchData(dateString);
+  }
+
+
+
+  fetchData(date) {
+    const { fetchAllData } = this.props;
+    const timeDate = getTimeBody(date);
+    fetchAllData(timeDate);
+    if (date === moment().format('yyyy_MM_DD')){
       if (this.interval){
         clearInterval(this.interval);
       }
+
       this.interval = setInterval(this.updateChart, interval);
-    }
-    else if (this.interval){
+    } else if (this.interval){
       clearInterval(this.interval);
     }
   }
 
-  fetchData() {
-    const { fetchAllData, settings } = this.props;
-    const timeDate = getTimeBody(settings);
-    fetchAllData(timeDate);
-  }
-
   render() {
-    const { settings } = this.props;
     return (
       <Container fluid style={styles.container}>
         <Row style={styles.rowContainer}>
@@ -212,12 +211,8 @@ class MainDashboardScreen extends React.Component {
   }
 }
 
-const getTimeBody = (settings) => {
-  if (!settings) return null;
-  const date = settings.selectedDate
-  const range = settings.timeRange
-  const body = _.pickBy({ day: date, endTime: ""});
-  return body;
+const getTimeBody = (date) => {
+  return _.pickBy({ day: date, endTime: ""});
 }
 
 const mapDispatchToProps = (dispatch) => {

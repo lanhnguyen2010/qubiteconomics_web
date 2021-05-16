@@ -15,7 +15,7 @@ const types = {
   };
   
   const initialState = {
-    selectedDate: '2021_05_14',
+    selectedDate: '',
     timeRange: null,
   };
   
