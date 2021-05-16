@@ -9,28 +9,47 @@ export default class LineChart extends BaseChart {
 
     var fontSize = 11;
     var labelFontSize = 10;
+    var fontFamily = 'Roboto,sans-serif'
 
     options = _.merge(options, {
         legend: {
           horizontalAlign: "right",
           verticalAlign: "top",
           fontSize: fontSize,
-          fontWeight: "normal"
+          fontWeight: "normal",
+          fontFamily: fontFamily
         },
         title: {
           text: this.chartInfo.name,
           fontSize: fontSize,
-          fontFamily:'Oswald',
+          fontWeight: 'bold',
+          fontFamily: fontFamily,
           horizontalAlign: "left"
         },
         toolTip:{
           content:"{y}" ,
           fontSize: fontSize,
+          fontFamily: fontFamily,
           fontWeight: 'normal',
           animationEnabled: false,
           backgroundColor: "transparent",
           borderThickness: 0,
-          shared: true
+          shared: true,
+          contentFormatter: function (e) {
+            let tooltip = '<div style="font-size: 10px;">';
+            if (e.entries) {
+                for (var i = 0; i < e.entries.length; i++) {
+                    if(e.entries[i].dataPoint) {
+                        if(!e.entries[i].dataSeries.color){
+                            e.entries[i].dataSeries.color = '#4661EE';
+                        }
+                        let div = '<div style="padding-right: 5px; display: inline-block; color:' + e.entries[i].dataSeries.color + '">' + e.entries[i].dataPoint.y.toFixed(2) + '</div>'
+                        tooltip = tooltip.concat(div);
+                    }
+                }
+            }
+            return tooltip.concat('</div>');
+          }
         },
         axisX: {
           valueFormatString: "HH:mm",
@@ -38,6 +57,7 @@ export default class LineChart extends BaseChart {
           intervalType: "minute",
           includeZero: false,
           labelFontSize: labelFontSize,
+          labelFontFamily: fontFamily,
           lineThickness: 0.4,
           tickLength: 0,
           margin: 10,
@@ -46,7 +66,8 @@ export default class LineChart extends BaseChart {
           gridThickness: 0.1,
           lineThickness: 0.4,
           tickLength: 0,
-          labelFontSize: labelFontSize
+          labelFontSize: labelFontSize,
+          labelFontFamily: fontFamily
         }],
         axisY2:{
           tickLength:0,

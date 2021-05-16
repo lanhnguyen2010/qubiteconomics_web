@@ -35,6 +35,26 @@ CanvasJS.addColorSet("customColorSet1",
   "#EB8CC6",
 ]);
 
+const styles = {
+  container: {
+    backgroundColor: '#e6e7ec',
+    overflow:'hidden'
+  },
+  rowContainer: {
+    height: '100vh'
+  },
+  rowCol1: {
+    height: '30vh', 
+    paddingTop: 10 
+  },
+  rowCol3: {
+    height: '25vh', paddingTop: 10 
+  },
+  chartInfoContainer: {
+    height: '30vh', width: '33vw', marginTop: 10, overflow: 'auto' 
+  }
+}
+
 class MainDashboardScreen extends React.Component {
 
   constructor(props) {
@@ -76,48 +96,50 @@ class MainDashboardScreen extends React.Component {
 
   render() {
     const { settings } = this.props;
-    const currentDate = settings? (settings.selectedDate? settings.selectedDate : "") : "";
     return (
-      <Container fluid style={{backgroundColor: '#e6e7ec', overflow:'hidden'}}>
-        <Row style={{ height: '100vh'}}>
+      <Container fluid style={styles.container}>
+        <Row style={styles.rowContainer}>
           <Col style={{paddingLeft: 20}}>
-            <Row style={{ height: '30vh', paddingTop: 10 }}>
+            <Row style={styles.rowCol1}>
               <VN30DerivativeChart ref={this.chartC1Ref} data={{ chartData: this.props.PSOutbound }} />
             </Row>
-            <Row style={{ height: '30vh', paddingTop: 10 }}>
+            <Row style={styles.rowCol1}>
               <BuyupSelldownChart ref={this.chartC4Ref} data={{ chartData: this.props.BusdOutbound, bubblesData: this.props.Arbit }} />
             </Row>
-            <Row style={{ height: '30vh', paddingTop: 10 }}>
+            <Row style={styles.rowCol1}>
               <NETBUSDChart ref={this.chartC7Ref} data={{ chartData: this.props.BusdOutbound, bubblesData: this.props.ArbitUnwind }} />
             </Row>
           </Col>
-          <Col style={{paddingLeft: 20, paddingRight: 20}}>
-            <Row style={{ height: '30vh', paddingTop: 10, borderRadius: 16 }}>
+          <Col style={{paddingLeft: 25, paddingRight: 25}}>
+            <Row style={styles.rowCol1}>
               <ForeignDerivativeChart ref={this.chartC2Ref} data={{ chartData: this.props.BuySellNNOutbound }} />
             </Row>
-            <Row style={{ height: '30vh', paddingTop: 10 }}>
+            <Row style={styles.rowCol1}>
               <BuySellPressureChart ref={this.chartC5Ref} data={{ chartData: this.props.BuySellNNOutbound }} />
             </Row>
-            <Row style={{paddingTop: 10, paddingBottom: 10 }}>
-              <Col>Date:</Col>
-              <Col><DatePicker selected={this.selectedDate} onChange={date => this.onDatePicked(date)} /></Col>
-              <Col></Col>
+            <Row style={styles.rowCol1}>
+              <Col>
+            <Row>
+              <DatePicker style={{ fontFamily: 'Roboto,sans-serif'}} selected={this.selectedDate} onChange={date => this.onDatePicked(date)} />
             </Row>
-            <Row style={{ height: '36vh', width: '33vw', paddingTop: 10, overflow: 'auto' }}>
-              <ChartInfo />
+            <Row style={styles.chartInfoContainer}>
+                <ChartInfo />
             </Row>
           </Col>
-          <Col style={{paddingRight: 20}}>
-            <Row style={{ height: '25vh', paddingTop: 10 }}>
+            </Row>
+            
+          </Col>
+          <Col style={{paddingRight: 21}}>
+            <Row style={styles.rowCol3}>
               <SuuF1Chart ref={this.chartC3Ref} data={{ chartData: this.props.SuuF1Outbound }} />
             </Row>
-            <Row style={{ height: '25vh', paddingTop: 10 }}>
+            <Row style={styles.rowCol3}>
               <FBFSChart ref={this.chartC6Ref} data={{ chartData: this.props.SuuF1Outbound }} />
             </Row>
-            <Row style={{ height: '25vh', paddingTop: 10 }}>
+            <Row style={styles.rowCol3}>
               <F1BidVAskVChart ref={this.chartC8Ref} data={{ chartData: this.props.SuuF1Outbound }} />
             </Row>
-            <Row style={{ height: '25vh', paddingTop: 10, paddingBottom: 10 }}>
+            <Row style={styles.rowCol3}>
               <NetBSChart ref={this.chartC9Ref} data={{ chartData: this.props.SuuF1Outbound }} />
             </Row>
           </Col>
