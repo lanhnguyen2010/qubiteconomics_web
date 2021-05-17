@@ -144,7 +144,7 @@ class MainDashboardScreen extends React.Component {
     this.NetBSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
 
     chartManager.shift();
-    chartManager.renderCharts(false, true);
+    chartManager.registerRenderCharts(false, true);
   }
 
   async onDatePicked(date) {
