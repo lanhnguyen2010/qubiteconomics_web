@@ -57,8 +57,7 @@ export default class F1BidVAskVChart extends LineChart {
     return options;
   }
 
-  updateData() {
-    let chartData = this.props.data.chartData;
+  updateData(chartData) {
     if (!chartData || !chartData.length) return;
 
     this.chart.updateData([

@@ -96,8 +96,7 @@ export default class LineChart extends BaseChart {
     return options;
   }
 
-  updateData() {
-    let chartData = this.props.data.chartData;
+  updateData(chartData) {
     if (!chartData || !chartData.length) return;
 
     var reversedData = [...chartData];

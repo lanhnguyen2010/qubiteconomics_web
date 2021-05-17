@@ -102,8 +102,6 @@ class MainDashboardScreen extends React.Component {
   }
 
   updateChart = async ()=> {
-    const { fetchAllData, settings } = this.props;
-
     if (this.chartRefs && this.chartRefs[0].current && this.chartRefs[0].current.chart && this.chartRefs[0].current.chart.dataPoints && this.chartRefs[0].current.chart.dataPoints[0]){
       let timeRange = this.chartRefs[0].current.chart.dataPoints[0].map(i => i.x);
       let maxCurrentTime = Math.max(...timeRange);
@@ -149,10 +147,21 @@ class MainDashboardScreen extends React.Component {
 
 
 
-  fetchData(date) {
-    const { fetchAllData } = this.props;
-    const timeDate = getTimeBody(date);
-    fetchAllData(timeDate);
+  async fetchData(date) {
+    const requestBody = getTimeBody(date);
+
+    this.fetchSuuF1(requestBody);
+    this.fetchBuySellNN(requestBody);
+    const ps = await StockAPI.fetchPSOutbound(requestBody);
+    const busd = await StockAPI.fetchBusdOutbound(requestBody);
+    this.VN30DerivativeChartRef.current.updateData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(busd)});
+    
+    const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
+    this.BuyupSelldownChartRef.current.updateData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbit(arbitUnwind)});
+    this.NETBUSDChartRef.current.updateData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
+    
+    
+
     if (date === moment().format('yyyy_MM_DD')){
       if (this.interval){
         clearInterval(this.interval);
@@ -164,27 +173,41 @@ class MainDashboardScreen extends React.Component {
     }
   }
 
+  async fetchBuySellNN(requestBody) {
+    const buysellNN = await StockAPI.fetchBuySellNNOutbound(requestBody);
+    this.ForeignDerivativeChartRef.current.updateData(DataParser.parseBuySellNNOutbound(buysellNN));
+    this.BuySellPressureChartRef.current.updateData(DataParser.parseBuySellNNOutbound(buysellNN));
+  }
+
+  async fetchSuuF1(requestBody) {
+    const suuF1 = await StockAPI.fetchSuuF1Outbound(requestBody);
+    this.SuuF1ChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
+    this.FBFSChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
+    this.F1BidVAskVChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
+    this.NetBSChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
+  }
+
   render() {
     return (
       <Container fluid style={styles.container}>
         <Row style={styles.rowContainer}>
           <Col style={{paddingLeft: 20}}>
             <Row style={styles.rowCol1}>
-              <VN30DerivativeChart ref={this.VN30DerivativeChartRef} data={{PS: this.props.PSOutbound, VNIndex30:this.props.VNIndex30}} />
+              <VN30DerivativeChart ref={this.VN30DerivativeChartRef} />
             </Row>
             <Row style={styles.rowCol1}>
-              <BuyupSelldownChart ref={this.BuyupSelldownChartRef} data={{ chartData: this.props.BusdOutbound, bubblesData: this.props.Arbit }} />
+              <BuyupSelldownChart ref={this.BuyupSelldownChartRef} />
             </Row>
             <Row style={styles.rowCol1}>
-              <NETBUSDChart ref={this.NETBUSDChartRef} data={{ chartData: this.props.BusdOutbound, bubblesData: this.props.ArbitUnwind }} />
+              <NETBUSDChart ref={this.NETBUSDChartRef} />
             </Row>
           </Col>
           <Col style={{paddingLeft: 25, paddingRight: 25}}>
             <Row style={styles.rowCol1}>
-              <ForeignDerivativeChart ref={this.ForeignDerivativeChartRef} data={{ chartData: this.props.BuySellNNOutbound }} />
+              <ForeignDerivativeChart ref={this.ForeignDerivativeChartRef} />
             </Row>
             <Row style={styles.rowCol1}>
-              <BuySellPressureChart ref={this.BuySellPressureChartRef} data={{ chartData: this.props.BuySellNNOutbound }} />
+              <BuySellPressureChart ref={this.BuySellPressureChartRef} />
             </Row>
             <Row style={styles.rowCol1}>
               <Col>
@@ -202,16 +225,16 @@ class MainDashboardScreen extends React.Component {
           </Col>
           <Col style={{paddingRight: 21}}>
             <Row style={styles.rowCol3}>
-              <SuuF1Chart ref={this.SuuF1ChartRef} data={{ chartData: this.props.SuuF1Outbound }} />
+              <SuuF1Chart ref={this.SuuF1ChartRef} />
             </Row>
             <Row style={styles.rowCol3}>
-              <FBFSChart ref={this.FBFSChartRef} data={{ chartData: this.props.SuuF1Outbound }} />
+              <FBFSChart ref={this.FBFSChartRef} />
             </Row>
             <Row style={styles.rowCol3}>
-              <F1BidVAskVChart ref={this.F1BidVAskVChartRef} data={{ chartData: this.props.SuuF1Outbound }} />
+              <F1BidVAskVChart ref={this.F1BidVAskVChartRef} />
             </Row>
             <Row style={styles.rowCol3}>
-              <NetBSChart ref={this.NetBSChartRef} data={{ chartData: this.props.SuuF1Outbound }} />
+              <NetBSChart ref={this.NetBSChartRef} />
             </Row>
           </Col>
         </Row>
@@ -225,19 +248,9 @@ const getTimeBody = (date) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  const { actions } = require("../../redux/StockPriceRedux");
   const SettingsRedux  = require("../../redux/SettingsRedux");
-
   return {
-    fetchAllData: (data) => {
-      actions.fetchPSOutboundData(dispatch, data);
-      actions.fetchBusdOutboundData(dispatch, data);
-      actions.fetchBusdNNOutboundData(dispatch, data);
-      actions.fetchBuySellNNOutboundData(dispatch, data);
-      actions.fetchSuuF1OutboundData(dispatch, data);
-      actions.fetchArbitUnwindData(dispatch, data);
-    },
-    setDate:(date) => {
+      setDate:(date) => {
       SettingsRedux.actions.updateSelectedDate(dispatch, date)
     }
   }
@@ -245,13 +258,6 @@ const mapDispatchToProps = (dispatch) => {
 
 const mapStateToProps = (state) => {
   return {
-    PSOutbound: state.stockPrice.PSOutbound,
-    BuySellNNOutbound: state.stockPrice.BuySellNNOutbound,
-    SuuF1Outbound: state.stockPrice.SuuF1Outbound,
-    BusdOutbound: state.stockPrice.BusdOutbound,
-    ArbitUnwind: state.stockPrice.ArbitUnwind,
-    Arbit: state.stockPrice.Arbit,
-    VNIndex30: state.stockPrice.VNIndex30,
     settings: state.settings
   }
 }
