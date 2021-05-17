@@ -378,6 +378,8 @@ class XCanvasJS {
     this.dataPoints = [];
     dataPointsList.forEach(dps => this.dataPoints.push(dps));
 
+    let stripLines = []
+
     this.dataPoints.forEach((dps, index) => {
       if (!dps.length) return;
 
@@ -393,8 +395,8 @@ class XCanvasJS {
           if (this.minDpsTime > minDpsTime) this.minDpsTime = minDpsTime;
           if (this.maxDpsTime < maxDpsTime) this.maxDpsTime = maxDpsTime;
         }
-    });
-
+        stripLines.push(this.buildStripLine(dps[dps.length - 1].y, index))
+    })
     var minDisplayTime = this.minDpsTime;
     var maxDisplayTime = this.maxDpsTime;
 
@@ -413,13 +415,14 @@ class XCanvasJS {
     };
 
     if (!this.ready) { this.ready = true; this.getManager().fireReadyEvent(this.getIndex()); }
+    this.chart.options.axisY[0].stripLines = stripLines;
 
     this.renderChart(true, true);
   }
 
   appendData(dataPointsList) {
     if (!dataPointsList || !dataPointsList.length) return;
-
+    let stripLines = []
     // Append data
     dataPointsList.forEach((dps, index) => {
       if (!dps.length) return;
@@ -449,7 +452,29 @@ class XCanvasJS {
       } else {
         if (this.maxDpsTime < maxDpstime) this.maxDpsTime = maxDpstime;
       }
+      if (this.chart.options.data[index].type === 'line'){
+        stripLines.push(this.buildStripLine(dps[dps.length - 1].y, index));
+      }
     });
+    this.chart.options.axisY[0].stripLines = stripLines;
+  }
+
+  buildStripLine(dataY, index) {
+    let color = this.chart.data[index].color;
+    if (!color){
+      color = this.chart.data[index].lineColor;
+    }
+    return {
+      value: dataY,
+      color: color,
+      labelFontColor: color,
+      label: dataY.toFixed(2),
+      labelPlacement: "outside",
+      labelBackgroundColor: "none",
+      labelFontSize: 8,
+      lineDashType: "dot",
+      opacity: .7
+    }
   }
 
   setViewport(minTime, maxTime) {
