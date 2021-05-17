@@ -466,7 +466,6 @@ class XCanvasJS {
 
     if (!this.ready) { this.ready = true; this.getManager().fireReadyEvent(this.getIndex()); }
 
-    this.renderChart(true, true);
     this.getManager().registerRender(this.getIndex(), true, true);
   }
 
