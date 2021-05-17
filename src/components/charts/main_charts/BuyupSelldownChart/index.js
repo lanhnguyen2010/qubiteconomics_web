@@ -43,7 +43,7 @@ export default class BuyupSelldownChart extends LineChart {
       showInLegend: true,
       axisYType: "secondary",
       legendText: this.chartInfo.legends[0].name,
-      fillOpacity: .7,
+      fillOpacity: .5,
       axisYIndex: 1,
       xValueType: "dateTime",
       color: "#6666ff",

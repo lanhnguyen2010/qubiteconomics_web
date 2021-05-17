@@ -245,7 +245,7 @@ class MainDashboardScreen extends React.Component {
 }
 
 const getTimeBody = (date) => {
-  return _.pickBy({ day: date, endTime: ''});
+  return _.pickBy({ day: date, endTime: ""});
 }
 
 const mapDispatchToProps = (dispatch) => {
