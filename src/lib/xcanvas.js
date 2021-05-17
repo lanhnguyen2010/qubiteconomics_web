@@ -440,7 +440,9 @@ class XCanvasJS {
           if (this.minDpsTime > minDpsTime) this.minDpsTime = minDpsTime;
           if (this.maxDpsTime < maxDpsTime) this.maxDpsTime = maxDpsTime;
         }
+      if (this.chart.options.data[index].type === 'line') {
         stripLines.push(this.buildStripLine(dps[dps.length - 1].y, index))
+      }
     })
     this.chart.options.axisY[0].stripLines = stripLines;
 
@@ -509,9 +511,13 @@ class XCanvasJS {
   }
 
   buildStripLine(dataY, index) {
+    if(!dataY) return {}
     let color = this.chart.data[index].color;
     if (!color){
       color = this.chart.data[index].lineColor;
+    }
+    if (!color){
+      color = this.chart.data[index]._colorSet[index];
     }
     return {
       value: dataY,
@@ -521,8 +527,9 @@ class XCanvasJS {
       labelPlacement: "outside",
       labelBackgroundColor: "none",
       labelFontSize: 8,
-      lineDashType: "dot",
-      opacity: .7
+      lineDashType: "line",
+      thickness:0.7,
+      opacity: 5
     }
   }
 
