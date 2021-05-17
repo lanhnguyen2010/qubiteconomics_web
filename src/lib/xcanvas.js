@@ -84,7 +84,7 @@ class XCanvasJSManager {
 
     setTimeout(() => {
       this.triggerRender();
-    }, 10);
+    }, 1);
   }
 
   registerRender(index, forceRender, notifyChanges) {
