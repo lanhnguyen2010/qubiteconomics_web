@@ -430,16 +430,16 @@ class XCanvasJS {
 
       this.chart.options.data[index].dataPoints = dps;
 
-        var minDpsTime = dps[0].x.getTime();
-        var maxDpsTime = dps[dps.length - 1].x.getTime();
+      var minDpsTime = dps[0].x.getTime();
+      var maxDpsTime = dps[dps.length - 1].x.getTime();
 
-        if (index === 0) {
-          this.minDpsTime = minDpsTime;
-          this.maxDpsTime = maxDpsTime;
-        } else {
-          if (this.minDpsTime > minDpsTime) this.minDpsTime = minDpsTime;
-          if (this.maxDpsTime < maxDpsTime) this.maxDpsTime = maxDpsTime;
-        }
+      if (index === 0) {
+        this.minDpsTime = minDpsTime;
+        this.maxDpsTime = maxDpsTime;
+      } else {
+        if (this.minDpsTime > minDpsTime) this.minDpsTime = minDpsTime;
+        if (this.maxDpsTime < maxDpsTime) this.maxDpsTime = maxDpsTime;
+      }
       if (this.chart.options.data[index].type === 'line') {
         stripLines.push(this.buildStripLine(dps[dps.length - 1].y, index))
       }
@@ -447,10 +447,6 @@ class XCanvasJS {
     this.chart.options.axisY[0].stripLines = stripLines;
 
     if (!this.minDpsTime || !this.maxDpsTime) return;
-
-    if (!this.ready) {
-      this.ready = true; this.getManager().fireReadyEvent(this.getIndex());
-    }
 
     this.getManager().setViewport(this.minDpsTime, this.maxDpsTime);
     this.getManager().calculateInterval();
@@ -466,7 +462,10 @@ class XCanvasJS {
       }]
     };
 
-    if (!this.ready) { this.ready = true; this.getManager().fireReadyEvent(this.getIndex()); }
+    if (!this.ready) {
+      this.ready = true;
+      this.getManager().fireReadyEvent(this.getIndex());
+    }
 
     this.getManager().registerRender(this.getIndex(), true, true);
   }
@@ -548,6 +547,8 @@ class XCanvasJS {
       axisX.viewportMaximum = new Date(maxTime);
 
       this.dataPoints.forEach((dps, index) => {
+        if (!dps.length) return;
+
         if (dps[dps.length - 1].x.getTime() < maxTime) {
           // Append an empty point to sync the time-range
           var emptyPoint = {...dps[dps.length - 1]};

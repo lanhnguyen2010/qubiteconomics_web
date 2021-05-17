@@ -150,7 +150,12 @@ class MainDashboardScreen extends React.Component {
 
   async onDatePicked(date) {
     this.selectedDate = date;
-    const dateString = moment(date).format('yyyy_MM_DD')
+    const dateString = moment(date).format('yyyy_MM_DD');
+
+    let chartManager = XCanvasJSManager.getInstance("DB01");
+    chartManager.clear();
+    chartManager.registerRenderCharts(true, true);
+
     await this.props.setDate(dateString);
     this.fetchData(dateString);
   }
