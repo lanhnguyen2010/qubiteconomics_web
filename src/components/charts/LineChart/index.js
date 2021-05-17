@@ -107,11 +107,11 @@ export default class LineChart extends BaseChart {
   }
 
   appendData(data) {
-      if (data && data.length){
-          this.chart.appendData([
-              data.map(item => ({ x: item.time, y: item.price }))
-          ])
-      }
+    if (data && data.length) {
+      this.chart.appendData([
+        data.map(item => ({ x: item.time, y: item.price }))
+      ])
+    }
   }
 
 }

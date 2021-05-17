@@ -39,7 +39,9 @@ CanvasJS.addColorSet("customColorSet1",
   "#EB8CC6",
 ]);
 
-const interval = 10000
+const interval = 5000;
+const minutesToFetch = 30;
+
 const styles = {
   container: {
     backgroundColor: '#e6e7ec',
@@ -77,8 +79,10 @@ class MainDashboardScreen extends React.Component {
     this.chartRefs.push(this.NetBSChartRef = React.createRef());
     this.selectedDate = new Date();
     this.updateChart = this.updateChart.bind(this);
-    this.interval = null;
-
+    
+    this.callTimerID = null;
+    this.realTimeDate = moment().format('yyyy_MM_DD');
+    this.lastCheckDate = null;
   }
 
   componentDidMount() {
@@ -95,49 +99,52 @@ class MainDashboardScreen extends React.Component {
   }
 
   componentWillUnmount() {
-    if (this.interval) {
-
-      clearInterval(this.interval);
-    }
+    clearInterval(this.callTimerID);
   }
 
   updateChart = async ()=> {
-    const { fetchAllData, settings } = this.props;
+    let chartManager = XCanvasJSManager.getInstance("DB01");
+    if (!chartManager.isReady()) return;
 
-    if (this.chartRefs && this.chartRefs[0].current && this.chartRefs[0].current.chart && this.chartRefs[0].current.chart.dataPoints && this.chartRefs[0].current.chart.dataPoints[0]){
-      let timeRange = this.chartRefs[0].current.chart.dataPoints[0].map(i => i.x);
-      let maxCurrentTime = Math.max(...timeRange);
-
-      let currentDate = moment().format('yyyy_MM_DD');
-      let currentTime = moment(maxCurrentTime).add(-1, "minutes").format('HH:mm:ss');
-      let fakeEndTime = moment(maxCurrentTime).add(10, 'minutes').format('HH:mm:ss');
-      let requestBody = {
-        day: currentDate,
-        startTime: currentTime,
-        endTime: ''
-      }
-
-      const ps = await StockAPI.fetchPSOutbound(requestBody);
-      const busd = await StockAPI.fetchBusdOutbound(requestBody);
-      const buysellNN = await StockAPI.fetchBuySellNNOutbound(requestBody);
-      const suuF1 = await StockAPI.fetchSuuF1Outbound(requestBody);
-      const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
-
-      this.VN30DerivativeChartRef.current.appendData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(busd)});
-      this.BuyupSelldownChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbit(arbitUnwind)});
-      this.NETBUSDChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
-      this.ForeignDerivativeChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
-      this.BuySellPressureChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
-      this.SuuF1ChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
-      this.FBFSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
-      this.F1BidVAskVChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
-      this.NetBSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
-
-      let chartManager = XCanvasJSManager.getInstance("DB01");
-
-      chartManager.shift();
-      chartManager.renderCharts(false, true);
+    let minDpsTime, maxDpsTime;
+    if (!this.lastCheckDate) {
+      minDpsTime = Math.min(...chartManager.chartsManager.map(mgr => { return mgr.maxDpsTime }));
+      maxDpsTime = Math.max(...chartManager.chartsManager.map(mgr => { return mgr.maxDpsTime }));
+    } else {
+      minDpsTime = this.lastCheckDate;
+      maxDpsTime = this.lastCheckDate + minutesToFetch * 60 * 1000;
     }
+    this.lastCheckDate = maxDpsTime;
+
+    const requestFromTime = moment(new Date(minDpsTime)).add(-1, "minutes").format("HH:mm:ss");
+    const requestToTime = moment(new Date(maxDpsTime)).format("HH:mm:ss");
+    const requestBody = {
+      day: this.realTimeDate,
+      startTime: requestFromTime,
+      endTime: requestToTime
+    }
+
+    const ps = await StockAPI.fetchPSOutbound(requestBody);
+    const busd = await StockAPI.fetchBusdOutbound(requestBody);
+    const buysellNN = await StockAPI.fetchBuySellNNOutbound(requestBody);
+    const suuF1 = await StockAPI.fetchSuuF1Outbound(requestBody);
+    const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
+
+    // Trigger next call
+    this.callTimerID = setTimeout(this.updateChart, interval);
+
+    this.VN30DerivativeChartRef.current.appendData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(busd)});
+    this.BuyupSelldownChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbit(arbitUnwind)});
+    this.NETBUSDChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
+    this.ForeignDerivativeChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
+    this.BuySellPressureChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
+    this.SuuF1ChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
+    this.FBFSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
+    this.F1BidVAskVChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
+    this.NetBSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
+
+    chartManager.shift();
+    chartManager.renderCharts(false, true);
   }
 
   async onDatePicked(date) {
@@ -147,20 +154,15 @@ class MainDashboardScreen extends React.Component {
     this.fetchData(dateString);
   }
 
+  fetchData(dateStr) {
+    clearInterval(this.callTimerID);
 
-
-  fetchData(date) {
     const { fetchAllData } = this.props;
-    const timeDate = getTimeBody(date);
+    const timeDate = getTimeBody(dateStr);
     fetchAllData(timeDate);
-    if (date === moment().format('yyyy_MM_DD')){
-      if (this.interval){
-        clearInterval(this.interval);
-      }
 
-      this.interval = setInterval(this.updateChart, interval);
-    } else if (this.interval){
-      clearInterval(this.interval);
+    if (dateStr === this.realTimeDate) {
+      this.callTimerID = setTimeout(this.updateChart, interval);
     }
   }
 
@@ -221,7 +223,7 @@ class MainDashboardScreen extends React.Component {
 }
 
 const getTimeBody = (date) => {
-  return _.pickBy({ day: date, endTime: ""});
+  return _.pickBy({ day: date, endTime: "10:30:00"});
 }
 
 const mapDispatchToProps = (dispatch) => {
