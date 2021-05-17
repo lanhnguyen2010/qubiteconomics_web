@@ -36,12 +36,19 @@ export default class VN30DerivativeChart extends LineChart {
   updateData(chartData) {
     if (!chartData || !chartData.PS || !chartData.VNIndex30) return;
 
-    var data = [
+    this.chart.updateData([
       chartData.PS.map(item => ({ x: item.time, y: item.price })),
       chartData.VNIndex30.map(item => ({ x: item.time, y: item.last }))
-    ]
+    ])
+  }
 
-    this.chart.updateData(data)
+  appendData(chartData) {
+    if (!chartData || !chartData.PS || !chartData.VNIndex30) return;
+
+    this.chart.appendData([
+      chartData.PS.map(item => ({ x: item.time, y: item.price })),
+      chartData.VNIndex30.map(item => ({ x: item.time, y: item.last }))
+    ])
   }
 
 }

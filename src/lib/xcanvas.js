@@ -424,6 +424,22 @@ class XCanvasJS {
     dataPointsList.forEach((dps, index) => {
       if (!dps.length) return;
 
+      // Remove redundant points
+      let newFromTime = dps[0].x.getTime();
+      const currentDps = this.dataPoints[index];
+      let pushFromIndex = currentDps.length - 1;
+      for (var i = pushFromIndex; i >= 0; i--) {
+        if (currentDps[i].x < newFromTime) {
+          break;
+        }
+        pushFromIndex = i;
+      }
+
+      // Append new points
+      if (pushFromIndex + 1 <= currentDps.length - 1) {
+        this.dataPoints[index].splice(pushFromIndex + 1);
+      }
+
       this.dataPoints[index].push(...dps);
       this.chart.options.data[index].dataPoints = this.dataPoints[index];
 
