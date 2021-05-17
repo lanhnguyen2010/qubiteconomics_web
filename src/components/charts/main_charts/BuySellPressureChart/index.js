@@ -33,8 +33,8 @@ export default class BuySellPressureChart extends LineChart {
     return options;
   }
 
-  updateData() {
-    let chartData = this.props.data.chartData;
+  updateData(chartData) {
+    // let chartData = this.props.data.chartData;
     if (!chartData || !chartData.length) return;
 
     this.chart.updateData([

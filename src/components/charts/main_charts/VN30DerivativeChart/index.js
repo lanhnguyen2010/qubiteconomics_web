@@ -33,8 +33,7 @@ export default class VN30DerivativeChart extends LineChart {
     return options;
   }
 
-  updateData() {
-    let chartData = this.props.data;
+  updateData(chartData) {
     if (!chartData || !chartData.PS || !chartData.VNIndex30) return;
 
     this.chart.updateData([

@@ -33,8 +33,7 @@ export default class FBFSChart extends LineChart {
     return options;
   }
 
-  updateData() {
-    let chartData = this.props.data.chartData;
+  updateData(chartData) {
     if (!chartData || !chartData.length) return;
 
     this.chart.updateData([
