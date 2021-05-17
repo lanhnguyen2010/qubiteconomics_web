@@ -28,6 +28,10 @@ class XCanvasJSManager {
     this.mouseDown = 0;
     document.addEventListener("mousedown", () => { this.mouseDown++; });
     document.addEventListener("mouseup", () => { this.mouseDown--; });
+
+    this.renderQueue = [];
+    this.registeredRenderCharts = {};
+    this.triggerRender();
   }
 
   register(mgr) {
@@ -62,6 +66,54 @@ class XCanvasJSManager {
     this.ready = false;
   }
 
+  triggerRender() {
+    if (this.renderQueue.length) {
+      let chartIndex = this.renderQueue.shift();
+      let chart = this.registeredRenderCharts[chartIndex];
+      this.registeredRenderCharts[chartIndex] = null;
+
+      // Render
+      if (!this.chartsManager[chartIndex] || !this.chartsManager[chartIndex].ready) {
+        // Not ready yet, register again to render later
+        this.registerRender(chart, chart.forceRender, chart.notifyChanges);
+      } else {
+        // Good state, let's render
+        this.chartsManager[chartIndex].render(chart.forceRender, chart.notifyChanges);
+      }
+    }
+
+    setTimeout(() => {
+      this.triggerRender();
+    }, 10);
+  }
+
+  registerRender(index, forceRender, notifyChanges) {
+    var item = this.registeredRenderCharts[index];
+    if (!item) {
+      this.renderQueue.push(index);
+      this.registeredRenderCharts[index] = {
+        forceRender,
+        notifyChanges
+      }
+    } else {
+      this.registeredRenderCharts[index] = {
+        forceRender: forceRender || item.forceRender,
+        notifyChanges: notifyChanges || item.notifyChanges
+      }
+    }
+  }
+
+  registerRenderCharts(forceRender, notifyChanges, forceRenderIndex) {
+    if (forceRenderIndex) {
+      this.chartsManager[forceRenderIndex].render(forceRender, notifyChanges);
+    }
+    this.chartsManager.forEach(mgr => {
+      if (forceRenderIndex && forceRenderIndex === mgr.getIndex()) return;
+
+      this.registerRender(mgr.getIndex(), forceRender, notifyChanges);
+    });
+  }
+
   calculateInterval() {
     var minuteDiffs = parseInt((this.maxViewportTime - this.minViewportTime) / 1000 / 60);
     var interval = 0;
@@ -87,7 +139,6 @@ class XCanvasJSManager {
     }
     this.chartsManager.forEach(mgr => mgr.setInterval(interval));
   }
-
 
   showTooltipXAt(triggerIndex, xValue) {
     this.chartsManager.forEach(mgr => { 
@@ -148,12 +199,6 @@ class XCanvasJSManager {
       if (mgr.chart.axisY[0].crosshair) {
         mgr.chart.axisY[0].crosshair.hide();
       }
-    });
-  }
-
-  renderCharts(forceRender, notifyChanges) {
-    this.chartsManager.forEach(mgr => {
-      mgr.renderChart(forceRender, notifyChanges);
     });
   }
 
@@ -278,7 +323,7 @@ class XCanvasJS {
       legend: {
         itemclick: (e) => {
           e.dataSeries.visible = !(typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible);
-          this.renderChart(true);
+          this.getManager().registerRender(this.getIndex(), true);
         },
         cursor: "pointer"
       },
@@ -348,7 +393,7 @@ class XCanvasJS {
       this.getManager().calculateInterval();
     }
 
-    this.getManager().renderCharts(false, true);
+    this.getManager().registerRenderCharts(false, true, this.getIndex());
     this.getManager().dispatchEvent(this.getIndex(), event, "mousemove", true);
   }
 
@@ -378,6 +423,8 @@ class XCanvasJS {
     this.dataPoints = [];
     dataPointsList.forEach(dps => this.dataPoints.push(dps));
 
+    let stripLines = []
+
     this.dataPoints.forEach((dps, index) => {
       if (!dps.length) return;
 
@@ -393,12 +440,17 @@ class XCanvasJS {
           if (this.minDpsTime > minDpsTime) this.minDpsTime = minDpsTime;
           if (this.maxDpsTime < maxDpsTime) this.maxDpsTime = maxDpsTime;
         }
-    });
+        stripLines.push(this.buildStripLine(dps[dps.length - 1].y, index))
+    })
+    this.chart.options.axisY[0].stripLines = stripLines;
 
-    var minDisplayTime = this.minDpsTime;
-    var maxDisplayTime = this.maxDpsTime;
+    if (!this.minDpsTime || !this.maxDpsTime) return;
 
-    this.getManager().setViewport(minDisplayTime, maxDisplayTime);
+    if (!this.ready) {
+      this.ready = true; this.getManager().fireReadyEvent(this.getIndex());
+    }
+
+    this.getManager().setViewport(this.minDpsTime, this.maxDpsTime);
     this.getManager().calculateInterval();
 
     var date = new Date(this.maxDpsTime);
@@ -415,11 +467,12 @@ class XCanvasJS {
     if (!this.ready) { this.ready = true; this.getManager().fireReadyEvent(this.getIndex()); }
 
     this.renderChart(true, true);
+    this.getManager().registerRender(this.getIndex(), true, true);
   }
 
   appendData(dataPointsList) {
     if (!dataPointsList || !dataPointsList.length) return;
-
+    let stripLines = []
     // Append data
     dataPointsList.forEach((dps, index) => {
       if (!dps.length) return;
@@ -449,10 +502,34 @@ class XCanvasJS {
       } else {
         if (this.maxDpsTime < maxDpstime) this.maxDpsTime = maxDpstime;
       }
+      if (this.chart.options.data[index].type === 'line'){
+        stripLines.push(this.buildStripLine(dps[dps.length - 1].y, index));
+      }
     });
+    this.chart.options.axisY[0].stripLines = stripLines;
+  }
+
+  buildStripLine(dataY, index) {
+    let color = this.chart.data[index].color;
+    if (!color){
+      color = this.chart.data[index].lineColor;
+    }
+    return {
+      value: dataY,
+      color: color,
+      labelFontColor: color,
+      label: dataY.toFixed(2),
+      labelPlacement: "outside",
+      labelBackgroundColor: "none",
+      labelFontSize: 8,
+      lineDashType: "dot",
+      opacity: .7
+    }
   }
 
   setViewport(minTime, maxTime) {
+    if (!this.ready) return;
+
     var axisX = this.chart.options.axisX;
 
     if (!axisX.viewportMinimum || axisX.viewportMinimum.getTime() !== minTime) {
@@ -479,6 +556,8 @@ class XCanvasJS {
   }
 
   setInterval(value) {
+    if (!this.ready) return;
+
     if (this.chart.options.axisX.interval !== value) {
       this.hasPendingChanges = true;
       this.chart.options.axisX.interval = value;
@@ -598,7 +677,7 @@ class XCanvasJS {
     })
   }
 
-  renderChart(forceRender, notifyChanges) {
+  render(forceRender, notifyChanges) {
     if (forceRender || this.hasPendingChanges) {
       this.hasPendingChanges = false;
 
@@ -620,7 +699,7 @@ class XCanvasJS {
 
     this.manager.setViewport(event.axisX[0].viewportMinimum, event.axisX[0].viewportMaximum);
     this.manager.setAtRightSide(event.axisX[0].viewportMaximum === this.maxDpsTime);
-    this.manager.renderCharts(false, true);
+    this.manager.registerRenderCharts(false, true, this.getIndex());
   }
 
   debounce(func, wait, immediate) {
