@@ -54,6 +54,8 @@ export default class BuyupSelldownChart extends LineChart {
   }
 
   updateData(data) {
+    if (!data) return;
+
     let bubblesData = data.bubblesData;
     let chartData = data.chartData;
     if (!bubblesData || !bubblesData.length || !chartData || !chartData.length) return;
