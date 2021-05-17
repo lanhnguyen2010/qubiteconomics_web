@@ -109,7 +109,7 @@ class MainDashboardScreen extends React.Component {
       let maxCurrentTime = Math.max(...timeRange);
 
       let currentDate = moment().format('yyyy_MM_DD');
-      let currentTime = moment(maxCurrentTime).format('HH:mm:ss');
+      let currentTime = moment(maxCurrentTime).add(-1, "minutes").format('HH:mm:ss');
       let fakeEndTime = moment(maxCurrentTime).add(10, 'minutes').format('HH:mm:ss');
       let requestBody = {
         day: currentDate,
