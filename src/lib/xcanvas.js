@@ -517,7 +517,7 @@ class XCanvasJS {
       value: dataY,
       color: color,
       labelFontColor: color,
-      label: dataY.toFixed(2),
+      label: dataY ? dataY.toFixed(2) : "0",
       labelPlacement: "outside",
       labelBackgroundColor: "none",
       labelFontSize: 8,

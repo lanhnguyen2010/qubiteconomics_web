@@ -38,7 +38,6 @@ export default class BaseChart extends React.Component {
   }
 
   componentDidUpdate() {
-    this.updateData();
   }
 
   updateData() {
