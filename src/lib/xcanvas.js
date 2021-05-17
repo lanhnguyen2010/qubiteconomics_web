@@ -527,7 +527,7 @@ class XCanvasJS {
       labelPlacement: "outside",
       labelBackgroundColor: "none",
       labelFontSize: 8,
-      lineDashType: "line",
+      lineDashType: "dot",
       thickness:0.7,
       opacity: 5
     }
