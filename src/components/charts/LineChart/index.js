@@ -67,7 +67,6 @@ export default class LineChart extends BaseChart {
           valueFormatString: "HH:mm",
           interval: 30,
           intervalType: "minute",
-          includeZero: false,
           labelFontSize: labelFontSize,
           labelFontFamily: fontFamily,
           lineThickness: 0.4,
