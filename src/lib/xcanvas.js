@@ -303,7 +303,7 @@ class XCanvasJS {
     this.event = new EventBus();
     this.__init();
 
-    this.onRangeChanged = this.debounce(this.__onRangeChanged.bind(this), 20);
+    this.onRangeChanging = this.debounce(this.__onRangeChanging.bind(this), 20);
     this.onZooming = this.debounce(this.__onZooming.bind(this), 20);
   }
 
@@ -331,7 +331,8 @@ class XCanvasJS {
 
   getDefaultOptions() {
     return {
-      rangeChanging: (event) => this.onRangeChanged(event),
+      rangeChanging: (event) => this.onRangeChanging(event),
+      rangeChanged: (event) => this.onRangeChanged(event),
       legend: {
         itemclick: (e) => {
           e.dataSeries.visible = !(typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible);
@@ -588,6 +589,8 @@ class XCanvasJS {
 
           this.chart.options.data[index].dataPoints = dps;
         }
+
+        this.chart.options.data[index].dataPoints = dps;
       });
       this.chart.options.axisY[0].stripLines = stripLines;
     }
@@ -732,9 +735,19 @@ class XCanvasJS {
     }
   }
 
-  __onRangeChanged(event) {
-    if (!this.manager.isMouseDown()) return;
+  onRangeChanged(event) {
+    if (event.trigger == "reset") {
+      let minDpsTime = Math.min(...this.manager.chartsManager.map(mgr => { return mgr.minDpsTime }));
+      let maxDpsTime = Math.min(...this.manager.chartsManager.map(mgr => { return mgr.maxDpsTime }));
 
+      this.manager.setViewport(minDpsTime, maxDpsTime);
+      this.manager.setAtRightSide(true);
+      this.manager.registerRenderCharts(false, true, this.getIndex());
+    }
+  }
+
+  __onRangeChanging(event) {
+    if (!this.manager.isMouseDown()) return;
     this.manager.setViewport(event.axisX[0].viewportMinimum, event.axisX[0].viewportMaximum);
     this.manager.setAtRightSide(event.axisX[0].viewportMaximum === this.maxDpsTime);
     this.manager.registerRenderCharts(false, true, this.getIndex());

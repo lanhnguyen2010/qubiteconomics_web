@@ -1,4 +1,15 @@
 .canvasjs-chart-toolbar {
+  border: none !important;
+}
+
+.canvasjs-chart-toolbar button {
+  background: transparent !important;
+}
+.canvasjs-chart-toolbar button:hover {
+  background: rgb(33, 150, 243) !important;
+}
+
+.canvasjs-chart-toolbar button:first-child {
   visibility: hidden;
 }
 
