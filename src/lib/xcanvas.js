@@ -329,8 +329,9 @@ class XCanvasJS {
       },
       axisX: {
         crosshair: {
-          enabled: false,
+          enabled: true,
           thickness: 0.5,
+          label:''
         }
       },
       axisY: [{

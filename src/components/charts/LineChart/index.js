@@ -79,7 +79,7 @@ export default class LineChart extends BaseChart {
           lineThickness: 0,
           tickLength: 0,
           labelFontSize: labelFontSize,
-          labelFontFamily: fontFamily.concat,
+          labelFontFamily: fontFamily,
         }],
         axisY2:{
           tickLength:0,
