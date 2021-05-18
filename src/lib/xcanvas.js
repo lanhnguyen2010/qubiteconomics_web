@@ -453,8 +453,11 @@ class XCanvasJS {
         if (this.minDpsTime > minDpsTime) this.minDpsTime = minDpsTime;
         if (this.maxDpsTime < maxDpsTime) this.maxDpsTime = maxDpsTime;
       }
-      if (this.chart.options.data[index].type !== 'scatter') {
+      if (this.chart.options.data[index].type !== 'scatter' && this.chart.data[index].visible) {
         stripLines.push(this.buildStripLine(dps[dps.length - 1].y, index))
+      }
+      else{
+        stripLines.push({})
       }
     })
     this.chart.options.axisY[0].stripLines = stripLines;
@@ -569,8 +572,11 @@ class XCanvasJS {
           maxY = dps[i].y
         }
 
-        if (this.chart.options.data[index].type !== 'scatter') {
+        if (this.chart.options.data[index].type !== 'scatter' && this.chart.data[index].visible) {
           stripLines.push(this.buildStripLine(maxY, index))
+        }
+        else{
+          stripLines.push({})
         }
 
         if (dps[dps.length - 1].x.getTime() < maxTime) {

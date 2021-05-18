@@ -18,7 +18,35 @@ export default class LineChart extends BaseChart {
           verticalAlign: "top",
           fontSize: fontSize,
           fontWeight: "normal",
-          fontFamily: fontFamily
+          fontFamily: fontFamily,
+          cursor: "pointer",
+          itemclick: function (e) {
+            const isScatter = e.chart.data[e.dataSeriesIndex].type === 'scatter'
+            if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+              e.dataSeries.visible = false;
+              if (!isScatter) {
+                e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].thickness = 0;
+                e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].labelFontColor = 'transparent';
+                e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].labelBackgroundColor = 'none';
+              }
+            } else {
+              if (!isScatter) {
+                let color = e.chart.data[e.dataSeriesIndex].color;
+                if (!color) {
+                  color = e.chart.data[e.dataSeriesIndex].lineColor;
+                }
+                if (!color) {
+                  color = e.chart.data[e.dataSeriesIndex]._colorSet[e.dataSeriesIndex];
+                }
+                e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].thickness = 0.7;
+                e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].labelFontColor = 'white';
+                e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].labelBackgroundColor = color;
+              }
+              e.dataSeries.visible = true;
+            }
+
+            e.chart.render();
+          }
         },
         title: {
           text: this.chartInfo.name,
