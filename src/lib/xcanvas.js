@@ -441,7 +441,7 @@ class XCanvasJS {
         if (this.minDpsTime > minDpsTime) this.minDpsTime = minDpsTime;
         if (this.maxDpsTime < maxDpsTime) this.maxDpsTime = maxDpsTime;
       }
-      if (this.chart.options.data[index].type === 'line') {
+      if (this.chart.options.data[index].type !== 'scatter') {
         stripLines.push(this.buildStripLine(dps[dps.length - 1].y, index))
       }
     })
@@ -473,7 +473,6 @@ class XCanvasJS {
 
   appendData(dataPointsList) {
     if (!dataPointsList || !dataPointsList.length) return;
-    let stripLines = []
     // Append data
     dataPointsList.forEach((dps, index) => {
       if (!dps.length) return;
@@ -503,11 +502,7 @@ class XCanvasJS {
       } else {
         if (this.maxDpsTime < maxDpstime) this.maxDpsTime = maxDpstime;
       }
-      if (this.chart.options.data[index].type === 'line'){
-        stripLines.push(this.buildStripLine(dps[dps.length - 1].y, index));
-      }
     });
-    this.chart.options.axisY[0].stripLines = stripLines;
   }
 
   buildStripLine(dataY, index) {
@@ -519,18 +514,16 @@ class XCanvasJS {
     if (!color){
       color = this.chart.data[index]._colorSet[index];
     }
-    return {
+    const baseOptions = this.chart.options.axisY[0].stripLinesOptions
+    debugger
+    const stripLineOptions = {
       value: dataY,
       color: color,
-      labelFontColor: color,
+      labelFontColor: "white",
       label: dataY ? dataY.toFixed(2) : "0",
-      labelPlacement: "outside",
-      labelBackgroundColor: "none",
-      labelFontSize: 8,
-      lineDashType: "dot",
-      thickness:0.7,
-      opacity: 5
+      labelBackgroundColor: color
     }
+    return {...baseOptions, ...stripLineOptions}
   }
 
   setViewport(minTime, maxTime) {
@@ -538,6 +531,7 @@ class XCanvasJS {
 
     var axisX = this.chart.options.axisX;
 
+    let stripLines = []
     if (!axisX.viewportMinimum || axisX.viewportMinimum.getTime() !== minTime) {
       this.hasPendingChanges = true;
       axisX.viewportMinimum = new Date(minTime);
@@ -549,6 +543,18 @@ class XCanvasJS {
 
       this.dataPoints.forEach((dps, index) => {
         if (!dps.length) return;
+        let maxY = 0
+
+        //update striplines when set viewport
+        for (var i =0; i < dps.length; i++){
+          if(dps[i].x > axisX.viewportMaximum){
+            break;
+          }
+          maxY = dps[i].y
+        }
+        if (this.chart.options.data[index].type !== 'scatter') {
+          stripLines.push(this.buildStripLine(maxY, index))
+        }
 
         if (dps[dps.length - 1].x.getTime() < maxTime) {
           // Append an empty point to sync the time-range
@@ -560,6 +566,7 @@ class XCanvasJS {
           this.chart.options.data[index].dataPoints = this.dataPoints[index];
         }
       });
+      this.chart.options.axisY[0].stripLines = stripLines;
     }
   }
 
