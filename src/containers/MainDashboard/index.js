@@ -107,22 +107,15 @@ class MainDashboardScreen extends React.Component {
     let chartManager = XCanvasJSManager.getInstance("DB01");
     if (!chartManager.isReady()) return;
 
-    let minDpsTime, maxDpsTime;
-    if (!this.lastCheckDate) {
-      minDpsTime = Math.min(...chartManager.chartsManager.map(mgr => { return mgr.maxDpsTime }));
-      maxDpsTime = Math.max(...chartManager.chartsManager.map(mgr => { return mgr.maxDpsTime }));
-    } else {
-      minDpsTime = this.lastCheckDate;
-      maxDpsTime = this.lastCheckDate + minutesToFetch * 60 * 1000;
-    }
-    this.lastCheckDate = maxDpsTime;
+    let minDpsTime;
+    minDpsTime = Math.min(...chartManager.chartsManager.map(mgr => { return mgr.maxDpsTime }));
 
-    const requestFromTime = moment(new Date(minDpsTime)).add(-1, "minutes").format("HH:mm:ss");
-    const requestToTime = moment(new Date(maxDpsTime)).format("HH:mm:ss");
+    const requestFromTime = moment(new Date(minDpsTime)).format("HH:mm:ss");
+    // const requestToTime = moment(new Date(maxDpsTime)).format("HH:mm:ss");
     const requestBody = {
       day: this.realTimeDate,
       startTime: requestFromTime,
-      endTime: requestToTime
+
     }
 
     const ps = await StockAPI.fetchPSOutbound(requestBody);

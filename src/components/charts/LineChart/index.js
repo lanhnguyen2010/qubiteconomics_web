@@ -1,4 +1,5 @@
 import _ from "lodash";
+import moment from "moment-timezone";
 import BaseChart from "components/charts/BaseChart";
 
 import "./styles.css";
@@ -38,6 +39,11 @@ export default class LineChart extends BaseChart {
           contentFormatter: function (e) {
             let tooltip = '<div style="font-size: 10px;">';
             if (e.entries) {
+                if (e.entries.length) {
+                  const time = moment(new Date(e.entries[0].dataPoint.x)).format("HH:mm:ss");
+                  const divX = '<div style="padding-right: 5px; display: inline-block; color: black">' + time + '</div>';
+                  tooltip = tooltip.concat(divX);
+                }
                 for (var i = 0; i < e.entries.length; i++) {
                     if(e.entries[i].dataPoint) {
                         if(e.entries[i].dataSeries.visible) {
@@ -59,7 +65,7 @@ export default class LineChart extends BaseChart {
         },
         axisX: {
           valueFormatString: "HH:mm",
-          interval: 5,
+          interval: 30,
           intervalType: "minute",
           includeZero: false,
           labelFontSize: labelFontSize,
@@ -73,7 +79,7 @@ export default class LineChart extends BaseChart {
           lineThickness: 0,
           tickLength: 0,
           labelFontSize: labelFontSize,
-          labelFontFamily: fontFamily
+          labelFontFamily: fontFamily.concat,
         }],
         axisY2:{
           tickLength:0,
