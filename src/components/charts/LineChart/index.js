@@ -10,7 +10,26 @@ export default class LineChart extends BaseChart {
 
     var fontSize = 11;
     var labelFontSize = 10;
-    var fontFamily = 'Roboto,sans-serif'
+    var fontFamily = 'Roboto,sans-serif';
+
+    const enableStripeLine = (e) => {
+      let color = e.chart.data[e.dataSeriesIndex].color;
+      if (!color) {
+        color = e.chart.data[e.dataSeriesIndex].lineColor;
+      }
+      if (!color) {
+        color = e.chart.data[e.dataSeriesIndex]._colorSet[e.dataSeriesIndex];
+      }
+      e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].thickness = 0.7;
+      e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].labelFontColor = 'white';
+      e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].labelBackgroundColor = color;
+    };
+  
+    const disableStripeLine = (e) => {
+      e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].thickness = 0;
+      e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].labelFontColor = 'transparent';
+      e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].labelBackgroundColor = 'none';
+    };
 
     options = _.merge(options, {
         legend: {
@@ -22,29 +41,22 @@ export default class LineChart extends BaseChart {
           cursor: "pointer",
           itemclick: function (e) {
             const isScatter = e.chart.data[e.dataSeriesIndex].type === 'scatter'
-            if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-              e.dataSeries.visible = false;
+            const isLineVisible = typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible;
+            const isStripLinesVisible = e.chart.options.axisY[0].stripLines && e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].thickness !== 0;
+            if (isLineVisible && isStripLinesVisible) {
               if (!isScatter) {
-                e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].thickness = 0;
-                e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].labelFontColor = 'transparent';
-                e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].labelBackgroundColor = 'none';
+                disableStripeLine(e);
+              } else {
+                e.dataSeries.visible = false;
               }
+            } else if (isLineVisible && !isStripLinesVisible) {
+              e.dataSeries.visible = false;
             } else {
               if (!isScatter) {
-                let color = e.chart.data[e.dataSeriesIndex].color;
-                if (!color) {
-                  color = e.chart.data[e.dataSeriesIndex].lineColor;
-                }
-                if (!color) {
-                  color = e.chart.data[e.dataSeriesIndex]._colorSet[e.dataSeriesIndex];
-                }
-                e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].thickness = 0.7;
-                e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].labelFontColor = 'white';
-                e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].labelBackgroundColor = color;
+                enableStripeLine(e);
               }
               e.dataSeries.visible = true;
             }
-
             e.chart.render();
           }
         },
