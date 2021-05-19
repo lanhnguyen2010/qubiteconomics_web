@@ -41,7 +41,7 @@ CanvasJS.addColorSet("customColorSet1",
 
 const interval = 5000;
 const minutesToFetch = 30;
-const modeSimulate = true;
+const modeSimulate = false;
 
 const styles = {
   container: {
