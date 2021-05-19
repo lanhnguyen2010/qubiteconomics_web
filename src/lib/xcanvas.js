@@ -543,23 +543,50 @@ class XCanvasJS {
   }
 
   buildStripLine(dataY, index) {
-    if(!dataY) return {}
-    let color = this.chart.data[index].color;
-    if (!color){
-      color = this.chart.data[index].lineColor;
+    if (!dataY) return {}
+
+    const axisY = this.chart.options.axisY[0];
+    const chartData = this.chart.data;
+    if (!axisY.stripLines || !axisY.stripLines.length){
+      axisY.stripLines = [];
+      for( var i = 0; i < this.chart.options.data.length; i++){
+        axisY.stripLines.push({});
+      }
     }
-    if (!color){
-      color = this.chart.data[index]._colorSet[index];
+    if (this.chart.options.data[index].type === 'scatter') return;
+
+    let finalStripline;
+    if (axisY.stripLines[index] && this.chart.options.axisY[0].stripLines[index].value) {
+      //use old stripLines
+      axisY.stripLines[index].value = dataY
+      axisY.stripLines[index].label= dataY ? dataY.toFixed(2) : "0"
+    } else {
+      // create new
+      let color = chartData[index].color;
+      if (!color) {
+        color = chartData[index].lineColor;
+      }
+      if (!color) {
+        color = chartData[index]._colorSet[index];
+      }
+      const baseOptions = axisY.stripLinesOptions
+      const stripLineOptions = {
+        value: dataY,
+        color: color,
+        labelFontColor: "white",
+        label: dataY ? dataY.toFixed(2) : "0",
+        labelBackgroundColor: color
+      }
+
+      finalStripline = {...baseOptions, ...stripLineOptions};
+
+      //invisible
+      //kep the stripline because it can be enable later
+      if (!chartData[index].visible) {
+        finalStripline.thickness = 0;
+      }
+      axisY.stripLines[index] = finalStripline;
     }
-    const baseOptions = this.chart.options.axisY[0].stripLinesOptions
-    const stripLineOptions = {
-      value: dataY,
-      color: color,
-      labelFontColor: "white",
-      label: dataY ? dataY.toFixed(2) : "0",
-      labelBackgroundColor: color
-    }
-    return {...baseOptions, ...stripLineOptions}
   }
 
   setViewport(minTime, maxTime) {
@@ -730,14 +757,12 @@ class XCanvasJS {
     const stripLines = [];
     this.dataPoints.forEach((_, index) => {
       let value = stripLinesValue[index];
-      if (!isNaN(parseInt(value)) && this.chart.options.data[index].type !== 'scatter' && this.chart.data[index].visible) {
-        stripLines[index] = this.buildStripLine(value, index);
+      if (!isNaN(parseInt(value))) {
+       this.buildStripLine(value, index);
       }
 
       if (!stripLines[index]) stripLines[index] = {};
     })
-
-    this.chart.options.axisY[0].stripLines = stripLines;
   }
 
   render(forceRender, notifyChanges) {

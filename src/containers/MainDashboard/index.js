@@ -41,6 +41,7 @@ CanvasJS.addColorSet("customColorSet1",
 
 const interval = 5000;
 const minutesToFetch = 30;
+const modeSimulate = true;
 
 const styles = {
   container: {
@@ -111,11 +112,14 @@ class MainDashboardScreen extends React.Component {
     minDpsTime = Math.min(...chartManager.chartsManager.map(mgr => { return mgr.maxDpsTime }));
 
     const requestFromTime = moment(new Date(minDpsTime)).format("HH:mm:ss");
-    // const requestToTime = moment(new Date(maxDpsTime)).format("HH:mm:ss");
+    const requestToTime = moment(new Date(minDpsTime)).add(2, "minutes").format("HH:mm:ss");
     const requestBody = {
       day: this.realTimeDate,
       startTime: requestFromTime,
 
+    }
+    if (modeSimulate) {
+      requestBody.endTime = requestToTime;
     }
 
     const ps = await StockAPI.fetchPSOutbound(requestBody);
@@ -243,7 +247,11 @@ class MainDashboardScreen extends React.Component {
 }
 
 const getTimeBody = (date) => {
-  return _.pickBy({ day: date, endTime: ""});
+  let request = { day: date, endTime: ""};
+  if (modeSimulate) {
+    request.endTime = "10:20:00";
+  }
+  return _.pickBy(request);
 }
 
 const mapDispatchToProps = (dispatch) => {
