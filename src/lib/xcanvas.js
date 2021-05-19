@@ -125,7 +125,12 @@ class XCanvasJSManager {
   }
 
   calculateInterval() {
-    var minuteDiffs = parseInt((this.maxViewportTime - this.minViewportTime) / 1000 / 60);
+    var interval = this.calculateIntervalFromTime(this.minViewportTime, this.maxViewportTime);
+    this.chartsManager.forEach(mgr => mgr.setInterval(interval));
+  }
+
+  calculateIntervalFromTime(minTime, maxTime) {
+    var minuteDiffs = parseInt((maxTime - minTime) / 1000 / 60);
     var interval = 0;
     if (minuteDiffs <= 5) {
       interval = 1;
@@ -147,7 +152,7 @@ class XCanvasJSManager {
     } else {
       interval = 30;
     }
-    this.chartsManager.forEach(mgr => mgr.setInterval(interval));
+    return interval;
   }
 
   showTooltipXAt(triggerIndex, xValue) {
@@ -437,15 +442,19 @@ class XCanvasJS {
     this.dataPoints = [];
     dataPointsList.forEach(dps => this.dataPoints.push(dps));
 
-    let stripLines = []
 
     this.dataPoints.forEach((dps, index) => {
       if (!dps.length) return;
 
-      this.chart.options.data[index].dataPoints = dps;
-
       var minDpsTime = dps[0].x.getTime();
       var maxDpsTime = dps[dps.length - 1].x.getTime();
+
+      // Append a padding x
+      maxDpsTime += this.manager.calculateIntervalFromTime(minDpsTime, maxDpsTime) * 60 * 1000;
+
+      this.appendAnEmptyNode(dps, maxDpsTime);
+
+      this.chart.options.data[index].dataPoints = dps;
 
       if (index === 0) {
         this.minDpsTime = minDpsTime;
@@ -454,14 +463,7 @@ class XCanvasJS {
         if (this.minDpsTime > minDpsTime) this.minDpsTime = minDpsTime;
         if (this.maxDpsTime < maxDpsTime) this.maxDpsTime = maxDpsTime;
       }
-      if (this.chart.options.data[index].type !== 'scatter' && this.chart.data[index].visible) {
-        stripLines.push(this.buildStripLine(dps[dps.length - 1].y, index))
-      }
-      else{
-        stripLines.push({})
-      }
     })
-    this.chart.options.axisY[0].stripLines = stripLines;
 
     if (!this.minDpsTime || !this.maxDpsTime) return;
 
@@ -487,11 +489,25 @@ class XCanvasJS {
     this.getManager().registerRender(this.getIndex(), true, true);
   }
 
+  getLastValidPoint(dps) {
+    for (var i = dps.length; i >= 0; i--) {
+      if (dps[i].y !== null) {
+        return dps[i].y;
+      }
+    }
+  }
+
   appendData(dataPointsList) {
     if (!dataPointsList || !dataPointsList.length) return;
+
     // Append data
     dataPointsList.forEach((dps, index) => {
       if (!dps.length) return;
+
+      let maxDpsTime = dps[dps.length - 1].x.getTime();
+
+      // Append a padding x
+      maxDpsTime += this.manager.calculateIntervalFromTime(this.minDpsTime, maxDpsTime) * 60 * 1000;
 
       // Remove redundant points
       let newFromTime = dps[0].x.getTime();
@@ -508,20 +524,20 @@ class XCanvasJS {
           pushFromIndex = i;
         }
   
-        // Append new points
+        // Remove outdated points
         if (pushFromIndex + 1 <= currentDps.length - 1) {
           this.dataPoints[index].splice(pushFromIndex + 1);
         }
 
+        // Append new points
         this.dataPoints[index].push(...dps);
       }
       this.chart.options.data[index].dataPoints = this.dataPoints[index];
 
-      var maxDpstime = dps[dps.length - 1].x.getTime();
       if (index === 0) {
-        this.maxDpsTime = maxDpstime;
+        this.maxDpsTime = maxDpsTime;
       } else {
-        if (this.maxDpsTime < maxDpstime) this.maxDpsTime = maxDpstime;
+        if (this.maxDpsTime < maxDpsTime) this.maxDpsTime = maxDpsTime;
       }
     });
   }
@@ -551,7 +567,6 @@ class XCanvasJS {
 
     var axisX = this.chart.options.axisX;
 
-    let stripLines = []
     if (!axisX.viewportMinimum || axisX.viewportMinimum.getTime() !== minTime) {
       this.hasPendingChanges = true;
       axisX.viewportMinimum = new Date(minTime);
@@ -563,38 +578,25 @@ class XCanvasJS {
 
       this.dataPoints.forEach((dps, index) => {
         if (!dps.length) return;
-        let maxY = 0
-
-        // Update striplines when set viewport
-        for (var i = 0; i < dps.length; i++){
-          if (dps[i].x > axisX.viewportMaximum){
-            break;
-          }
-          maxY = dps[i].y
-        }
-
-        if (this.chart.options.data[index].type !== 'scatter' && this.chart.data[index].visible) {
-          stripLines.push(this.buildStripLine(maxY, index))
-        }
-        else{
-          stripLines.push({})
-        }
 
         if (dps[dps.length - 1].x.getTime() < maxTime) {
-          // Append an empty point to sync the time-range
-          var emptyPoint = {...dps[dps.length - 1]};
-          emptyPoint.x = new Date(maxTime);
-          emptyPoint.y = null;
-          dps.push(emptyPoint);
-
+          this.appendAnEmptyNode(dps, maxTime);
           this.chart.options.data[index].dataPoints = dps;
         }
 
         this.chart.options.data[index].dataPoints = dps;
       });
-      this.chart.options.axisY[0].stripLines = stripLines;
     }
   }
+
+  appendAnEmptyNode(dps, time) {
+    // Append an empty point to sync the time-range
+    var emptyPoint = {...dps[dps.length - 1]};
+    emptyPoint.x = new Date(time);
+    emptyPoint.y = null;
+    dps.push(emptyPoint);
+  }
+
 
   setInterval(value) {
     if (!this.ready) return;
@@ -627,14 +629,14 @@ class XCanvasJS {
       var i;
 
       for (i = 0; i < length; i++) {
-        if (legend.dataPoints[i].x >= xMin) {
+        if (legend.dataPoints[i].x >= xMin && legend.dataPoints[i].y !== null) {
           fromY = legend.dataPoints[i].y;
           break;
         }
       }
 
       for (i = length - 1; i >= 0; i--) {
-        if (legend.dataPoints[i].x <= xMax) {
+        if (legend.dataPoints[i].x <= xMax && legend.dataPoints[i].y !== null) {
           toY = legend.dataPoints[i].y;
           break;
         }
@@ -663,13 +665,13 @@ class XCanvasJS {
     if (childElement.getAttribute("state") === "pan") childElement.click();
   }
 
-  limitDataPoints() {
+  beforeRender() {
     if (!this.dataPoints || !this.dataPoints.length) return;
 
     let chart = this.chart;
 
-    var minX = this.manager.minDpsTime;
-    var maxX = this.manager.maxDpstime;
+    var minX = this.manager.minViewportTime;
+    var maxX = this.manager.maxViewportTime;
     let range = Math.round(maxX - minX);
     if (!parseInt(range)) return;
 
@@ -684,6 +686,7 @@ class XCanvasJS {
 
     var showFullInRange = minutes <= 120;
     var stepOutSide = 5;
+    let stripLinesValue = [];
 
     this.dataPoints.forEach((dps, dpsIndex) => {
       let filteredDPs = [];
@@ -695,7 +698,14 @@ class XCanvasJS {
 
         filteredDPs.push(dps[i]);
 
-        if (dps[i].x.getTime() <= maxX && dps[i].x.getTime() >= minX) {
+        let valueX = dps[i].x.getTime();
+        if (valueX >= minX && valueX <= maxX) {
+
+          // Take the latest visible Y
+          if (dps[i].y !== null) {
+            stripLinesValue[dpsIndex] = dps[i].y;
+          }
+
           if (!filter || showFullInRange) {
             i++;
           } else {
@@ -716,13 +726,25 @@ class XCanvasJS {
 
       chart.options.data[dpsIndex].dataPoints = filteredDPs;
     })
+
+    const stripLines = [];
+    this.dataPoints.forEach((_, index) => {
+      let value = stripLinesValue[index];
+      if (!isNaN(parseInt(value)) && this.chart.options.data[index].type !== 'scatter' && this.chart.data[index].visible) {
+        stripLines[index] = this.buildStripLine(value, index);
+      }
+
+      if (!stripLines[index]) stripLines[index] = {};
+    })
+
+    this.chart.options.axisY[0].stripLines = stripLines;
   }
 
   render(forceRender, notifyChanges) {
     if (forceRender || this.hasPendingChanges) {
       this.hasPendingChanges = false;
 
-      this.limitDataPoints();
+      this.beforeRender();
       this.chart.render();
       this.swithToPanMode();
 
