@@ -217,6 +217,10 @@ class XCanvasJSManager {
     });
   }
 
+  getMinValidDpsTime() {
+    return Math.min(...this.chartsManager.map(mgr => mgr.getMaxValidDpsTime()));
+  }
+
   fireReadyEvent() {
     if (this.isReady()) {
       /*
@@ -436,12 +440,37 @@ class XCanvasJS {
     this.index = index;
   }
 
+  getMaxValidDpsTime() {
+    let maxValidDpsTime = 0;
+    this.dataPoints.forEach((dps) => {
+      if (!dps.length) return;
+      for (var i = dps.length - 1; i >= 0; i--) {
+        if (dps[i].y !== null) {
+          var maxDpsTime = dps[i].x.getTime();
+          if (maxValidDpsTime === 0) {
+            maxValidDpsTime = maxDpsTime;
+          } else {
+            if (maxValidDpsTime < maxDpsTime) maxValidDpsTime = maxDpsTime;
+          }
+          break;
+        }
+      }
+    })
+    return maxValidDpsTime;
+  }
+
+  getPadding(minDpsTime, maxDpsTime) {
+    var maxPaddingTime = this.manager.calculateIntervalFromTime(minDpsTime, maxDpsTime)  * 60 * 1000;
+    var paddingTime = (maxDpsTime - minDpsTime) * 3 / 100;
+    if (paddingTime > maxPaddingTime) paddingTime = maxPaddingTime;
+    return parseInt(paddingTime);
+  }
+
   updateData(dataPointsList) {
     if (!dataPointsList || !dataPointsList.length) return;
 
     this.dataPoints = [];
     dataPointsList.forEach(dps => this.dataPoints.push(dps));
-
 
     this.dataPoints.forEach((dps, index) => {
       if (!dps.length) return;
@@ -450,8 +479,7 @@ class XCanvasJS {
       var maxDpsTime = dps[dps.length - 1].x.getTime();
 
       // Append a padding x
-      maxDpsTime += this.manager.calculateIntervalFromTime(minDpsTime, maxDpsTime) * 60 * 1000;
-
+      maxDpsTime += this.getPadding(minDpsTime, maxDpsTime);
       this.appendAnEmptyNode(dps, maxDpsTime);
 
       this.chart.options.data[index].dataPoints = dps;
@@ -507,15 +535,24 @@ class XCanvasJS {
       let maxDpsTime = dps[dps.length - 1].x.getTime();
 
       // Append a padding x
-      maxDpsTime += this.manager.calculateIntervalFromTime(this.minDpsTime, maxDpsTime) * 60 * 1000;
+      maxDpsTime += this.getPadding(this.minDpsTime, maxDpsTime);
+      this.appendAnEmptyNode(dps, maxDpsTime);
 
       // Remove redundant points
       let newFromTime = dps[0].x.getTime();
       let currentDps = this.dataPoints[index];
 
       if (!currentDps) {
-        this.dataPoints[index] = dps;
+        currentDps = this.dataPoints[index] = dps;
       } else if (currentDps.length) {
+
+        // Remove null points
+        for (var i = currentDps.length - 1; i >= 0 && i >= currentDps.length - 50; i--) {
+          if (currentDps[i].y === null) {
+            currentDps.splice(i, 1);
+          }
+        }
+
         let pushFromIndex = currentDps.length - 1;
         for (var i = pushFromIndex; i >= 0; i--) {
           if (currentDps[i].x < newFromTime) {
@@ -526,13 +563,13 @@ class XCanvasJS {
   
         // Remove outdated points
         if (pushFromIndex + 1 <= currentDps.length - 1) {
-          this.dataPoints[index].splice(pushFromIndex + 1);
+          currentDps.splice(pushFromIndex + 1);
         }
 
         // Append new points
-        this.dataPoints[index].push(...dps);
+        currentDps.push(...dps);
       }
-      this.chart.options.data[index].dataPoints = this.dataPoints[index];
+      this.chart.options.data[index].dataPoints = currentDps;
 
       if (index === 0) {
         this.maxDpsTime = maxDpsTime;
@@ -623,7 +660,6 @@ class XCanvasJS {
     emptyPoint.y = null;
     dps.push(emptyPoint);
   }
-
 
   setInterval(value) {
     if (!this.ready) return;
@@ -717,37 +753,35 @@ class XCanvasJS {
 
     this.dataPoints.forEach((dps, dpsIndex) => {
       let filteredDPs = [];
-      let done = false;
       var filter = this.chartInfo.legends[dpsIndex].filter !== false;
 
-      for (var i = 0; i < dps.length;) {
-        if (done) break;
-
+      let dpsLength = dps.length;
+      for (var i = 0; i < dpsLength;) {
         filteredDPs.push(dps[i]);
-
         let valueX = dps[i].x.getTime();
-        if (valueX >= minX && valueX <= maxX) {
 
-          // Take the latest visible Y
+        // Take the latest visible Y
+        // Build stripline
+        if (valueX >= minX && valueX <= maxX) {
           if (dps[i].y !== null) {
             stripLinesValue[dpsIndex] = dps[i].y;
           }
+        }
 
+        // Always take first and last fixed points
+        if (i <= 50 || i >= dpsLength - 100) {
+          i++;
+          continue;
+        }
+
+        if (valueX >= minX && valueX <= maxX) {
           if (!filter || showFullInRange) {
             i++;
           } else {
             i += step;
-            if (i >= dps.length) {
-              i--;
-              done = true;
-            }
           }
         } else {
           i += stepOutSide;
-          if (i >= dps.length) {
-            i--;
-            done = true;
-          }
         }
       }
 

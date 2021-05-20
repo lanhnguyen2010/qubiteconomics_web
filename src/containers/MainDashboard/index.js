@@ -41,7 +41,6 @@ CanvasJS.addColorSet("customColorSet1",
 
 const interval = 5000;
 const minutesToFetch = 30;
-const modeSimulate = false;
 
 const styles = {
   container: {
@@ -80,21 +79,33 @@ class MainDashboardScreen extends React.Component {
     this.chartRefs.push(this.NetBSChartRef = React.createRef());
     this.selectedDate = new Date();
     this.updateChart = this.updateChart.bind(this);
-    
+
     this.callTimerID = null;
-    this.realTimeDate = moment().format('yyyy_MM_DD');
     this.lastCheckDate = null;
+
+    this.realTimeDate = new URL(window.location.href).searchParams.get("rt");
+    if (!this.realTimeDate) {
+      this.realTimeDate = moment().format('yyyy_MM_DD');
+      this.modeSimulate = false;
+    } else {
+      this.modeSimulate = true;
+    }
   }
 
   componentDidMount() {
     this.chartRefs.forEach((ref, index) => ref.current.configureChartRelation("DB01", index));
-    let currentDate = moment();
 
-    if (currentDate.day() === 0 ||currentDate.day() === 6){
-      currentDate.add(-2, 'day')
-      this.selectedDate = new Date(currentDate);
+    let dateString;
+    if (this.modeSimulate) {
+      dateString = this.realTimeDate
+    } else {
+      let currentDate = moment();
+      if (currentDate.day() === 0 ||currentDate.day() === 6){
+        currentDate.add(-2, 'day')
+        this.selectedDate = new Date(currentDate);
+      }
+      dateString = currentDate.format('yyyy_MM_DD')
     }
-    const dateString = currentDate.format('yyyy_MM_DD')
 
     this.fetchData(dateString);
   }
@@ -108,17 +119,20 @@ class MainDashboardScreen extends React.Component {
     let chartManager = XCanvasJSManager.getInstance("DB01");
     if (!chartManager.isReady()) return;
 
-    let minDpsTime;
-    minDpsTime = Math.min(...chartManager.chartsManager.map(mgr => { return mgr.maxDpsTime }));
+    let requestDpsTime = chartManager.getMinValidDpsTime();
 
-    const requestFromTime = moment(new Date(minDpsTime)).format("HH:mm:ss");
-    const requestToTime = moment(new Date(minDpsTime)).add(2, "minutes").format("HH:mm:ss");
+    const requestFromTime = moment(new Date(requestDpsTime)).add(-1, "minutes").format("HH:mm:ss");
     const requestBody = {
       day: this.realTimeDate,
       startTime: requestFromTime,
-
     }
-    if (modeSimulate) {
+    if (this.modeSimulate) {
+      let date = new Date(requestDpsTime + (20 * 60 * 1000));
+      if (date.getHours() >= 12 && date.getHours() <= 14 && date.getMinutes() < 10) {
+        date.setHours(14);
+        date.setMinutes(10);
+      }
+      const requestToTime = moment(date).format("HH:mm:ss");
       requestBody.endTime = requestToTime;
     }
 
@@ -159,7 +173,12 @@ class MainDashboardScreen extends React.Component {
 
   async fetchData(dateStr) {
     clearInterval(this.callTimerID);
-    const requestBody = getTimeBody(dateStr);
+
+    let request = { day: dateStr, endTime: ""};
+    if (this.modeSimulate) {
+      request.endTime = "10:20:00";
+    }
+    const requestBody = _.pickBy(request);
 
     this.fetchSuuF1(requestBody);
     this.fetchBuySellNN(requestBody);
@@ -244,14 +263,6 @@ class MainDashboardScreen extends React.Component {
       </Container>
     )
   }
-}
-
-const getTimeBody = (date) => {
-  let request = { day: date, endTime: ""};
-  if (modeSimulate) {
-    request.endTime = "10:20:00";
-  }
-  return _.pickBy(request);
 }
 
 const mapDispatchToProps = (dispatch) => {
