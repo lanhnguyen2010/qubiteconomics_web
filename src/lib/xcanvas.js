@@ -682,6 +682,9 @@ class XCanvasJS {
     let xMin = this.chart.axisX[0].viewportMinimum;
     let xMax = this.chart.axisX[0].viewportMaximum;
 
+    let fromX = xMin;
+    let toX = xMax;
+
     this.chart.legend.dataSeries.forEach(legend => {
       if (!legend.dataPoints || !legend.dataPoints.length) return;
 
@@ -694,6 +697,7 @@ class XCanvasJS {
       for (i = 0; i < length; i++) {
         if (legend.dataPoints[i].x >= xMin && legend.dataPoints[i].y !== null) {
           fromY = legend.dataPoints[i].y;
+          fromX = legend.dataPoints[i].x;
           break;
         }
       }
@@ -701,6 +705,7 @@ class XCanvasJS {
       for (i = length - 1; i >= 0; i--) {
         if (legend.dataPoints[i].x <= xMax && legend.dataPoints[i].y !== null) {
           toY = legend.dataPoints[i].y;
+          toX = legend.dataPoints[i].x
           break;
         }
       }
@@ -714,7 +719,7 @@ class XCanvasJS {
     if (values.length) {
       info = {
         name: this.chartInfo.key,
-        time: [xMin, xMax],
+        time: [fromX, toX],
         values
       }
     }

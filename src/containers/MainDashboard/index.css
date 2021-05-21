@@ -1,5 +1,5 @@
 .canvasjs-chart-canvas{
-    border-radius: 4px;
+    /* border-radius: 4px; */
     box-shadow: none;
 }
 
@@ -19,5 +19,12 @@
 .disabled-date {
     pointer-events: none;
     color: #ccc;
+}
 
+.canvasjs-chart-toolbar button:hover {
+    background: white !important;
+}
+
+.canvasjs-chart-toolbar button img {
+    filter: none !important;
 }
