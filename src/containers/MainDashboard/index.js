@@ -90,6 +90,8 @@ class MainDashboardScreen extends React.Component {
     } else {
       this.modeSimulate = true;
     }
+
+    this.reachEndTime = false;
   }
 
   componentDidMount() {
@@ -115,13 +117,24 @@ class MainDashboardScreen extends React.Component {
   }
 
   updateChart = async ()=> {
+    try {
+      await this.internalUpdateChart();
+    } finally {
+      // Trigger next call
+      if (!this.reachEndTime) {
+        this.callTimerID = setTimeout(this.updateChart, interval);
+      }
+    }
+  }
 
+  internalUpdateChart = async ()=> {
     let chartManager = XCanvasJSManager.getInstance("DB01");
     if (!chartManager.isReady()) return;
 
     let requestDpsTime = chartManager.getMinValidDpsTime();
+    let requestDate = new Date(requestDpsTime);
 
-    const requestFromTime = moment(new Date(requestDpsTime)).add(-1, "minutes").format("HH:mm:ss");
+    const requestFromTime = moment(requestDate).add(-1, "minutes").format("HH:mm:ss");
     const requestBody = {
       day: this.realTimeDate,
       startTime: requestFromTime,
@@ -134,6 +147,11 @@ class MainDashboardScreen extends React.Component {
       }
       const requestToTime = moment(date).format("HH:mm:ss");
       requestBody.endTime = requestToTime;
+    } else {
+      let toDate = new Date();
+      if (toDate.getHours() >= 15 || (toDate.getHours() >= 14 && toDate.getMinutes() > 50)) {
+        this.reachEndTime = true;
+      }
     }
 
     const ps = await StockAPI.fetchPSOutbound(requestBody);
@@ -141,9 +159,6 @@ class MainDashboardScreen extends React.Component {
     const buysellNN = await StockAPI.fetchBuySellNNOutbound(requestBody);
     const suuF1 = await StockAPI.fetchSuuF1Outbound(requestBody);
     const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
-
-    // Trigger next call
-    this.callTimerID = setTimeout(this.updateChart, interval);
 
     this.VN30DerivativeChartRef.current.appendData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(busd)});
     this.BuyupSelldownChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbit(arbitUnwind)});
@@ -156,7 +171,7 @@ class MainDashboardScreen extends React.Component {
     this.NetBSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
 
     chartManager.shift();
-    chartManager.registerRenderCharts(false, true);
+    chartManager.registerRenderCharts(true);
   }
 
   async onDatePicked(date) {
@@ -165,7 +180,7 @@ class MainDashboardScreen extends React.Component {
 
     let chartManager = XCanvasJSManager.getInstance("DB01");
     chartManager.clear();
-    chartManager.registerRenderCharts(true, true);
+    chartManager.registerRenderCharts(true);
 
     await this.props.setDate(dateString);
     this.fetchData(dateString);
@@ -185,10 +200,14 @@ class MainDashboardScreen extends React.Component {
     const ps = await StockAPI.fetchPSOutbound(requestBody);
     const busd = await StockAPI.fetchBusdOutbound(requestBody);
     this.VN30DerivativeChartRef.current.updateData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(busd)});
-    
+
     const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
     this.BuyupSelldownChartRef.current.updateData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbit(arbitUnwind)});
     this.NETBUSDChartRef.current.updateData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
+
+    let chartManager = XCanvasJSManager.getInstance("DB01");
+    chartManager.initViewport();
+    chartManager.registerRenderCharts(true);
 
     if (dateStr === this.realTimeDate) {
       this.callTimerID = setTimeout(this.updateChart, interval);
