@@ -24,6 +24,7 @@ class XCanvasJSManager {
     this.atRightSide = true;
 
     this.ready = false;
+    this.filterData = false;
 
     this.mouseDown = 0;
     document.addEventListener("mousedown", () => { this.mouseDown++; });
@@ -97,6 +98,7 @@ class XCanvasJSManager {
         if (maxTime > mgr.maxDpsTime) maxTime = mgr.maxDpsTime;
       }
     })
+
 
     minTime -= 5 * 60 * 1000;
     maxTime += 10 * 60 * 1000;
@@ -413,7 +415,6 @@ class XCanvasJS {
     var currentViewportMax = axisX.viewportMaximum;
     var currentMinuteDiffs = parseInt((currentViewportMax - currentViewportMin) / 1000 / 60);
 
-
     var interval = 10 * 60 * 1000;
   
     var newViewportMin, newViewportMax;
@@ -490,10 +491,6 @@ class XCanvasJS {
       var minDpsTime = dps[0].x.getTime();
       var maxDpsTime = dps[dps.length - 1].x.getTime();
 
-      // Append a padding x
-      // maxDpsTime += this.getPadding(minDpsTime, maxDpsTime);
-      // this.appendAnEmptyNode(dps, maxDpsTime);
-
       this.chart.options.data[index].dataPoints = dps;
 
       if (index === 0) {
@@ -506,9 +503,6 @@ class XCanvasJS {
     })
 
     if (!this.minDpsTime || !this.maxDpsTime) return;
-
-    this.minDpsTime -= 5 * 60 * 1000;
-    this.maxDpsTime += 30 * 60 * 1000;
 
     var date = new Date(this.maxDpsTime);
     this.chart.options.axisX.scaleBreaks = {
@@ -762,6 +756,11 @@ class XCanvasJS {
           if (dps[i].y !== null) {
             stripLinesValue[dpsIndex] = dps[i].y;
           }
+        }
+
+        if (!this.filterData) {
+          i++;
+          continue;
         }
 
         // Always take first and last fixed points
