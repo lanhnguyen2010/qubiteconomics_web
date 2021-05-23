@@ -195,8 +195,8 @@ class MainDashboardScreen extends React.Component {
     }
     const requestBody = _.pickBy(request);
 
-    this.fetchSuuF1(requestBody);
-    this.fetchBuySellNN(requestBody);
+    await this.fetchSuuF1(requestBody);
+    await this.fetchBuySellNN(requestBody);
     const ps = await StockAPI.fetchPSOutbound(requestBody);
     const busd = await StockAPI.fetchBusdOutbound(requestBody);
     this.VN30DerivativeChartRef.current.updateData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(busd)});
