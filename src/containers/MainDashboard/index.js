@@ -89,6 +89,7 @@ class MainDashboardScreen extends React.Component {
       this.modeSimulate = false;
     } else {
       this.modeSimulate = true;
+      this.simuateEndTime = 0;
     }
 
     this.reachEndTime = false;
@@ -140,16 +141,23 @@ class MainDashboardScreen extends React.Component {
       startTime: requestFromTime,
     }
     if (this.modeSimulate) {
-      let date = new Date(requestDpsTime + (20 * 60 * 1000));
-      if (date.getHours() >= 12 && date.getHours() <= 14 && date.getMinutes() < 10) {
+      if (!this.simuateEndTime) this.simuateEndTime = requestDpsTime;
+      this.simuateEndTime += (20 * 60 * 1000);
+
+      let date = new Date(this.simuateEndTime);
+      if (date.getHours() >= 12 && date.getHours() <= 14) {
         date.setHours(14);
-        date.setMinutes(10);
+        date.setMinutes(30);
+
+        this.simuateEndTime = date.getTime();
+      } else if (date.getHours() >= 16) {
+        this.reachEndTime = true;
       }
-      const requestToTime = moment(date).format("HH:mm:ss");
-      requestBody.endTime = requestToTime;
+
+      requestBody.endTime = moment(date).format("HH:mm:ss");
     } else {
       let toDate = new Date();
-      if (toDate.getHours() >= 15 || (toDate.getHours() >= 14 && toDate.getMinutes() > 50)) {
+      if (toDate.getHours() >= 15) {
         this.reachEndTime = true;
       }
     }
@@ -170,7 +178,7 @@ class MainDashboardScreen extends React.Component {
     this.F1BidVAskVChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
     this.NetBSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
 
-    chartManager.shift();
+    chartManager.initViewRange();
     chartManager.registerRenderCharts(true);
   }
 
