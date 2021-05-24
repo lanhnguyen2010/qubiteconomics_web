@@ -110,7 +110,6 @@ class XCanvasJSManager {
 
   triggerRender() {
     if (this.renderQueue.length) {
-      this.calculateInterval();
 
       let chartIndex = this.renderQueue.shift();
       let chart = this.registeredRenderCharts[chartIndex];
@@ -122,6 +121,8 @@ class XCanvasJSManager {
         this.registerRender(chartIndex, chart.notifyChanges);
       } else {
         // Good state, let's render
+        this.calculateInterval();
+
         this.chartsManager[chartIndex].render(chart.notifyChanges);
       }
     }
@@ -146,8 +147,6 @@ class XCanvasJSManager {
   }
 
   registerRenderCharts(notifyChanges, forceRenderIndex) {
-    this.calculateInterval();
-
     if (forceRenderIndex) {
       this.chartsManager[forceRenderIndex].render(notifyChanges);
     }
@@ -158,7 +157,23 @@ class XCanvasJSManager {
   }
 
   calculateInterval() {
-    var minuteDiffs = parseInt((this.maxViewportTime - this.minViewportTime) / 1000 / 60);
+    var maxViewport = this.maxViewportTime;
+    var minViewport = this.minViewportTime;
+
+    if (!minViewport || !maxViewport) {
+      // Not ready, take the min/max from charts
+      this.chartsManager.forEach(mgr => {
+        if (!mgr.ready) return;
+        if (!minViewport || minViewport > mgr.minDpsTime) {
+          minViewport = mgr.minDpsTime;
+        }
+        if (!maxViewport || maxViewport < mgr.maxDpsTime) {
+          maxViewport = mgr.maxDpsTime;
+        }
+      });
+    }
+
+    var minuteDiffs = parseInt((maxViewport - minViewport) / 1000 / 60);
     var interval = 0;
     if (minuteDiffs <= 20) {
       interval = 1;
@@ -248,25 +263,8 @@ class XCanvasJSManager {
 
   fireReadyEvent() {
     if (this.isReady()) {
-      /*
-      let maxWidth1 = 0;
-      this.chartsManager.forEach(mgr => {
-        if (mgr.chart.axisY[0]) {
-          var width1 = mgr.chart.axisY[0].bounds.x2 - mgr.chart.axisY[0].bounds.x1;
-          if (maxWidth1 < width1) maxWidth1 = width1;
-        }
-      });
-  
-      this.chartsManager.forEach(mgr => {
-        if (maxWidth1 > 0) {
-          var diff = maxWidth1;
-          if (mgr.chart.axisY[0]) {
-            var diff = maxWidth1 - mgr.chart.axisY[0].bounds.x2;
-          }
-          if (diff > 0) mgr.chart.axisY[0].set("margin", diff);
-        }
-      });
-      */
+      this.initViewport();
+      this.registerRenderCharts(true);
     }
   }
 
@@ -519,6 +517,8 @@ class XCanvasJS {
       this.ready = true;
       this.getManager().fireReadyEvent(this.getIndex());
     }
+
+    this.getManager().registerRender(this.getIndex(), false);
   }
 
   getLastValidPoint(dps) {

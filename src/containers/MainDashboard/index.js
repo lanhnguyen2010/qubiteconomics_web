@@ -195,19 +195,9 @@ class MainDashboardScreen extends React.Component {
     }
     const requestBody = _.pickBy(request);
 
-    await this.fetchSuuF1(requestBody);
-    await this.fetchBuySellNN(requestBody);
-    const ps = await StockAPI.fetchPSOutbound(requestBody);
-    const busd = await StockAPI.fetchBusdOutbound(requestBody);
-    this.VN30DerivativeChartRef.current.updateData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(busd)});
-
-    const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
-    this.BuyupSelldownChartRef.current.updateData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbit(arbitUnwind)});
-    this.NETBUSDChartRef.current.updateData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
-
-    let chartManager = XCanvasJSManager.getInstance("DB01");
-    chartManager.initViewport();
-    chartManager.registerRenderCharts(true);
+    this.fetchSuuF1(requestBody);
+    this.fetchBuySellNN(requestBody);
+    this.fetchOthers(requestBody);
 
     if (dateStr === this.realTimeDate) {
       this.callTimerID = setTimeout(this.updateChart, interval);
@@ -226,6 +216,16 @@ class MainDashboardScreen extends React.Component {
     this.FBFSChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
     this.F1BidVAskVChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
     this.NetBSChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
+  }
+
+  async fetchOthers(requestBody) {
+    const ps = await StockAPI.fetchPSOutbound(requestBody);
+    const busd = await StockAPI.fetchBusdOutbound(requestBody);
+    this.VN30DerivativeChartRef.current.updateData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(busd)});
+
+    const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
+    this.BuyupSelldownChartRef.current.updateData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbit(arbitUnwind)});
+    this.NETBUSDChartRef.current.updateData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
   }
 
   render() {
