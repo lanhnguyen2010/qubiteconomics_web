@@ -30,7 +30,7 @@ export default class F1BidVAskVChart extends LineChart {
   initChartOptions(options) {
     options = super.initChartOptions(options);
 
-    options.data.push({
+    this.getChartOptions(options).data.push({
       type: "line",
       showInLegend: true,
       lineThickness: 1,
@@ -38,7 +38,7 @@ export default class F1BidVAskVChart extends LineChart {
       xValueType: "dateTime",
       yValueFormatString: "#,##0.00"
     })
-    options.data.push({
+    this.getChartOptions(options).data.push({
       type: "line",
       showInLegend: true,
       lineThickness: 1,
@@ -46,7 +46,7 @@ export default class F1BidVAskVChart extends LineChart {
       xValueType: "dateTime",
       yValueFormatString: "#,##0.00"
     })
-    options.data.push({
+    this.getChartOptions(options).data.push({
       type: "line",
       showInLegend: true,
       lineThickness: 1,

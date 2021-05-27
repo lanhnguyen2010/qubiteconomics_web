@@ -1,9 +1,9 @@
 import React from "react";
 import _ from "lodash";
-import { XCanvasJS } from "lib/xcanvas";
+import { XCanvasJS } from "utils/xcanvas";
 import CanvasJSReact from 'lib/canvasjs.stock.react';
 
-const CanvasJSChart = CanvasJSReact.CanvasJSChart;
+const CanvasJSChart = CanvasJSReact.CanvasJSStockChart;
 const CanvasJS = CanvasJSReact.CanvasJS;
 CanvasJS.addColorSet("customColorSet1",
 [
@@ -46,22 +46,30 @@ export default class BaseChart extends React.Component {
   appendData() {
   }
 
+  initChartInfo() {
+    return {
+      name: "Chart"
+    };
+  }
+
   initChartOptions(options) {
     options = _.merge(options, {
       theme: "light1",
       animationEnabled: true,
       animationDuration: 1500,
-      zoomEnabled: true,
-      panEnabled: true,
       colorSet: "customColorSet1",
+      charts: [
+        {
+          zoomEnabled: true,
+          panEnabled: true,
+        }
+      ]
     })
     return options;
   }
 
-  initChartInfo() {
-    return {
-      name: "Chart"
-    };
+  getChartOptions(options) {
+    return options.charts[0];
   }
 
   configureChartRelation(id, index) {

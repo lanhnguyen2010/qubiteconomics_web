@@ -27,9 +27,9 @@ export default class BuyupSelldownChart extends LineChart {
   initChartOptions(options) {
     options = super.initChartOptions(options);
 
-    options.data[0].legendText = this.chartInfo.legends[1].name;
+    this.getChartOptions(options).data[0].legendText = this.chartInfo.legends[1].name;
 
-    options.data.push({
+    this.getChartOptions(options).data.push({
       type: "line",
       lineThickness: 1,
       showInLegend: true,
@@ -37,7 +37,7 @@ export default class BuyupSelldownChart extends LineChart {
       xValueType: "dateTime",
       yValueFormatString: "#,##0.00"
     });
-    options.data.unshift({
+    this.getChartOptions(options).data.unshift({
       type: "scatter",
       lineThickness: 1,
       showInLegend: true,

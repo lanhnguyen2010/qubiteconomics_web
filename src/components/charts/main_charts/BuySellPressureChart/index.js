@@ -22,7 +22,7 @@ export default class BuySellPressureChart extends LineChart {
   initChartOptions(options) {
     options = super.initChartOptions(options);
 
-    options.data.push({
+    this.getChartOptions(options).data.push({
       type: "line",
       lineThickness: 1,
       showInLegend: true,
@@ -30,6 +30,14 @@ export default class BuySellPressureChart extends LineChart {
       xValueType: "dateTime",
       yValueFormatString: "#,##0.00"
     })
+
+    options = this.mergeOptions(options, {
+      navigator: {
+        height: 0,
+        width: 0
+      }
+    })
+
     return options;
   }
 

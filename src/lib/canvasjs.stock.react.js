@@ -51,7 +51,6 @@ class CanvasJSStockChart extends React.Component {
     componentDidMount() {
         //Create Chart and Render		
         this.stockChart = new CanvasJS.StockChart(this.chartContainerId, this.options);
-        this.stockChart.render();
 
         if (this.props.onRef)
             this.props.onRef(this.stockChart);

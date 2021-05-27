@@ -1,5 +1,5 @@
 import Constants from "common/Constants";
-import { request, requestPost } from "services/request";
+import { requestPost } from "services/request";
 
 const StockAPI = {
     fetchPSOutbound: async (data) => {

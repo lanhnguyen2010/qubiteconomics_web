@@ -3,9 +3,9 @@ import React from "react";
 import moment from "moment-timezone";
 import _ from "lodash";
 import "react-datepicker/dist/react-datepicker.css";
-import { Container, Row, Col, Form } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import CanvasJSReact from 'lib/canvasjs.stock.react';
-import { XCanvasJSManager } from 'lib/xcanvas';
+import { XCanvasJSManager } from 'utils/xcanvas';
 
 import VN30DerivativeChart from "components/charts/main_charts/VN30DerivativeChart";
 import ForeignDerivativeChart from "components/charts/main_charts/ForeignDerivativeChart";
@@ -40,7 +40,6 @@ CanvasJS.addColorSet("customColorSet1",
 ]);
 
 const interval = 5000;
-const minutesToFetch = 30;
 
 const styles = {
   container: {
