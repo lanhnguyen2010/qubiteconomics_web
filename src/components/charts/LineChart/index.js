@@ -65,7 +65,12 @@ export default class LineChart extends BaseChart {
           fontSize: fontSize,
           fontWeight: 'bold',
           fontFamily: fontFamily,
-          horizontalAlign: "left"
+          horizontalAlign: "left",
+          padding: {
+            left: 10,
+            top: 5,
+            bottom: 5
+          }
         },
         toolTip:{
           content:"{y}" ,
@@ -111,7 +116,7 @@ export default class LineChart extends BaseChart {
           labelFontFamily: fontFamily,
           lineThickness: 0.4,
           tickLength: 0,
-          margin: 10,
+          margin: 10
         },
         axisY: [{
             gridThickness: 0.1,
@@ -132,7 +137,8 @@ export default class LineChart extends BaseChart {
           labelFontSize: labelFontSize,
           gridThickness: 0.1,
           lineThickness: 0,
-          labelFontFamily: fontFamily
+          labelFontFamily: fontFamily,
+          margin: 10
         },
         data: [{
           hoveredMarkerSize: 0.5,
