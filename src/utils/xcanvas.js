@@ -495,15 +495,22 @@ class XCanvasJS {
     this.dataPoints = [];
     dataPointsList.forEach(dps => this.dataPoints.push(dps));
 
+    let iFirstIndex = -1;
     this.dataPoints.forEach((dps, index) => {
-      if (!dps.length) return;
+      if (!dps.length) {
+        return;
+      }
+      if (iFirstIndex === -1) {
+        iFirstIndex = index;
+      }
+
 
       var minDpsTime = dps[0].x.getTime();
       var maxDpsTime = dps[dps.length - 1].x.getTime();
 
       this.getChartOptions().data[index].dataPoints = dps;
 
-      if (index === 0) {
+      if (index === iFirstIndex) {
         this.minDpsTime = minDpsTime;
         this.maxDpsTime = maxDpsTime;
       } else {
