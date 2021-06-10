@@ -273,15 +273,23 @@ class XCanvasJSManager {
         if (!mgr.getChart()) return;
 
         let chart = mgr.getChart();
+        let axisY = chart.axisY;
+        if (!axisY.length){
+          axisY = chart.axisY2;
+        }
         chart.axisX[0].crosshair.hide();
-        chart.axisY[0].crosshair.hide();
+        axisY[0].crosshair.hide();
       });
       return;
     }
 
     // Show events
     var orgChart = this.chartsManager[triggerIndex].getChart();
-    if (!orgChart || !orgChart.axisY[0]) return
+    let axisY = orgChart.axisY;
+    if (axisY && !axisY.length){
+      axisY = orgChart.axisY2;
+    }
+    if (!orgChart || !axisY[0]) return
 
     let orgX = event.offsetX;
     let orgY = event.offsetY;
@@ -295,8 +303,12 @@ class XCanvasJSManager {
       if (!mgr.getChart()) return;
 
       let chart = mgr.getChart();
+      let axisYArr = chart.axisY;
+      if (!axisYArr.length){
+        axisYArr = chart.axisY2;
+      }
       let axisX = chart.axisX[0];
-      let axisY = chart.axisY[0];
+      let axisY = axisYArr[0];
 
       let chartElBounds = mgr.chart.container.getBoundingClientRect();
       var chartY = chartElBounds.height * ratioY;
@@ -378,13 +390,20 @@ class XCanvasJS {
               label:''
             }
           },
-          axisY: [{
+          axisY: {
             crosshair: {
               enabled: true,
               shared: true,
               thickness: 0.5
             }
-          }],
+          },
+          axisY2: {
+            crosshair: {
+              enabled: true,
+              shared: true,
+              thickness: 0.5
+            }
+          },
           data: []
         }
       ],
@@ -606,7 +625,7 @@ class XCanvasJS {
   buildStripLine(dataY, index) {
     if (!dataY) return {}
 
-    const axisY = this.getChartOptions().axisY[0];
+    const axisY = this.getChartOptions().axisY2;
     const chartData = this.getChart().data;
     if (!chartData || !chartData[index]) return;
 
@@ -619,7 +638,7 @@ class XCanvasJS {
     if (this.getChartOptions().data[index].type === 'scatter') return;
 
     let finalStripline;
-    if (axisY.stripLines[index] && this.getChartOptions().axisY[0].stripLines[index].value) {
+    if (axisY.stripLines[index] && axisY.stripLines[index].value) {
       //use old stripLines
       axisY.stripLines[index].value = dataY
       axisY.stripLines[index].label= dataY ? dataY.toFixed(2) : "0"
@@ -849,7 +868,7 @@ class XCanvasJS {
       minViewportY = this.roundNumber(minViewportY, false, interval);
       maxViewportY = this.roundNumber(maxViewportY, true, interval);
 
-      let axisY = this.getChartOptions().axisY[0];
+      let axisY = this.getChartOptions().axisY2;
       axisY.minimum = minY;
       axisY.maximum = maxY;
       axisY.viewportMinimum = minViewportY;
@@ -869,7 +888,7 @@ class XCanvasJS {
       if (!stripLines[index]) stripLines[index] = {};
     })
 
-    this.getChartOptions().axisY[0].stripLines = stripLines;
+    this.getChartOptions().axisY2.stripLines = stripLines;
   }
 
   render(notifyChanges) {
