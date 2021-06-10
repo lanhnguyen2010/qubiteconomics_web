@@ -626,8 +626,9 @@ class XCanvasJS {
     if (!dataY) return {}
 
     const axisY = this.getChartOptions().axisY2;
+    if (!this.getChart() || !this.getChart().data || !this.getChart().data[index]) return;
+
     const chartData = this.getChart().data;
-    if (!chartData || !chartData[index]) return;
 
     if (!axisY.stripLines || !axisY.stripLines.length){
       axisY.stripLines = [];
@@ -876,19 +877,14 @@ class XCanvasJS {
       axisY.interval = interval;
     }
 
-    const stripLines = [];
     this.dataPoints.forEach((_, index) => {
       let value = stripLinesValue[index];
-      if (!isNaN(parseInt(value))
-        && this.getChartOptions().data[index].type !== 'scatter'
-        && this.getChartOptions().data[index].visible) {
-        stripLines[index] = this.buildStripLine(value, index);
+      if (!isNaN(parseInt(value))) {
+        this.buildStripLine(value, index);
       }
 
-      if (!stripLines[index]) stripLines[index] = {};
     })
 
-    this.getChartOptions().axisY2.stripLines = stripLines;
   }
 
   render(notifyChanges) {
