@@ -246,74 +246,6 @@ class XCanvasJSManager {
     return newValue;
   }
 
-  showTooltipXAt(triggerIndex, xValue) {
-    this.chartsManager.forEach(mgr => { 
-      if (mgr.getIndex() === triggerIndex) return;
-
-      if (mgr.getChart().toolTip.enabled) {
-        mgr.getChart().toolTip.showAtX(xValue)
-      }
-    });
-  }
-
-  hideTooltipX(triggerIndex) {
-    this.chartsManager.forEach(mgr => {
-      if (mgr.getIndex() === triggerIndex) return;
-
-      if (mgr.getChart().toolTip.enabled) {
-        mgr.getChart().toolTip.hide();
-      }
-    });
-  }
-
-  showCrosshairXAt(triggerIndex, xValue) {
-    this.chartsManager.forEach(mgr => {
-      if (mgr.getIndex() === triggerIndex) return;
-
-      if (mgr.getChart().axisX[0].crosshair) {
-        mgr.getChart().axisX[0].crosshair.showAt(xValue);
-      }
-    });
-  }
-
-  hideCrosshairX(triggerIndex) {
-    this.chartsManager.forEach(mgr => {
-      if (mgr.getIndex() === triggerIndex) return;
-
-      if (mgr.getChart().axisX[0].crosshair) {
-        mgr.getChart().axisX[0].crosshair.hide();
-      }
-    });
-  }
-
-  showCrosshairYAt(triggerIndex, yPercentage) {
-    this.chartsManager.forEach(mgr => {
-      if (mgr.getIndex() === triggerIndex) return;
-      let axisY = mgr.getChart().axisY;
-      if (!axisY.length){
-        axisY = mgr.getChart().axisY2;
-      }
-      if (axisY[0].crosshair) {
-        var cHeight = mgr.getChart().bounds.y2 - mgr.getChart().bounds.y1;
-        var cY = yPercentage * cHeight;
-        axisY[0].crosshair.showAt(axisY[0].convertPixelToValue(cY));
-      }
-    });
-  }
-
-  hideCrosshairY(triggerIndex) {
-    this.chartsManager.forEach(mgr => {
-      if (mgr.getIndex() === triggerIndex) return;
-      let axisY = mgr.getChart().axisY;
-      if (!axisY.length){
-        axisY = mgr.getChart().axisY2;
-      }
-      if (axisY[0].crosshair) {
-        axisY[0].crosshair.hide();
-      }
-    });
-  }
-
   getMinValidDpsTime() {
     return Math.min(...this.chartsManager.map(mgr => mgr.getMaxValidDpsTime()));
   }
@@ -332,58 +264,48 @@ class XCanvasJSManager {
     return this.ready;
   }
 
-  dispatchEvent(triggerIndex, event, customEventType, triggerSelf) {
+  dispatchEvent(triggerIndex, event) {
+
+    // Remove events
+    if (event.type == "mouseout") {
+      this.chartsManager.forEach(mgr => {
+        if (!mgr.ready || mgr.getIndex() === triggerIndex) return;
+        if (!mgr.getChart()) return;
+
+        let chart = mgr.getChart();
+        chart.axisX[0].crosshair.hide();
+        chart.axisY[0].crosshair.hide();
+      });
+      return;
+    }
+
+    // Show events
     var orgChart = this.chartsManager[triggerIndex].getChart();
-    if (!orgChart || !orgChart.axisY2[0]) return;
+    if (!orgChart || !orgChart.axisY[0]) return
+
+    let orgX = event.offsetX;
+    let orgY = event.offsetY;
 
     var oriElBounds =  orgChart.container.getBoundingClientRect();
-    var orgChartBoundsY = orgChart.axisY2[0].bounds; // y1(top), x2 (left), height
-
-    var xValue = orgChart.axisX[0].convertPixelToValue(parseInt(event.clientX - oriElBounds.x));
-    var ratioY = (event.clientY - oriElBounds.y - orgChartBoundsY.y1) * 1.0 / orgChartBoundsY.height;
+    var ratioY = orgY * 1.0 / oriElBounds.height;
+    var xValue = orgChart.axisX[0].convertPixelToValue(orgX);
 
     this.chartsManager.forEach(mgr => {
-      if (!mgr.ready) return;
-      if (!triggerSelf && mgr.getIndex() === triggerIndex) return;
+      if (!mgr.ready || mgr.getIndex() === triggerIndex) return;
       if (!mgr.getChart()) return;
 
-      var zone = mgr.chart.container;
-      var elBounds = zone.getBoundingClientRect();
-      let axisY = mgr.getChart().axisY;
-      if (!axisY.length){
-        axisY = mgr.getChart().axisY2;
-      }
+      let chart = mgr.getChart();
+      let axisX = chart.axisX[0];
+      let axisY = chart.axisY[0];
 
-      var chartBoundsY = axisY[0].bounds;
-      var chartClientY = elBounds.y + (chartBoundsY.height * ratioY);
+      let chartElBounds = mgr.chart.container.getBoundingClientRect();
+      var chartY = chartElBounds.height * ratioY;
 
-      var clientX = parseInt(elBounds.x + axisY[0].convertValueToPixel(xValue));
-      var clientY = parseInt(chartClientY + chartBoundsY.y1);
-
-      var customEvent = this.createEvent(
-        customEventType || event.type,
-        event.screenX,
-        event.screenY,
-        clientX,
-        clientY
-      );
-
-      zone.dispatchEvent(customEvent);
+      axisX.crosshair.showAt(xValue);
+      axisY.crosshair.showAt(axisY.convertPixelToValue(chartY));
     });
   }
 
-  createEvent(type, screenX, screenY, clientX, clientY) {
-    var event = new MouseEvent(type, {
-      view: window,
-      bubbles: false,
-      cancelable: true,
-      screenX: screenX,
-      screenY: screenY,
-      clientX: clientX,
-      clientY: clientY
-    });
-    return event;
-  }
 }
 
 XCanvasJSManager.getInstance = function(key) {
@@ -456,20 +378,13 @@ class XCanvasJS {
               label:''
             }
           },
-          axisY: {
+          axisY: [{
             crosshair: {
               enabled: true,
               shared: true,
               thickness: 0.5
             }
-          },
-          axisY2: {
-            crosshair: {
-              enabled: true,
-              shared: true,
-              thickness: 0.5
-            }
-          },
+          }],
           data: []
         }
       ],
@@ -514,7 +429,6 @@ class XCanvasJS {
 
       var currentViewportMin = this.getManager().minViewportTime;
       var currentViewportMax = this.getManager().maxViewportTime;
-      var currentMinuteDiffs = parseInt((currentViewportMax - currentViewportMin) / 1000 / 60);
   
       var interval = 10 * 60 * 1000;
     
@@ -533,11 +447,10 @@ class XCanvasJS {
       if (newViewportMax >= this.maxDpsTime) newViewportMax = this.maxDpsTime;
   
       var minuteDiffs = parseInt((newViewportMax - newViewportMin) / 1000 / 60);
-  
-      if (minuteDiffs >= 30 || (currentMinuteDiffs < 30 && currentMinuteDiffs < minuteDiffs)) {
+      if (minuteDiffs >= 1) {
         this.getManager().setViewport(newViewportMin, newViewportMax);
         this.getManager().registerRenderCharts(true, this.getIndex());
-      }  
+      }
     }
     finally
     {
@@ -693,7 +606,7 @@ class XCanvasJS {
   buildStripLine(dataY, index) {
     if (!dataY) return {}
 
-    const axisY = this.getChartOptions().axisY2;
+    const axisY = this.getChartOptions().axisY[0];
     const chartData = this.getChart().data;
     if (!chartData || !chartData[index]) return;
 
@@ -706,7 +619,7 @@ class XCanvasJS {
     if (this.getChartOptions().data[index].type === 'scatter') return;
 
     let finalStripline;
-    if (axisY.stripLines[index] && axisY.stripLines[index].value) {
+    if (axisY.stripLines[index] && this.getChartOptions().axisY[0].stripLines[index].value) {
       //use old stripLines
       axisY.stripLines[index].value = dataY
       axisY.stripLines[index].label= dataY ? dataY.toFixed(2) : "0"
@@ -808,7 +721,8 @@ class XCanvasJS {
   swithToPanMode() {
     let callback = true;
     if (this.ready && this.chart && this.chart.container) {
-      var parentElement = this.chart.container.getElementsByClassName("canvasjs-chart-toolbar")[0];
+      let panel = this.chart.container.getElementsByClassName("canvasjs-chart-panel")[1];
+      var parentElement = panel.getElementsByClassName("canvasjs-chart-toolbar")[0];
       if (parentElement) {
         var childElement = parentElement.getElementsByTagName("button")[0];
         if (childElement) {
@@ -935,7 +849,7 @@ class XCanvasJS {
       minViewportY = this.roundNumber(minViewportY, false, interval);
       maxViewportY = this.roundNumber(maxViewportY, true, interval);
 
-      let axisY = this.getChartOptions().axisY2;
+      let axisY = this.getChartOptions().axisY[0];
       axisY.minimum = minY;
       axisY.maximum = maxY;
       axisY.viewportMinimum = minViewportY;
@@ -955,7 +869,7 @@ class XCanvasJS {
       if (!stripLines[index]) stripLines[index] = {};
     })
 
-    this.getChartOptions().axisY2.stripLines = stripLines;
+    this.getChartOptions().axisY[0].stripLines = stripLines;
   }
 
   render(notifyChanges) {
