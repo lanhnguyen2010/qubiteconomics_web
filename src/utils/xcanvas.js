@@ -721,7 +721,8 @@ class XCanvasJS {
   swithToPanMode() {
     let callback = true;
     if (this.ready && this.chart && this.chart.container) {
-      var parentElement = this.chart.container.getElementsByClassName("canvasjs-chart-toolbar")[0];
+      let panel = this.chart.container.getElementsByClassName("canvasjs-chart-panel")[1];
+      var parentElement = panel.getElementsByClassName("canvasjs-chart-toolbar")[0];
       if (parentElement) {
         var childElement = parentElement.getElementsByTagName("button")[0];
         if (childElement) {
