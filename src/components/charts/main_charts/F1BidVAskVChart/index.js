@@ -31,6 +31,8 @@ export default class F1BidVAskVChart extends LineChart {
     options = super.initChartOptions(options);
 
     this.getChartOptions(options).data.push({
+      axisYType: "secondary",
+      axisYIndex: 0,
       type: "line",
       showInLegend: true,
       lineThickness: 1,
@@ -39,6 +41,7 @@ export default class F1BidVAskVChart extends LineChart {
       yValueFormatString: "#,##0.00"
     })
     this.getChartOptions(options).data.push({
+      axisYType: "secondary",
       type: "line",
       showInLegend: true,
       lineThickness: 1,
@@ -47,6 +50,7 @@ export default class F1BidVAskVChart extends LineChart {
       yValueFormatString: "#,##0.00"
     })
     this.getChartOptions(options).data.push({
+      axisYType: "secondary",
       type: "line",
       showInLegend: true,
       lineThickness: 1,

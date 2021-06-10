@@ -20,15 +20,15 @@ export default class LineChart extends BaseChart {
       if (!color) {
         color = e.chart.data[e.dataSeriesIndex]._colorSet[e.dataSeriesIndex];
       }
-      e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].thickness = 0.7;
-      e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].labelFontColor = 'white';
-      e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].labelBackgroundColor = color;
+      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].thickness = 0.7;
+      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].labelFontColor = 'white';
+      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].labelBackgroundColor = color;
     };
   
     const disableStripeLine = (e) => {
-      e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].thickness = 0;
-      e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].labelFontColor = 'transparent';
-      e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].labelBackgroundColor = 'none';
+      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].thickness = 0;
+      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].labelFontColor = 'transparent';
+      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].labelBackgroundColor = 'none';
     };
 
     options = _.merge(options, {
@@ -44,7 +44,7 @@ export default class LineChart extends BaseChart {
             itemclick: function (e) {
               const isScatter = e.chart.data[e.dataSeriesIndex].type === 'scatter'
               const isLineVisible = typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible;
-              const isStripLinesVisible = e.chart.options.axisY[0].stripLines && e.chart.options.axisY[0].stripLines[e.dataSeriesIndex].thickness !== 0;
+              const isStripLinesVisible = e.chart.options.axisY2.stripLines && e.chart.options.axisY2.stripLines[e.dataSeriesIndex].thickness !== 0;
               if (isLineVisible && isStripLinesVisible) {
                 if (!isScatter) {
                   disableStripeLine(e);
@@ -120,8 +120,8 @@ export default class LineChart extends BaseChart {
             tickLength: 0,
             margin: 10
           },
-          axisY: [{
-              gridThickness: 0.1,
+          axisY: {
+              gridThickness: 0,
               lineThickness: 0,
               tickLength: 0,
               labelFontSize: labelFontSize,
@@ -132,17 +132,35 @@ export default class LineChart extends BaseChart {
                   lineDashType: "dot",
                   thickness: 0.7,
                   opacity: 5
+              },
+              crosshair: {
+                enabled: false,
+                shared: true,
+                thickness: 0.5
               }
-          }],
+          },
           axisY2:{
             tickLength:0,
             labelFontSize: labelFontSize,
-            gridThickness: 0.1,
+            gridThickness: 0,
             lineThickness: 0,
             labelFontFamily: fontFamily,
-            margin: 10
+            margin: 10,
+            crosshair: {
+              enabled: true,
+              shared: true,
+              thickness: 0.5
+            },
+            stripLinesOptions: {
+              labelPlacement: "outside",
+              labelFontSize: 8,
+              lineDashType: "dot",
+              thickness: 0.7,
+              opacity: 5
+            },
           },
           data: [{
+            axisYType: "secondary",
             hoveredMarkerSize: 0.5,
             markerSize: 0,
             type: "line",

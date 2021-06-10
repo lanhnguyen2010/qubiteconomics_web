@@ -23,6 +23,7 @@ export default class VN30DerivativeChart extends LineChart {
     options = super.initChartOptions(options);
 
     this.getChartOptions(options).data.push({
+      axisYType: "secondary",
       type: "line",
       lineThickness: 1,
       showInLegend: true,

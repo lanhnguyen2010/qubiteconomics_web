@@ -30,6 +30,8 @@ export default class BuyupSelldownChart extends LineChart {
     this.getChartOptions(options).data[0].legendText = this.chartInfo.legends[1].name;
 
     this.getChartOptions(options).data.push({
+      axisY2Type: "secondary",
+      axisYType: "secondary",
       type: "line",
       lineThickness: 1,
       showInLegend: true,
@@ -39,12 +41,12 @@ export default class BuyupSelldownChart extends LineChart {
     });
     this.getChartOptions(options).data.unshift({
       type: "scatter",
+      axisYType: "primary",
+      axisYIndex: 0,
       lineThickness: 1,
       showInLegend: true,
-      axisYType: "secondary",
       legendText: this.chartInfo.legends[0].name,
       fillOpacity: .5,
-      axisYIndex: 1,
       xValueType: "dateTime",
       color: "#6666ff",
       yValueFormatString: "#,##0.00",

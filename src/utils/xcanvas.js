@@ -289,11 +289,14 @@ class XCanvasJSManager {
   showCrosshairYAt(triggerIndex, yPercentage) {
     this.chartsManager.forEach(mgr => {
       if (mgr.getIndex() === triggerIndex) return;
-
-      if (mgr.getChart().axisY[0].crosshair) {
+      let axisY = mgr.getChart().axisY;
+      if (!axisY.length){
+        axisY = mgr.getChart().axisY2;
+      }
+      if (axisY[0].crosshair) {
         var cHeight = mgr.getChart().bounds.y2 - mgr.getChart().bounds.y1;
         var cY = yPercentage * cHeight;
-        mgr.getChart().axisY[0].crosshair.showAt(mgr.getChart().axisY[0].convertPixelToValue(cY));
+        axisY[0].crosshair.showAt(axisY[0].convertPixelToValue(cY));
       }
     });
   }
@@ -301,9 +304,12 @@ class XCanvasJSManager {
   hideCrosshairY(triggerIndex) {
     this.chartsManager.forEach(mgr => {
       if (mgr.getIndex() === triggerIndex) return;
-
-      if (mgr.getChart().axisY[0].crosshair) {
-        mgr.getChart().axisY[0].crosshair.hide();
+      let axisY = mgr.getChart().axisY;
+      if (!axisY.length){
+        axisY = mgr.getChart().axisY2;
+      }
+      if (axisY[0].crosshair) {
+        axisY[0].crosshair.hide();
       }
     });
   }
@@ -328,10 +334,10 @@ class XCanvasJSManager {
 
   dispatchEvent(triggerIndex, event, customEventType, triggerSelf) {
     var orgChart = this.chartsManager[triggerIndex].getChart();
-    if (!orgChart || !orgChart.axisY[0]) return;
+    if (!orgChart || !orgChart.axisY2[0]) return;
 
     var oriElBounds =  orgChart.container.getBoundingClientRect();
-    var orgChartBoundsY = orgChart.axisY[0].bounds; // y1(top), x2 (left), height
+    var orgChartBoundsY = orgChart.axisY2[0].bounds; // y1(top), x2 (left), height
 
     var xValue = orgChart.axisX[0].convertPixelToValue(parseInt(event.clientX - oriElBounds.x));
     var ratioY = (event.clientY - oriElBounds.y - orgChartBoundsY.y1) * 1.0 / orgChartBoundsY.height;
@@ -343,11 +349,15 @@ class XCanvasJSManager {
 
       var zone = mgr.chart.container;
       var elBounds = zone.getBoundingClientRect();
+      let axisY = mgr.getChart().axisY;
+      if (!axisY.length){
+        axisY = mgr.getChart().axisY2;
+      }
 
-      var chartBoundsY = mgr.getChart().axisY[0].bounds;
+      var chartBoundsY = axisY[0].bounds;
       var chartClientY = elBounds.y + (chartBoundsY.height * ratioY);
 
-      var clientX = parseInt(elBounds.x + mgr.getChart().axisX[0].convertValueToPixel(xValue));
+      var clientX = parseInt(elBounds.x + axisY[0].convertValueToPixel(xValue));
       var clientY = parseInt(chartClientY + chartBoundsY.y1);
 
       var customEvent = this.createEvent(
@@ -446,13 +456,20 @@ class XCanvasJS {
               label:''
             }
           },
-          axisY: [{
+          axisY: {
             crosshair: {
               enabled: true,
               shared: true,
               thickness: 0.5
             }
-          }],
+          },
+          axisY2: {
+            crosshair: {
+              enabled: true,
+              shared: true,
+              thickness: 0.5
+            }
+          },
           data: []
         }
       ],
@@ -676,7 +693,7 @@ class XCanvasJS {
   buildStripLine(dataY, index) {
     if (!dataY) return {}
 
-    const axisY = this.getChartOptions().axisY[0];
+    const axisY = this.getChartOptions().axisY2;
     const chartData = this.getChart().data;
     if (!chartData || !chartData[index]) return;
 
@@ -689,7 +706,7 @@ class XCanvasJS {
     if (this.getChartOptions().data[index].type === 'scatter') return;
 
     let finalStripline;
-    if (axisY.stripLines[index] && this.getChartOptions().axisY[0].stripLines[index].value) {
+    if (axisY.stripLines[index] && axisY.stripLines[index].value) {
       //use old stripLines
       axisY.stripLines[index].value = dataY
       axisY.stripLines[index].label= dataY ? dataY.toFixed(2) : "0"
@@ -918,7 +935,7 @@ class XCanvasJS {
       minViewportY = this.roundNumber(minViewportY, false, interval);
       maxViewportY = this.roundNumber(maxViewportY, true, interval);
 
-      let axisY = this.getChartOptions().axisY[0];
+      let axisY = this.getChartOptions().axisY2;
       axisY.minimum = minY;
       axisY.maximum = maxY;
       axisY.viewportMinimum = minViewportY;
@@ -938,7 +955,7 @@ class XCanvasJS {
       if (!stripLines[index]) stripLines[index] = {};
     })
 
-    this.getChartOptions().axisY[0].stripLines = stripLines;
+    this.getChartOptions().axisY2.stripLines = stripLines;
   }
 
   render(notifyChanges) {

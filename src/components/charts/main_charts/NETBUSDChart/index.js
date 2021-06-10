@@ -31,10 +31,10 @@ export default class NETBUSDChart extends LineChart {
     this.getChartOptions(options).data[0].color = "green";
 
     this.getChartOptions(options).data.push({
+      axisYType: "secondary",
       type: "line",
       lineThickness: 1,
       showInLegend: true,
-      axisYIndex: 0,
       legendText: this.chartInfo.legends[2].name,
       xValueType: "dateTime",
       color: "#6666ff",
@@ -44,10 +44,9 @@ export default class NETBUSDChart extends LineChart {
       type: "scatter",
       lineThickness: 1,
       showInLegend: true,
-      axisYType: "secondary",
+      axisYType: "primary",
       legendText: this.chartInfo.legends[0].name,
       fillOpacity: .5,
-      axisYIndex: 1,
       xValueType: "dateTime",
       color: "#ff6666",
       yValueFormatString: "#,##0.00",
