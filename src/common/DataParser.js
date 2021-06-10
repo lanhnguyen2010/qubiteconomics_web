@@ -3,7 +3,8 @@ const DataParser = {
         let outData = []
         if (data && data.length) {
             outData = data.map((i) => {
-                return {price: i.price, time: new Date(2021, 1, 1, parseInt(i.hour), parseInt(i.minute), parseInt(i.second))}
+                let time = new Date(i.time);
+                return {price: i.price, time: new Date(2021, 1, 1, time.getHours() - 7, time.getMinutes(), time.getSeconds()),}
             }) 
         }
         return outData;
