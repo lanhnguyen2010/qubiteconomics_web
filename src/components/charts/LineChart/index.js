@@ -20,15 +20,15 @@ export default class LineChart extends BaseChart {
       if (!color) {
         color = e.chart.data[e.dataSeriesIndex]._colorSet[e.dataSeriesIndex];
       }
-      e.chart.options.axisY2[0].stripLines[e.dataSeriesIndex].thickness = 0.7;
-      e.chart.options.axisY2[0].stripLines[e.dataSeriesIndex].labelFontColor = 'white';
-      e.chart.options.axisY2[0].stripLines[e.dataSeriesIndex].labelBackgroundColor = color;
+      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].thickness = 0.7;
+      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].labelFontColor = 'white';
+      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].labelBackgroundColor = color;
     };
   
     const disableStripeLine = (e) => {
-      e.chart.options.axisY2[0].stripLines[e.dataSeriesIndex].thickness = 0;
-      e.chart.options.axisY2[0].stripLines[e.dataSeriesIndex].labelFontColor = 'transparent';
-      e.chart.options.axisY2[0].stripLines[e.dataSeriesIndex].labelBackgroundColor = 'none';
+      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].thickness = 0;
+      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].labelFontColor = 'transparent';
+      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].labelBackgroundColor = 'none';
     };
 
     options = _.merge(options, {
@@ -44,7 +44,7 @@ export default class LineChart extends BaseChart {
             itemclick: function (e) {
               const isScatter = e.chart.data[e.dataSeriesIndex].type === 'scatter'
               const isLineVisible = typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible;
-              const isStripLinesVisible = e.chart.options.axisY2[0].stripLines && e.chart.options.axisY2[0].stripLines[e.dataSeriesIndex].thickness !== 0;
+              const isStripLinesVisible = e.chart.options.axisY2.stripLines && e.chart.options.axisY2.stripLines[e.dataSeriesIndex].thickness !== 0;
               if (isLineVisible && isStripLinesVisible) {
                 if (!isScatter) {
                   disableStripeLine(e);
