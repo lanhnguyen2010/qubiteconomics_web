@@ -118,26 +118,26 @@ export default class LineChart extends BaseChart {
             labelFontFamily: fontFamily,
             lineThickness: 0.4,
             tickLength: 0,
-            margin: 10
+            margin: 10,
+            crosshair: {
+              enabled: true,
+              shared: true,
+              thickness: 0.5
+            }
           },
           axisY: {
-              gridThickness: 0,
-              lineThickness: 0,
-              tickLength: 0,
-              labelFontSize: labelFontSize,
-              labelFontFamily: fontFamily,
-              stripLinesOptions: {
-                  labelPlacement: "outside",
-                  labelFontSize: 8,
-                  lineDashType: "dot",
-                  thickness: 0.7,
-                  opacity: 5
-              },
-              crosshair: {
-                enabled: false,
-                shared: true,
-                thickness: 0.5
-              }
+            gridThickness: 0,
+            lineThickness: 0,
+            tickLength: 0,
+            labelFontSize: labelFontSize,
+            labelFontFamily: fontFamily,
+            stripLinesOptions: {
+              labelPlacement: "outside",
+              labelFontSize: 8,
+              lineDashType: "dot",
+              thickness: 0.7,
+              opacity: 5
+            }
           },
           axisY2:{
             tickLength:0,
@@ -157,7 +157,7 @@ export default class LineChart extends BaseChart {
               lineDashType: "dot",
               thickness: 0.7,
               opacity: 5
-            },
+            }
           },
           data: [{
             axisYType: "secondary",
