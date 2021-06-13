@@ -1,3 +1,5 @@
+import { ThumbUpSharp } from "@material-ui/icons";
+
 class EventBus {
   on (event, callback) {
     document.addEventListener(event, (e) => callback(e.detail));
@@ -277,13 +279,7 @@ class XCanvasJSManager {
 
     // Remove events
     if (event.type === "mouseout") {
-      this.chartsManager.forEach(mgr => {
-        if (!mgr.ready || mgr.getIndex() === orgTriggerIndex) return;
-        if (!mgr.getChart()) return;
-
-        mgr.getAxisX().crosshair.hide();
-        mgr.getAxisY().crosshair.hide();
-      });
+      this.hideCrosshair(orgTriggerIndex);
       return;
     }
 
@@ -313,6 +309,17 @@ class XCanvasJSManager {
       axisX.crosshair.showAt(xValue);
       axisY.crosshair.showAt(yValue);
     });
+  }
+
+  hideCrosshair(orgTriggerIndex) {
+    this.chartsManager.forEach(mgr => {
+      if (!mgr.ready || mgr.getIndex() === orgTriggerIndex) return;
+      if (!mgr.getChart()) return;
+
+      mgr.getAxisX().crosshair.hide();
+      mgr.getAxisY().crosshair.hide();
+    });
+    return;
   }
 }
 
@@ -401,7 +408,14 @@ class XCanvasJS {
             crosshair: {
               enabled: true,
               thickness: 0.5,
-              label: ''
+              label: '',
+              hidden: () => {
+                this.crosshairShowed = false;
+                this.getManager().hideCrosshair(this.getIndex());
+              },
+              updated: () => {
+                this.crosshairShowed = true;
+              }
             }
           },
           axisY: { },
@@ -409,7 +423,14 @@ class XCanvasJS {
             crosshair: {
               enabled: true,
               shared: true,
-              thickness: 0.5
+              thickness: 0.5,
+              hidden: () => {
+                this.crosshairShowed = false;
+                this.getManager().hideCrosshair(this.getIndex());
+              },
+              updated: () => {
+                this.crosshairShowed = true;
+              }
             }
           },
           data: []
@@ -441,7 +462,9 @@ class XCanvasJS {
         if (!this.ready) return;
 
         event.preventDefault();
-        this.getManager().dispatchEvent(this.getIndex(), event);
+        if (this.crosshairShowed) {
+          this.getManager().dispatchEvent(this.getIndex(), event);
+        }
       });
     })
   }
