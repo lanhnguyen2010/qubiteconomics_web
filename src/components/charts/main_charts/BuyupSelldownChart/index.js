@@ -62,20 +62,24 @@ export default class BuyupSelldownChart extends LineChart {
     let chartData = data.chartData;
     if (!bubblesData || !bubblesData.length || !chartData || !chartData.length) return;
 
-
+    var startTime =  new Date(2021, 1, 1, 9, 30, 0);
+    var endTime =  new Date(2021, 1, 1, 14, 30, 0);    
     this.chart.updateData([
       bubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius/2, name: item.label})),
-      chartData.map(item => ({ x: item.time, y: item.BU })),
-      chartData.map(item => ({ x: item.time, y: item.SD }))
+      chartData.map(item => ({ x: item.time, y: item.BU })).filter(x => x.x > startTime && x.x < endTime),
+      chartData.map(item => ({ x: item.time, y: item.SD })).filter(x => x.x > startTime && x.x < endTime )
     ])
   }
 
   appendData(data) {
     if (data && data.bubblesData && data.chartData){
+      var startTime =  new Date(2021, 1, 1, 9, 30, 0);
+      var endTime =  new Date(2021, 1, 1, 14, 30, 0);
+
       this.chart.appendData([
         data.bubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius/2, name: item.label})),
-        data.chartData.map(item => ({ x: item.time, y: item.BU })),
-        data.chartData.map(item => ({ x: item.time, y: item.SD }))
+        data.chartData.map(item => ({ x: item.time, y: item.BU })).filter(x => x.x > startTime && x.x < endTime),
+        data.chartData.map(item => ({ x: item.time, y: item.SD })).filter(x => x.x > startTime && x.x < endTime)
       ])
     }
   }
