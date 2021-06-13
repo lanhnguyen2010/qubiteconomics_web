@@ -29,7 +29,8 @@ export default class VN30DerivativeChart extends LineChart {
       showInLegend: true,
       legendText: this.chartInfo.legends[1].name,
       xValueType: "dateTime",
-      yValueFormatString: "#,##0.00"
+      yValueFormatString: "#,##0.00",
+      interpolate: true
     })
     return options;
   }

@@ -168,7 +168,8 @@ export default class LineChart extends BaseChart {
             showInLegend: true,
             legendText: this.chartInfo.legends[0].name,
             xValueType: "dateTime",
-            yValueFormatString: "#,##0.00"
+            yValueFormatString: "#,##0.00",
+            interpolate: true
           }]
         }
       ]
