@@ -63,12 +63,18 @@ export default class BuyupSelldownChart extends LineChart {
     if (!bubblesData || !bubblesData.length || !chartData || !chartData.length) return;
 
     var startTime =  new Date(2021, 1, 1, 9, 30, 0);
-    var endTime =  new Date(2021, 1, 1, 14, 30, 0);    
+    var endTime =  new Date(2021, 1, 1, 14, 30, 0);
+    var maxBU = Math.max.apply(Math, chartData.filter(x => x.time <= startTime).map(item => item.BU));
+    var maxSD = Math.max.apply(Math, chartData.filter(x => x.time <= startTime).map(item => item.SD));
     this.chart.updateData([
       bubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius/2, name: item.label})),
       chartData.map(item => ({ x: item.time, y: item.BU })).filter(x => x.x > startTime && x.x < endTime),
       chartData.map(item => ({ x: item.time, y: item.SD })).filter(x => x.x > startTime && x.x < endTime )
     ])
+    this.chart.chart.options.charts[0].axisX.stripLines=[{
+      value: startTime,
+      label: maxBU.toFixed(2) + ", " + maxSD.toFixed(2)
+    }]
   }
 
   appendData(data) {

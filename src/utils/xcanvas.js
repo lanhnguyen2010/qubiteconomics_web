@@ -571,7 +571,6 @@ class XCanvasJS {
         if (this.minDpsTime > minDpsTime) this.minDpsTime = minDpsTime;
         if (this.maxDpsTime < maxDpsTime) this.maxDpsTime = maxDpsTime;
       }
-      this.interpolate(0);
     })
 
     if (!this.minDpsTime || !this.maxDpsTime) return;
@@ -606,7 +605,6 @@ class XCanvasJS {
   appendData(dataPointsList) {
     if (!dataPointsList || !dataPointsList.length) return;
 
-    var minCurrentIndex = this.dataPoints.min(dataPoint => dataPoint.length);
     // Append data
     dataPointsList.forEach((dps, index) => {
       if (!dps.length) return;
@@ -648,7 +646,6 @@ class XCanvasJS {
       }
 
       this.getChartOptions().data[index].dataPoints = currentDps;
-      this.interpolate(minCurrentIndex);
     });
   }
 
@@ -914,44 +911,6 @@ class XCanvasJS {
 
     })
 
-  }
-
-  interpolate(startIndex) {
-    if (!this.dataPoints || !this.dataPoints.length) return;
-    let allXValue = [];
-    for (var i = 0; i < this.dataPoints.length; i++){
-      if (!this.dataPoints[i] || !this.dataPoints[i].length || this.getChartOptions().data[i].type !== 'line' || !this.getChartOptions().data[i].interpolate) {
-        continue;
-      }
-      for (var j = startIndex; j < this.dataPoints[i].length; j++) {
-        if (!allXValue.includes(this.dataPoints[i][j].x)) {
-          allXValue.push(this.dataPoints[i][j].x)
-        }
-      }
-    }
-    allXValue.sort();
-
-    for (var i = 0; i < this.dataPoints.length; i++){
-      if (!this.dataPoints[i] || !this.dataPoints[i].length || this.getChartOptions().data[i].type !== 'line' || !this.getChartOptions().data[i].interpolate) {
-        continue;
-      }
-      for (var j = 0; j < allXValue.length; j++) {
-        if (this.dataPoints[i].findIndex(element => element.x == allXValue[j]) <= 0) {
-          let iLimitNumber = 1;
-          while (iLimitNumber < 50 && allXValue[j - iLimitNumber]){
-            let iLastValue = this.dataPoints[i].findIndex(element => element.x == allXValue[j - iLimitNumber]);
-            //found last value
-            if (iLastValue > 0){
-              //fill to array with last value
-              this.dataPoints[i].splice(iLastValue + 1, 0, {...this.dataPoints[i][iLastValue], x:allXValue[j]});
-              iLimitNumber = 50;
-            }
-            iLimitNumber ++;
-
-          }
-        }
-      }
-    }
   }
 
   render(notifyChanges) {
