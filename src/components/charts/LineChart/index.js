@@ -118,12 +118,7 @@ export default class LineChart extends BaseChart {
             labelFontFamily: fontFamily,
             lineThickness: 0.4,
             tickLength: 0,
-            margin: 10,
-            crosshair: {
-              enabled: true,
-              shared: true,
-              thickness: 0.5
-            }
+            margin: 10
           },
           axisY: {
             gridThickness: 0,
@@ -146,11 +141,6 @@ export default class LineChart extends BaseChart {
             lineThickness: 0,
             labelFontFamily: fontFamily,
             margin: 10,
-            crosshair: {
-              enabled: true,
-              shared: true,
-              thickness: 0.5
-            },
             stripLinesOptions: {
               labelPlacement: "outside",
               labelFontSize: 8,

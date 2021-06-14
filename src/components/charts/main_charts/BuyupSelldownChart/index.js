@@ -73,7 +73,7 @@ export default class BuyupSelldownChart extends LineChart {
     ])
     this.chart.chart.options.charts[0].axisX.stripLines=[{
       value: startTime,
-      label: maxBU.toFixed(2) + ", " + maxSD.toFixed(2)
+      label: maxBU.toFixed(2) + "|" + maxSD.toFixed(2)
     }]
   }
 
