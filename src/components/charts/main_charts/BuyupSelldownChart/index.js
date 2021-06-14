@@ -66,14 +66,32 @@ export default class BuyupSelldownChart extends LineChart {
     var endTime =  new Date(2021, 1, 1, 14, 30, 0);
     var maxBU = Math.max.apply(Math, chartData.filter(x => x.time <= startTime).map(item => item.BU));
     var maxSD = Math.max.apply(Math, chartData.filter(x => x.time <= startTime).map(item => item.SD));
+    var maxBUEnd = Math.max.apply(Math, chartData.filter(x => x.time >= endTime).map(item => item.BU));
+    var maxSDEnd = Math.max.apply(Math, chartData.filter(x => x.time >= endTime).map(item => item.SD));
     this.chart.updateData([
       bubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius/2, name: item.label})),
       chartData.map(item => ({ x: item.time, y: item.BU })).filter(x => x.x > startTime && x.x < endTime),
       chartData.map(item => ({ x: item.time, y: item.SD })).filter(x => x.x > startTime && x.x < endTime )
     ])
-    this.chart.chart.options.charts[0].axisX.stripLines=[{
+    let chart = this.chart.chart.options.charts[0];
+    let color1 = chart.data[1].color;
+    let color2 = chart.data[2].color;
+    if (!color1){
+      color1 = this.chart.chart.selectedColorSet[1];
+    }
+    if (!color2){
+      color2 = this.chart.chart.selectedColorSet[2];
+    }
+    chart.axisX.stripLines=[{
       value: startTime,
-      label: maxBU.toFixed(2) + "|" + maxSD.toFixed(2)
+      labelAlign: "far",
+      abelPlacement: "inside",
+      label: maxBU.toFixed(0) + '|' + color1 + "," + maxSD.toFixed(0) + '|' + color2
+    },
+    {
+      value: endTime,
+      labelAlign: "far",
+      label: maxBUEnd.toFixed(0) + '|' + color1 + "," + maxSDEnd.toFixed(0) + '|' + color2
     }]
   }
 
@@ -87,6 +105,9 @@ export default class BuyupSelldownChart extends LineChart {
         data.chartData.map(item => ({ x: item.time, y: item.BU })).filter(x => x.x > startTime && x.x < endTime),
         data.chartData.map(item => ({ x: item.time, y: item.SD })).filter(x => x.x > startTime && x.x < endTime)
       ])
+
+      debugger;
+
     }
   }
 }
