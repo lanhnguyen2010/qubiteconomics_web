@@ -105,9 +105,6 @@ export default class BuyupSelldownChart extends LineChart {
         data.chartData.map(item => ({ x: item.time, y: item.BU })).filter(x => x.x > startTime && x.x < endTime),
         data.chartData.map(item => ({ x: item.time, y: item.SD })).filter(x => x.x > startTime && x.x < endTime)
       ])
-
-      debugger;
-
     }
   }
 }
