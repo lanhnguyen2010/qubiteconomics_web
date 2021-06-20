@@ -14,4 +14,11 @@ export default class ForeignDerivativeChart extends LineChart {
       ]
     }
   }
+
+  initChartOptions(options) {
+    options = super.initChartOptions(options);
+    options.minMarginRight = 50;
+    return options;
+  }
+
 }

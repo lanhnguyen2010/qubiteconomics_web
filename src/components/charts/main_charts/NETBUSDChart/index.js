@@ -52,6 +52,10 @@ export default class NETBUSDChart extends LineChart {
       yValueFormatString: "#,##0.00",
       legendMarkerType: "circle",
     })
+
+    options.minMarginLeft = 30;
+    options.minMarginRight = 50;
+
     return options;
   }
 

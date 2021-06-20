@@ -118,7 +118,7 @@ export default class LineChart extends BaseChart {
             labelFontFamily: fontFamily,
             lineThickness: 0.4,
             tickLength: 0,
-            margin: 10
+            margin: 0
           },
           axisY: {
             gridThickness: 0,
@@ -132,7 +132,8 @@ export default class LineChart extends BaseChart {
               lineDashType: "dot",
               thickness: 0.7,
               opacity: 5
-            }
+            },
+            margin: 20
           },
           axisY2:{
             tickLength:0,
@@ -140,7 +141,7 @@ export default class LineChart extends BaseChart {
             gridThickness: 0,
             lineThickness: 0,
             labelFontFamily: fontFamily,
-            margin: 10,
+            margin: 20,
             stripLinesOptions: {
               labelPlacement: "outside",
               labelFontSize: 8,

@@ -31,6 +31,10 @@ export default class VN30DerivativeChart extends LineChart {
       xValueType: "dateTime",
       yValueFormatString: "#,##0.00"
     })
+
+    options.minMarginLeft = 30;
+    options.minMarginRight = 50;
+
     return options;
   }
 

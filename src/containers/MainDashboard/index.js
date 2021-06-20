@@ -206,6 +206,10 @@ class MainDashboardScreen extends React.Component {
     await this.fetchBuySellNN(requestBody);
     await this.fetchOthers(requestBody);
 
+    let chartManager = XCanvasJSManager.getInstance("DB01");
+    chartManager.initViewRange();
+    chartManager.registerRenderCharts(true);
+
     if (dateStr === this.realTimeDate) {
       this.callTimerID = setTimeout(this.updateChart, interval);
     }
@@ -216,10 +220,6 @@ class MainDashboardScreen extends React.Component {
     let parsedData = DataParser.parseBuySellNNOutbound(buysellNN);
     this.ForeignDerivativeChartRef.current.updateData(parsedData);
     this.BuySellPressureChartRef.current.updateData(parsedData);
-
-    let chartManager = XCanvasJSManager.getInstance("DB01");
-    chartManager.initViewRange();
-    chartManager.registerRenderCharts(true);
   }
 
   async fetchSuuF1(requestBody) {
@@ -228,10 +228,6 @@ class MainDashboardScreen extends React.Component {
     this.FBFSChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
     this.F1BidVAskVChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
     this.NetBSChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
-
-    let chartManager = XCanvasJSManager.getInstance("DB01");
-    chartManager.initViewRange();
-    chartManager.registerRenderCharts(true);
   }
 
   async fetchOthers(requestBody) {
@@ -239,17 +235,10 @@ class MainDashboardScreen extends React.Component {
     const busd = await StockAPI.fetchBusdOutbound(requestBody);
     this.VN30DerivativeChartRef.current.updateData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(busd)});
 
-    let chartManager = XCanvasJSManager.getInstance("DB01");
-    chartManager.initViewRange();
-    chartManager.registerRenderCharts(true);
-
     const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
-    let busdData = DataParser.parseBusdOutbound(busd);
+    const busdData = DataParser.parseBusdOutbound(busd);
     this.BuyupSelldownChartRef.current.updateData({chartData: busdData, bubblesData: DataParser.parseArbit(arbitUnwind)});
     this.NETBUSDChartRef.current.updateData({chartData: busdData, bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
-
-    chartManager.initViewRange();
-    chartManager.registerRenderCharts(true);
   }
 
   render() {

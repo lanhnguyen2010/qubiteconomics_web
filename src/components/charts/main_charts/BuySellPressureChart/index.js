@@ -40,6 +40,8 @@ export default class BuySellPressureChart extends LineChart {
       }
     })
 
+    options.minMarginRight = 50;
+
     return options;
   }
 

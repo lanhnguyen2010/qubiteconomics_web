@@ -16,3 +16,7 @@
 .canvasjs-chart-credit {
   display: none;
 }
+
+.hideme {
+  display: none;
+}

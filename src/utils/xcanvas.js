@@ -395,6 +395,8 @@ class XCanvasJS {
     return {
       rangeChanging: (event) => this.onRangeChanging(event),
       rangeChanged: (event) => this.onRangeChanged(event),
+      minMarginLeft: 20,
+      minMarginRight: 20,
       charts: [
         {
           legend: {
@@ -543,7 +545,10 @@ class XCanvasJS {
   }
 
   updateData(dataPointsList) {
-    if (!dataPointsList || !dataPointsList.length) return;
+    if (!dataPointsList || !dataPointsList.length) {
+      this.getManager().registerRender(this.getIndex());
+      return;
+    }
 
     this.dataPoints = [];
     dataPointsList.forEach(dps => this.dataPoints.push(dps));

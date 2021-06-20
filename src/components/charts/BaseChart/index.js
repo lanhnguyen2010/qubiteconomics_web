@@ -80,6 +80,10 @@ export default class BaseChart extends React.Component {
     this.chart.setIndex(index);
   }
 
+  registerRender() {
+    this.chart.getManager().registerRender(this.chart.getIndex());
+  }
+
   render() {
     const containerProps = {
       width: "100%",
