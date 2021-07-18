@@ -443,6 +443,8 @@ class XCanvasJS {
         height: 0.001,
         width: 0.1,
         slider: {
+        },
+        axisX: {
         }
       },
       rangeSelector: {
@@ -588,6 +590,7 @@ class XCanvasJS {
         endValue: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 13, 0, 0)
       }]
     };
+    this.getOptions().navigator.axisX.scaleBreaks = this.getAxisXOptions().scaleBreaks;
 
     if (!this.ready) {
       this.ready = true;

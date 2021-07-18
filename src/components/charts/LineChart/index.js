@@ -20,15 +20,18 @@ export default class LineChart extends BaseChart {
       if (!color) {
         color = e.chart.data[e.dataSeriesIndex]._colorSet[e.dataSeriesIndex];
       }
-      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].thickness = 0.7;
-      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].labelFontColor = 'white';
-      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].labelBackgroundColor = color;
+
+      var item = e.chart.options.axisY2.stripLines[e.dataSeriesIndex];
+      item.thickness = 0.7;
+      item.labelFontColor = 'white';
+      item.labelBackgroundColor = color;
     };
   
     const disableStripeLine = (e) => {
-      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].thickness = 0;
-      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].labelFontColor = 'transparent';
-      e.chart.options.axisY2.stripLines[e.dataSeriesIndex].labelBackgroundColor = 'none';
+      var item = e.chart.options.axisY2.stripLines[e.dataSeriesIndex];
+      item.thickness = 0;
+      item.labelFontColor = 'transparent';
+      item.labelBackgroundColor = 'none';
     };
 
     options = _.merge(options, {
