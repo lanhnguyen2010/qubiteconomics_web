@@ -107,8 +107,8 @@ class XCanvasJSManager {
     }
   }
 
-  triggerRender(delay) {
-    if (!delay && !this.lockRender && this.renderQueue.length) {
+  triggerRender() {
+    if (!this.lockRender && this.renderQueue.length) {
       let chartIndex = this.renderQueue.shift();
       let chartRenderInfo = this.registeredRenderCharts[chartIndex];
 
@@ -121,11 +121,10 @@ class XCanvasJSManager {
       }
     }
 
-    //if (!this.renderTriggerId && this.renderQueue.length)
-     {
+    {
       setTimeout(() => {
         this.triggerRender();
-      }, 1);
+      }, 100);
     }
   }
 

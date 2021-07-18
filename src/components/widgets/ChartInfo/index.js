@@ -68,7 +68,7 @@ export default class ChartInfo extends React.Component {
     })
 
     return (
-      <pre>{JSON.stringify(info, {maxLength: 80})}</pre>
+      <pre>{JSON.stringify(info, null, 4)}</pre>
       // <ReactJson src={info} name={null} iconStyle={"triangle"} displayObjectSize={false} displayDataTypes={false} displayArrayKey={false} />
     )
   }
