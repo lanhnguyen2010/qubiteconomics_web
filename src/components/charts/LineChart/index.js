@@ -134,7 +134,8 @@ export default class LineChart extends BaseChart {
               labelFontSize: 8,
               lineDashType: "dot",
               thickness: 0.7,
-              opacity: 5
+              opacity: 5,
+              trimText : false
             },
             margin: 20
           },
@@ -150,7 +151,9 @@ export default class LineChart extends BaseChart {
               labelFontSize: 8,
               lineDashType: "dot",
               thickness: 0.7,
-              opacity: 5
+              opacity: 5,
+              trimText : false,
+              fixedWidth: 30
             }
           },
           data: [{
