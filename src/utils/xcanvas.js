@@ -825,29 +825,30 @@ class XCanvasJS {
       for (var i = 0; i < dpsLength;) {
         filteredDPs.push(dps[i]);
         let valueX = dps[i].x.getTime();
+        let valueY = dps[i].y;
 
         if (sharedY) {
-          if (dps[i].y !== null) {
+          if (valueY !== null) {
             if (minY === null) {
-              minY = maxY = dps[0].y;
+              minY = maxY = valueY;
             } else {
-              if (minY > dps[i].y) minY = dps[i].y;
-              if (maxY < dps[i].y) maxY = dps[i].y;
+              if (minY > valueY) minY = valueY;
+              if (maxY < valueY) maxY = valueY;
             }
           }
         }
 
         // Visible range
         if (valueX >= minX && valueX <= maxX) {
-          if (dps[i].y !== null) {
-            stripLinesValue[dpsIndex] = dps[i].y;
+          if (valueY !== null) {
+            stripLinesValue[dpsIndex] = valueY;
 
             if (sharedY) {
               if (minViewportY === null) {
-                minViewportY = maxViewportY = dps[i].y;
+                minViewportY = maxViewportY = valueY;
               } else {
-                if (minViewportY > dps[i].y) minViewportY = dps[i].y;
-                if (maxViewportY < dps[i].y) maxViewportY = dps[i].y;
+                if (minViewportY > valueY) minViewportY = valueY;
+                if (maxViewportY < valueY) maxViewportY = valueY;
               }
             }
           }

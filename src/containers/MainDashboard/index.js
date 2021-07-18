@@ -86,6 +86,7 @@ class MainDashboardScreen extends React.Component {
     if (!this.realTimeDate) {
       this.realTimeDate = moment().format('yyyy_MM_DD');
       this.modeSimulate = false;
+      this.forceDate = new URL(window.location.href).searchParams.get("fd");
     } else {
       this.modeSimulate = true;
       this.simuateEndTime = 0;
@@ -101,12 +102,16 @@ class MainDashboardScreen extends React.Component {
     if (this.modeSimulate) {
       dateString = this.realTimeDate
     } else {
-      let currentDate = moment();
-      if (currentDate.day() === 0 ||currentDate.day() === 6){
-        currentDate.add(-2, 'day')
-        this.selectedDate = new Date(currentDate);
+      if (this.forceDate) {
+        dateString = this.forceDate;
+      } else {
+        let currentDate = moment();
+        if (currentDate.day() === 0 ||currentDate.day() === 6){
+          currentDate.add(-2, 'day')
+          this.selectedDate = new Date(currentDate);
+        }
+        dateString = currentDate.format('yyyy_MM_DD');
       }
-      dateString = currentDate.format('yyyy_MM_DD')
     }
 
     this.fetchData(dateString);

@@ -24,7 +24,7 @@ export default class BuySellPressureChart extends LineChart {
 
     this.getChartOptions(options).data.push({
       axisYType: "secondary",
-      axisYIndex: 0,
+      axisYIndex: 1,
       type: "line",
       lineThickness: 1,
       showInLegend: true,

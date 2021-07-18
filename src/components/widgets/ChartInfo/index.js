@@ -1,5 +1,5 @@
 import React from "react";
-import ReactJson from 'react-json-view';
+// import ReactJson from 'react-json-view';
 
 import ChartInfoEventBus from "components/widgets/ChartInfo/Event";
 import "./style.css";
@@ -68,8 +68,8 @@ export default class ChartInfo extends React.Component {
     })
 
     return (
-      // <pre>{stringify(info, {maxLength: 80})}</pre>
-      <ReactJson src={info} name={null} iconStyle={"triangle"} displayObjectSize={false} displayDataTypes={false} displayArrayKey={false} />
+      <pre>{JSON.stringify(info, {maxLength: 80})}</pre>
+      // <ReactJson src={info} name={null} iconStyle={"triangle"} displayObjectSize={false} displayDataTypes={false} displayArrayKey={false} />
     )
   }
 }
