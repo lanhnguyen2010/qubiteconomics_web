@@ -1,25 +1,31 @@
 const DataParser = {
     parsePSOutbound: (data) => {
         let outData = []
-        if (data && data.length) {
-            outData = data.map((i) => {
-                let time = new Date(i.time);
-                return {price: i.price, time: new Date(2021, 1, 1, time.getHours() - 7, time.getMinutes(), time.getSeconds()),}
-            }) 
+        console.log(data)
+        if (data && data.timestamp && data.timestamp.length) {
+            outData = data.timestamp.map((i, index) => {
+                let time = new Date(i * 1000);
+                return {
+                    price: data.price[index],
+                    time: new Date(2021, 1, 1, time.getHours() - 7, time.getMinutes(), time.getSeconds()),
+                }
+
+            }) ;
         }
+        console.log(outData)
         return outData;
     },
 
     parseBusdOutbound: (data) => {
         let outData = []
-        if (data && data.BUSD && data.BUSD.time && data.BUSD.time.length) {
-            outData = data.BUSD.time.map((i, index) => {
+        if (data && data.time && data.time.length) {
+            outData = data.time.map((i, index) => {
                 let iTimeSplit = i.split(":")
                 return {
-                    SD: data.BUSD.SD[index],
-                    BU: data.BUSD.BU[index],
-                    NetBUSD: data.BUSD.Net[index],
-                    SMA: data.BUSD.SMA[index],
+                    SD: data.SD[index],
+                    BU: data.BU[index],
+                    NetBUSD: data.Net[index],
+                    SMA: data.new_net[index],
                     time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
                 }
 
@@ -29,11 +35,11 @@ const DataParser = {
     },
     parseVN30Index: (data) => {
         let outData = []
-        if (data && data.VN30Index && data.VN30Index.timestamp && data.VN30Index.timestamp.length) {
-            outData = data.VN30Index.timestamp.map((i, index) => {
+        if (data && data.timestamp && data.timestamp.length) {
+            outData = data.timestamp.map((i, index) => {
                 let time = new Date(i * 1000);
                 return {
-                    last: data.VN30Index.last[index],
+                    last: data.last[index],
                     time: new Date(2021, 1, 1, time.getHours() - 7, time.getMinutes(), time.getSeconds()),
                 }
 
@@ -43,37 +49,38 @@ const DataParser = {
     },
     parseBuySellNNOutbound: (data) =>{
         let outData = []
-        if (data && data.buySell && data.buySell.time.length) {
-            outData = data.buySell.time.map((i, index) => {
+        if (data && data.time.length) {
+            outData = data.time.map((i, index) => {
 
                 let iTimeSplit = i.split(":")
                 return {
-                    price: data.buySell.netNN[index],
+                    price: data.netNN[index],
                     time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
-                    buyPressure: data.buySell.buyPressure[index],
-                    sellPressure: data.buySell.sellPressure[index]
+                    buyPressure: data.buyPressure[index],
+                    sellPressure: data.sellPressure[index]
                 }
             }) ;
         }
         return outData;
     },
+
     parseSuuF1Outbound: (data) =>{
         let outData = []
-        if (data && data.length) {
-            outData = data.map((i) => {
-
-                let iTimeSplit = i.time.split(":")
+        if (data && data.time && data.time.length) {
+            outData = data.time.map((i, index) => {
+                let iTimeSplit = i.split(":")
                 return {
-                    price: i.last,
-                    foreignerBuyVolume: i.foreignerBuyVolume,
-                    foreignerSellVolume: i.foreignerSellVolume,
-                    BidV: i.totalBidVolume,
-                    AskV  : i.totalOfferVolume,
-                    NetBA : i.Net_BA,
-                    SMA : i.SMA,
-                    NetBS : i['Net_BU&SD2'],
-                    time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2]))
+                    price: data.last[index],
+                    foreignerBuyVolume: data.foreignerBuyVolume[index],
+                    foreignerSellVolume: data.foreignerSellVolume[index],
+                    BidV: data.SMA_BidV[index],
+                    AskV: data.SMA_AskV[index],
+                    NetBA: data.Net_BA[index],
+                    NetBS: data['Net_BU&SD2'][index],
+                    SMA: data.SMA[index],
+                    time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
                 }
+
             }) ;
         }
         return outData;

@@ -6,6 +6,10 @@ const StockAPI = {
         return await requestPost(Constants.BASE_URL + Constants.PS_OUTBOUND_URL, data);
     },
 
+    fetchVN30IndexdOutbound: async (data) => {
+        return await requestPost(Constants.BASE_URL + Constants.VN30_INDEX_URL, data);
+    },
+
     fetchBusdOutbound: async (data) => {
         return await requestPost(Constants.BASE_URL + Constants.BUSD_OUTBOUND_URL, data);
     },

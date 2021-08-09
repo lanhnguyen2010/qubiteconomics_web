@@ -167,12 +167,13 @@ class MainDashboardScreen extends React.Component {
     }
 
     const ps = await StockAPI.fetchPSOutbound(requestBody);
+    const vn30index = await StockAPI.fetchVN30IndexdOutbound(requestBody);
     const busd = await StockAPI.fetchBusdOutbound(requestBody);
     const buysellNN = await StockAPI.fetchBuySellNNOutbound(requestBody);
     const suuF1 = await StockAPI.fetchSuuF1Outbound(requestBody);
     const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
 
-    this.VN30DerivativeChartRef.current.appendData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(busd)});
+    this.VN30DerivativeChartRef.current.appendData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(vn30index)});
     this.BuyupSelldownChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbit(arbitUnwind)});
     this.NETBUSDChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
     this.ForeignDerivativeChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
@@ -237,8 +238,9 @@ class MainDashboardScreen extends React.Component {
 
   async fetchOthers(requestBody) {
     const ps = await StockAPI.fetchPSOutbound(requestBody);
+    const vn30Index = await StockAPI.fetchVN30IndexdOutbound(requestBody);
     const busd = await StockAPI.fetchBusdOutbound(requestBody);
-    this.VN30DerivativeChartRef.current.updateData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(busd)});
+    this.VN30DerivativeChartRef.current.updateData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(vn30Index)});
 
     const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
     const busdData = DataParser.parseBusdOutbound(busd);
