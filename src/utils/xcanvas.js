@@ -680,7 +680,7 @@ class XCanvasJS {
       if (this.minDpsTime > minViewRangeTime) {
         dps.unshift({
           x: new Date(minViewRangeTime),
-          y: 0,
+          y: null,
           fake: true
         })
       }
@@ -688,7 +688,7 @@ class XCanvasJS {
       if (this.maxDpsTime < maxViewRangeTime) {
         dps.push({
           x: new Date(maxViewRangeTime),
-          y: 0,
+          y: null,
           fake: true
         })
       }
