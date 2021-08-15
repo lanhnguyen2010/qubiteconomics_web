@@ -35,9 +35,14 @@ export default class BuySellPressureChart extends LineChart {
 
     options = this.mergeOptions(options, {
       navigator: {
+        enabled: true,
         height: 0,
-        width: 0
-      }
+        width: 0,
+        slider: {
+        },
+        axisX: {
+        }
+      },
     })
 
     options.minMarginRight = 50;

@@ -1,18 +1,15 @@
 const DataParser = {
     parsePSOutbound: (data) => {
         let outData = []
-        console.log(data)
-        if (data && data.timestamp && data.timestamp.length) {
-            outData = data.timestamp.map((i, index) => {
-                let time = new Date(i * 1000);
+        if (data && data.time && data.time.length) {
+            outData = data.time.map((i, index) => {
+                let iTimeSplit = i.split(":")
                 return {
                     price: data.price[index],
-                    time: new Date(2021, 1, 1, time.getHours() - 7, time.getMinutes(), time.getSeconds()),
+                    time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
                 }
-
             }) ;
         }
-        console.log(outData)
         return outData;
     },
 
@@ -28,19 +25,18 @@ const DataParser = {
                     SMA: data.new_net[index],
                     time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
                 }
-
             }) ;
         }
         return outData;
     },
     parseVN30Index: (data) => {
         let outData = []
-        if (data && data.timestamp && data.timestamp.length) {
-            outData = data.timestamp.map((i, index) => {
-                let time = new Date(i * 1000);
+        if (data && data.time && data.time.length) {
+            outData = data.time.map((i, index) => {
+                let iTimeSplit = i.split(":")
                 return {
                     last: data.last[index],
-                    time: new Date(2021, 1, 1, time.getHours() - 7, time.getMinutes(), time.getSeconds()),
+                    time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
                 }
 
             }) ;
@@ -51,7 +47,6 @@ const DataParser = {
         let outData = []
         if (data && data.time.length) {
             outData = data.time.map((i, index) => {
-
                 let iTimeSplit = i.split(":")
                 return {
                     price: data.netNN[index],
@@ -100,8 +95,6 @@ const DataParser = {
                     y: data.unwind.y[index],
                     num_lots: data.unwind.num_lots[index]
                 }
-
-                //return {time: new Date(timeStamp/1000000 - 7*60*60*1000), price: BuySellNNOutbound.buySell.netNN[index]}
             }) ;
         }
         return outData;

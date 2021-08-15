@@ -95,19 +95,22 @@ export default class LineChart extends BaseChart {
                     tooltip = tooltip.concat(divX);
                   }
                   for (var i = 0; i < e.entries.length; i++) {
-                      if(e.entries[i].dataPoint) {
-                          if(e.entries[i].dataSeries.visible) {
-                              if (!e.entries[i].dataSeries.color) {
-                                  e.entries[i].dataSeries.color = '#4661EE';
+                    let entry = e.entries[i];
+                    if (entry.dataPoint) {
+                        if(entry.dataSeries.visible) {
+                            if (!entry.dataSeries.color) {
+                                entry.dataSeries.color = '#4661EE';
+                            }
+                            if (entry.dataPoint.y != null) {
+                              let label = entry.dataPoint.y.toFixed(2)
+                              if (entry.dataPoint.name){
+                                  label = entry.dataPoint.name;
                               }
-                              let label = e.entries[i].dataPoint.y.toFixed(2)
-                              if (e.entries[i].dataPoint.name){
-                                  label = e.entries[i].dataPoint.name;
-                              }
-                              let div = '<div style="padding-right: 5px; display: inline-block; color:' + e.entries[i].dataSeries.color + '">' + label + '</div>'
+                              let div = '<div style="padding-right: 5px; display: inline-block; color:' + entry.dataSeries.color + '">' + label + '</div>'
                               tooltip = tooltip.concat(div);
-                          }
-                      }
+                            }
+                        }
+                    }
                   }
               }
               return tooltip.concat('</div>');
@@ -179,10 +182,8 @@ export default class LineChart extends BaseChart {
 
   updateData(chartData) {
     if (!chartData || !chartData.length) return;
-
-    var reversedData = [...chartData];
     this.chart.updateData([
-      reversedData.map(item => ({ x: item.time, y: item.price }))
+      chartData.map(item => ({ x: item.time, y: item.price }))
     ])
   }
 

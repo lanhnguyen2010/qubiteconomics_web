@@ -182,9 +182,6 @@ class MainDashboardScreen extends React.Component {
     this.FBFSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
     this.F1BidVAskVChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
     this.NetBSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
-
-    chartManager.initViewRange();
-    chartManager.registerRenderCharts(true);
   }
 
   async onDatePicked(date) {

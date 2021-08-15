@@ -32,6 +32,12 @@ class XCanvasJSManager {
     this.renderQueue = [];
     this.registeredRenderCharts = {};
     this.triggerRender();
+
+    this.debug = false;
+  }
+
+  register(mgr) {
+    this.chartsManager.push(mgr);
   }
 
   acquireRenderLock() {
@@ -42,19 +48,34 @@ class XCanvasJSManager {
     this.lockRender = false;
   }
 
-  register(mgr) {
-    this.chartsManager.push(mgr);
+  setViewRange(minTime, maxTime) {
+    this.minViewRangeTime = minTime;
+    this.maxViewRangeTime = maxTime;
+
+    if (minTime > 0 && maxTime > 0) {
+      this.chartsManager.forEach(mgr => {
+        mgr.syncViewRange();
+      });
+  
+      if (this.debug) {
+        console.log("Range", this.minViewRangeTime, new Date(this.minViewRangeTime), this.maxViewRangeTime, new Date(this.maxViewRangeTime))  
+      }
+    }
   }
 
   setViewport(minTime, maxTime) {
-    this.minViewportTime = minTime || this.minViewRangeTime;
-    this.maxViewportTime = maxTime || this.maxViewRangeTime;
+    this.minViewportTime = minTime;
+    this.maxViewportTime = maxTime;
 
     this.chartsManager.forEach(mgr => {
-      var slider = mgr.getOptions().navigator.slider;
-      slider.minimum = this.minViewportTime;
-      slider.maximum = this.maxViewportTime;
+      var navigator = mgr.getOptions().navigator;
+      navigator.slider.minimum = this.minViewportTime;
+      navigator.slider.maximum = this.maxViewportTime;
     });
+
+    if (this.debug) {
+      console.log("View", this.minViewportTime, new Date(this.minViewportTime), this.maxViewportTime, new Date(this.maxViewportTime))
+    }
 
     this.calculateInterval();
   }
@@ -93,17 +114,12 @@ class XCanvasJSManager {
       }
     })
 
-    this.minViewRangeTime = minTime - 5 * 60 * 1000;
-    this.maxViewRangeTime = maxTime + 10 * 60 * 1000;
+    minTime = minTime - (15 * 60 * 1000);
+    maxTime = maxTime + (15 * 60 * 1000);
 
-    this.chartsManager.forEach(mgr => {
-      var slider = mgr.getOptions().navigator.slider;
-      slider.minimum = this.minViewRangeTime;
-      slider.maximum = this.maxViewRangeTime;
-    });
-
-    if (syncViewport) {
-      this.setViewport(this.minViewportTime, this.maxViewRangeTime);
+    this.setViewRange(minTime, maxTime);
+    if (syncViewport || !this.minViewportTime) {
+      this.setViewport(minTime, maxTime);
     }
   }
 
@@ -142,19 +158,16 @@ class XCanvasJSManager {
     this.renderQueue.push(index);
   }
 
-  registerRenderCharts(notifyChanges, forceRenderIndex) {
-    if (forceRenderIndex) {
-      this.chartsManager[forceRenderIndex].render(notifyChanges);
-    }
+  registerRenderCharts(notifyChanges, triggerIndex) {
     this.chartsManager.forEach(mgr => {
-      if (forceRenderIndex && forceRenderIndex === mgr.getIndex()) return;
+      if (triggerIndex && triggerIndex === mgr.getIndex()) return;
       this.registerRender(mgr.getIndex(), notifyChanges);
     });
   }
 
   calculateInterval() {
-    var maxViewport = this.maxViewportTime;
-    var minViewport = this.minViewportTime;
+    var maxViewport = this.maxViewportTime || this.maxViewRangeTime;
+    var minViewport = this.minViewportTime || this.minViewRangeTime;
 
     if (!minViewport || !maxViewport) {
       // Not ready, take the min/max from charts
@@ -433,6 +446,9 @@ class XCanvasJS {
                 this.crosshairShowed = true;
               }
             }
+            /*,labelFormatter: function(e){
+              return  "‎‎‎‎‏‏‎ ‎  " + e.value;
+            }*/
           },
           data: []
         }
@@ -477,11 +493,11 @@ class XCanvasJS {
 
       var currentViewportMin = this.getManager().minViewportTime;
       var currentViewportMax = this.getManager().maxViewportTime;
-  
+
       var interval = 10 * 60 * 1000;
-    
+
       var newViewportMin, newViewportMax;
-    
+
       if (event.deltaY < 0) {
         newViewportMin = currentViewportMin + interval;
         newViewportMax = currentViewportMax - interval;
@@ -490,10 +506,10 @@ class XCanvasJS {
         newViewportMin = currentViewportMin - interval;
         newViewportMax = currentViewportMax + interval;
       }
-  
+
       if (newViewportMin < this.minDpsTime) newViewportMin = this.minDpsTime;
       if (newViewportMax >= this.maxDpsTime) newViewportMax = this.maxDpsTime;
-  
+
       var minuteDiffs = parseInt((newViewportMax - newViewportMin) / 1000 / 60);
       if (minuteDiffs >= 1) {
         this.getManager().setViewport(newViewportMin, newViewportMax);
@@ -579,6 +595,10 @@ class XCanvasJS {
 
     if (!this.minDpsTime || !this.maxDpsTime) return;
 
+    if (this.manager.debug) {
+      console.log(this.chartInfo, new Date(this.minDpsTime), new Date(this.maxDpsTime));
+    }
+
     var date = new Date(this.maxDpsTime);
     this.getAxisXOptions().scaleBreaks = {
       customBreaks: [{
@@ -595,15 +615,8 @@ class XCanvasJS {
       this.ready = true;
       this.getManager().fireReadyEvent(this.getIndex());
     }
-
-    this.getManager().registerRender(this.getIndex(), false);
-  }
-
-  getLastValidPoint(dps) {
-    for (var i = dps.length; i >= 0; i--) {
-      if (dps[i].y !== null) {
-        return dps[i].y;
-      }
+    else {
+      this.getManager().registerRender(this.getIndex(), false);
     }
   }
 
@@ -651,6 +664,34 @@ class XCanvasJS {
       }
 
       this.getChartOptions().data[index].dataPoints = currentDps;
+    });
+  }
+
+  syncViewRange() {
+    let minViewRangeTime = this.getManager().minViewRangeTime;
+    let maxViewRangeTime = this.getManager().maxViewRangeTime;
+
+    this.getChartOptions().data.forEach((data) => {
+      let dps = data.dataPoints;
+      if (!dps.length) {
+        return;
+      }
+
+      if (this.minDpsTime > minViewRangeTime) {
+        dps.unshift({
+          x: new Date(minViewRangeTime),
+          y: null,
+          fake: true
+        })
+      }
+
+      if (this.maxDpsTime < maxViewRangeTime) {
+        dps.push({
+          x: new Date(maxViewRangeTime),
+          y: null,
+          fake: true
+        })
+      }
     });
   }
 
