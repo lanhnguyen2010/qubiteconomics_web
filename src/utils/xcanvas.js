@@ -489,6 +489,12 @@ class XCanvasJS {
         this.getManager().dispatchEvent(this.getIndex(), event);
       }
     });
+
+    this.chart.container.addEventListener("mouseup", (event) => {
+      if (this.markerArea) {
+        this.markerArea.setCurrentMarker();
+      }
+    });
   }
 
   activeMarker() {
