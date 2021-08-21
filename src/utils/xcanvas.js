@@ -1,3 +1,4 @@
+import { stringify } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { ThumbUpSharp } from "@material-ui/icons";
 
 class EventBus {
@@ -33,7 +34,7 @@ class XCanvasJSManager {
     this.registeredRenderCharts = {};
     this.triggerRender();
 
-    this.debug = false;
+    this.debug = new URL(window.location.href).searchParams.get("debug") == "true";
     this.selected = -1;
   }
 
@@ -350,6 +351,8 @@ class XCanvasJS {
 
     this.onRangeChanging = this.debounce(this.__onRangeChanging.bind(this), 20);
     this.onZooming = this.debounce(this.__onZooming.bind(this), 20);
+
+    this.stripLinesTouched = {};
   }
 
   __init() {
@@ -476,55 +479,85 @@ class XCanvasJS {
       event.preventDefault();
       this.onZooming(event);
     });
+
     this.chart.container.addEventListener("mousemove", (event) => {
       if (!this.ready) return;
-      if (this.selected == -1) {
+      var currentStripLineIndex = parseInt(this.currentStripLineIndex);
+
+      if (isNaN(currentStripLineIndex) || currentStripLineIndex == -1) {
         if (this.crosshairShowed) {
           this.getManager().dispatchEvent(this.getIndex(), event);
         }
       }
       else {
-        //TO DO
-        //Hanlde move Y
+        this.stripLinesTouched[currentStripLineIndex] = true;
 
+        var pos = event.offsetY;
+
+        var stripLines = this.getAxisYOptions().stripLines;
+        var stripLine = stripLines[currentStripLineIndex];
+        var currentValue = stripLine.value;
+        var currentX = this.getAxisY().convertValueToPixel(currentValue);
+
+        stripLine.value = this.getAxisY().convertPixelToValue(pos);
+
+        this.log(() => `Stripline ${currentStripLineIndex} changed (P, V): (${currentX}, ${currentValue}) => (${pos}, ${stripLine.value})`);
+
+        this.chart.render();
       }
     });
+
     this.chart.container.addEventListener("mouseout", (event) => {
       if (!this.ready) return;
       if (this.crosshairShowed) {
         this.getManager().dispatchEvent(this.getIndex(), event);
       }
     });
-    
+
     this.chart.container.addEventListener("mousedown", (event) => {
       if (!this.ready) return;
-      var chart = this.chart;
-      var relX = event.pageX - chart.container.offsetLeft;
-      var relY = event.pageY - chart.container.offsetTop;
-      var snapDistance = 10;
-      var stripLines = chart.charts[0].axisY2[0].stripLines;
-      for (var i = 0; i < stripLines.length; i++) {
-        if (stripLines[i].bounds && relX > stripLines[i].bounds.x1 - snapDistance 
-        && relX < stripLines[i].bounds.x2 + snapDistance 
-        && relY > stripLines[i].bounds.y1 - snapDistance 
-        && relY < stripLines[i].bounds.y2 + snapDistance) {
-          this.selected = i;
-          document.querySelectorAll(".canvasjs-chart-canvas").forEach(canvas => {
-            canvas.style.cursor="pointer";
-          })
 
+      // Reset
+      this.currentStripLineIndex = -1;
+
+      var x = event.offsetX;
+      var y = event.offsetY;
+      var delta = 5;
+
+      var stripLines = this.getAxisY().stripLines;
+      for (var i = 0; i < stripLines.length; i++) {
+        var bounds = stripLines[i].bounds;
+
+        if (x >= bounds.x1 - delta && x <= bounds.x2 + delta) {
+          if (y >= bounds.y1 - delta && y <= bounds.y2 + delta) {
+            this.currentStripLineIndex = i;
+            document.querySelectorAll(".canvasjs-chart-canvas").forEach(canvas => {
+              canvas.style.cursor = "pointer";
+            })
+          }
         }
-      };
+
+        this.log(() => `Evaluate stripline ${i}. {x,y}={${x},${y}}. Bounds: ${stringify(bounds)}. Matched: ${this.currentStripLineIndex}`);
+
+        if (this.currentStripLineIndex !== -1) {
+          break;
+        }
+      }
     })
 
     this.chart.container.addEventListener("mouseup", (event) => {
       if (!this.ready) return;
-      this.selected = -1;
+      this.currentStripLineIndex = -1;
       document.querySelectorAll(".canvasjs-chart-canvas").forEach(canvas => {
-        canvas.style.cursor="pointer";
+        canvas.style.cursor = "default";
       })
-
     })
+  }
+
+  log(fMsg) {
+    if (this.manager.debug) {
+      console.log(this.chartInfo.key + ": " + fMsg());
+    }
   }
 
   __onZooming(event) {
@@ -992,6 +1025,10 @@ class XCanvasJS {
     }
 
     this.dataPoints.forEach((_, index) => {
+      // We moved the stripline manually on UI, skip it
+      if (this.stripLinesTouched[index]) {
+        return;
+      }
       let value = stripLinesValue[index];
       if (!isNaN(parseInt(value))) {
         this.buildStripLine(value, index);
