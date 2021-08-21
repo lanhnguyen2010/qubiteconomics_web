@@ -34,6 +34,7 @@ class XCanvasJSManager {
     this.triggerRender();
 
     this.debug = false;
+    this.selected = -1;
   }
 
   register(mgr) {
@@ -475,14 +476,54 @@ class XCanvasJS {
       event.preventDefault();
       this.onZooming(event);
     });
-
-    ["mousemove", "mouseout"].forEach(evtName => {
-      this.chart.container.addEventListener(evtName, (event) => {
-        if (!this.ready) return;
+    this.chart.container.addEventListener("mousemove", (event) => {
+      if (!this.ready) return;
+      if (this.selected == -1) {
         if (this.crosshairShowed) {
           this.getManager().dispatchEvent(this.getIndex(), event);
         }
-      });
+      }
+      else {
+        //TO DO
+        //Hanlde move Y
+
+      }
+    });
+    this.chart.container.addEventListener("mouseout", (event) => {
+      if (!this.ready) return;
+      if (this.crosshairShowed) {
+        this.getManager().dispatchEvent(this.getIndex(), event);
+      }
+    });
+    
+    this.chart.container.addEventListener("mousedown", (event) => {
+      if (!this.ready) return;
+      var chart = this.chart;
+      var relX = event.pageX - chart.container.offsetLeft;
+      var relY = event.pageY - chart.container.offsetTop;
+      var snapDistance = 10;
+      var stripLines = chart.charts[0].axisY2[0].stripLines;
+      for (var i = 0; i < stripLines.length; i++) {
+        if (stripLines[i].bounds && relX > stripLines[i].bounds.x1 - snapDistance 
+        && relX < stripLines[i].bounds.x2 + snapDistance 
+        && relY > stripLines[i].bounds.y1 - snapDistance 
+        && relY < stripLines[i].bounds.y2 + snapDistance) {
+          this.selected = i;
+          document.querySelectorAll(".canvasjs-chart-canvas").forEach(canvas => {
+            canvas.style.cursor="pointer";
+          })
+
+        }
+      };
+    })
+
+    this.chart.container.addEventListener("mouseup", (event) => {
+      if (!this.ready) return;
+      this.selected = -1;
+      document.querySelectorAll(".canvasjs-chart-canvas").forEach(canvas => {
+        canvas.style.cursor="pointer";
+      })
+
     })
   }
 
