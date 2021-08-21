@@ -5498,7 +5498,7 @@ var MarkerArea = /** @class */ (function () {
         var scaleX = newWidth / this.imageWidth;
         var scaleY = newHeight / this.imageHeight;
         this.imageWidth = Math.round(newWidth);
-        this.imageHeight = Math.round(newHeight);
+        this.imageHeight = Math.round(newHeight) - this.getDiffHeight();
         this.editingTarget.src = this.target.src;
         this.editingTarget.width = this.imageWidth;
         this.editingTarget.height = this.imageHeight;
@@ -5652,7 +5652,7 @@ var MarkerArea = /** @class */ (function () {
                         ? this.target.offsetTop - Style.settings.toolbarHeight
                         : 0;
                     this.coverDiv.style.top = coverTop + "px";
-                    this.coverDiv.style.left = this.target.parentElement.parentElement.offsetLeft.toString() + "px";
+                    this.coverDiv.style.left = this.getX() + "px";
                     this.coverDiv.style.width = this.target.offsetWidth.toString() + "px";
                     //this.coverDiv.style.height = `${this.target.offsetHeight.toString()}px`;
                     this.coverDiv.style.zIndex = '5';
@@ -6100,15 +6100,28 @@ var MarkerArea = /** @class */ (function () {
     MarkerArea.prototype.onWindowResize = function () {
         this.positionUI();
     };
+    MarkerArea.prototype.getX = function () {
+        return this.target.parentElement.parentElement.offsetLeft + 4;
+    };
+    MarkerArea.prototype.getY = function () {
+        var coverTop = this.target.offsetTop > Style.settings.toolbarHeight
+        ? this.target.offsetTop - Style.settings.toolbarHeight
+        : 0;
+        return coverTop;
+    };
+    MarkerArea.prototype.getDiffHeight = function () {
+        let diff = 0;
+        if (this.target.offsetTop < Style.settings.toolbarHeight) {
+            diff = Style.settings.toolbarHeight - this.target.offsetTop;
+        }
+        return diff;
+    };
     MarkerArea.prototype.positionUI = function () {
         this.setTopLeft();
         switch (this.settings.displayMode) {
             case 'inline': {
-                var coverTop = this.target.offsetTop > Style.settings.toolbarHeight
-                    ? this.target.offsetTop - Style.settings.toolbarHeight
-                    : 0;
-                this.coverDiv.style.top = coverTop + "px";
-                this.coverDiv.style.left = this.target.parentElement.parentElement.offsetLeft.toString() + "px";
+                this.coverDiv.style.top = this.getY() + "px";
+                this.coverDiv.style.left = this.getX() + "px";
                 break;
             }
             case 'popup': {
