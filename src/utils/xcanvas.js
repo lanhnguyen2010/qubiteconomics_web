@@ -140,7 +140,7 @@ class XCanvasJSManager {
     {
       setTimeout(() => {
         this.triggerRender();
-      }, 100);
+      }, 300);
     }
   }
 
