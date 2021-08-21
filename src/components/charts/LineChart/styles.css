@@ -9,10 +9,6 @@
   background: rgb(33, 150, 243) !important;
 }
 
-.canvasjs-chart-toolbar button:first-child {
-  visibility: hidden;
-}
-
 .canvasjs-chart-credit {
   display: none;
 }

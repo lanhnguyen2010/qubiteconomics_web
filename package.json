@@ -11,6 +11,7 @@
     "@testing-library/user-event": "^12.1.10",
     "bootstrap": "^4.3.1",
     "create-react-class": "^15.7.0",
+    "markerjs2": "^2.11.1",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.33",
     "prop-types": "latest",

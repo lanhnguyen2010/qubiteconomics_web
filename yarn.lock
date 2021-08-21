@@ -8060,6 +8060,11 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
+markerjs2@^2.11.1:
+  version "2.11.1"
+  resolved "https://registry.yarnpkg.com/markerjs2/-/markerjs2-2.11.1.tgz#eb8bf7fc80a623bca0d9294bdb07ad942ad06fd7"
+  integrity sha512-LDL2n8JP07R0S9vdpGVmOZQkTbRyLU7bymEwpC5A9Dd+7G+CblgaowLhtiCnGdBu+kiyFNiGCwC94Fhj/CL5wg==
+
 match-sorter@^6.0.2:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/match-sorter/-/match-sorter-6.3.0.tgz#454a1b31ed218cddbce6231a0ecb5fdc549fed01"
