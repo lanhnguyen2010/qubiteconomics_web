@@ -40,12 +40,13 @@ export default class VN30DerivativeChart extends LineChart {
 
   updateData(chartData) {
     if (!chartData || !chartData.PS || !chartData.VNIndex30) return;
-
+    
     this.chart.updateData([
       chartData.VNIndex30.map(item => ({ x: item.time, y: item.last })),
       chartData.PS.map(item => ({ x: item.time, y: item.price }))
-      
+
     ])
+    this.setCorlor(this.chart.dataPoints);
   }
 
   appendData(chartData) {
@@ -53,8 +54,69 @@ export default class VN30DerivativeChart extends LineChart {
 
     this.chart.appendData([
       chartData.VNIndex30.map(item => ({ x: item.time, y: item.last })),
-      chartData.PS.map(item => ({ x: item.time, y: item.price }))    
+      chartData.PS.map(item => ({ x: item.time, y: item.price }))
     ])
+
+    this.setCorlor(this.chart.dataPoints);
   }
+
+
+  setCorlor(chartData) {
+    var isPSOnTop = true;
+    this.chart.getAxisXOptions().stripLines = [];
+    var PSData = chartData[1];
+    var VNIndex30Data = chartData[0];
+    var lastValue = PSData[0].x;
+    var lastIndex = 0;
+    for (var i = 0; i < PSData.length; i++) {
+      if (PSData[i]) {
+        var nearestPoint = this.getNearestPoint(lastIndex, PSData[i].x, VNIndex30Data);
+        lastIndex = nearestPoint.index;
+        if (isPSOnTop) {
+          if ((lastIndex > 0 && nearestPoint.dataPoint.y >= PSData[i].y && ((PSData[i].x - lastValue) > 1000*60)) || i == PSData.length - 1) {
+            isPSOnTop = false;
+            this.chart.getAxisXOptions().stripLines.push({
+              startValue: lastValue,
+              endValue: PSData[i].x,
+              color: "red",
+              thickness:0,
+              opacity: .3
+            })
+            lastValue = PSData[i].x;
+
+          }
+        }
+        else {
+          if ((lastIndex > 0 && nearestPoint.dataPoint.y <= PSData[i].y && ((PSData[i].x - lastValue) > 1000*60)) || i == PSData.length - 1) {
+            isPSOnTop = true;
+            this.chart.getAxisXOptions().stripLines.push({
+              startValue: lastValue,
+              endValue: PSData[i].x,
+              color: "green",
+              thickness:0,
+              opacity: .3
+            })
+            lastValue = PSData[i].x;
+
+          }
+        }
+      }
+    }
+  }
+
+  getNearestPoint(lastIndex, time, data){
+    for (var i = lastIndex; i < data.length; i++){
+      if(data[i].x > time){
+        return {
+          index: i,
+          dataPoint: data[i]
+        }
+      }
+    }
+    return {
+      index: 0
+    }
+  }
+
 
 }

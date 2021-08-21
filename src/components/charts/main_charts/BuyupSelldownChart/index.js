@@ -89,12 +89,13 @@ export default class BuyupSelldownChart extends LineChart {
     chart.axisX.stripLines=[{
       value: startTime,
       labelAlign: "far",
-      abelPlacement: "inside",
+      labelPlacement: "inside",
       label: maxBU.toFixed(0) + '|' + color1 + "," + maxSD.toFixed(0) + '|' + color2
     },
     {
       value: endTime,
       labelAlign: "far",
+      labelPlacement: "inside",
       label: maxBUEnd.toFixed(0) + '|' + color1 + "," + maxSDEnd.toFixed(0) + '|' + color2
     }]
   }
