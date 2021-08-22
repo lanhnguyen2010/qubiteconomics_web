@@ -1302,7 +1302,7 @@ var ResizeGrip = /** @class */ (function () {
         /**
          * Grip's size (raduis).
          */
-        this.GRIP_SIZE = 10;
+        this.GRIP_SIZE = 5;
         this.visual = SvgHelper.createGroup();
         this.visual.appendChild(SvgHelper.createCircle(this.GRIP_SIZE * 1.5, [['fill', 'transparent']]));
         this.visual.appendChild(SvgHelper.createCircle(this.GRIP_SIZE, [
