@@ -1,19 +1,25 @@
+import moment from "moment-timezone";
+
 const DataParser = {
-    parsePSOutbound: (data) => {
+    parsePSOutbound: (data, date) => {
+        date = date || moment();
+
         let outData = []
         if (data && data.time && data.time.length) {
             outData = data.time.map((i, index) => {
                 let iTimeSplit = i.split(":")
                 return {
                     price: data.price[index],
-                    time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
+                    time: new Date(date.year(), date.month(), date.date(), parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
                 }
             }) ;
         }
         return outData;
     },
 
-    parseBusdOutbound: (data) => {
+    parseBusdOutbound: (data, date) => {
+        date = date || moment();
+
         let outData = []
         if (data && data.time && data.time.length) {
             outData = data.time.map((i, index) => {
@@ -23,34 +29,38 @@ const DataParser = {
                     BU: data.BU[index],
                     NetBUSD: data.Net[index],
                     SMA: data.new_net[index],
-                    time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
+                    time: new Date(date.year(), date.month(), date.date(), parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
                 }
             }) ;
         }
         return outData;
     },
-    parseVN30Index: (data) => {
+    parseVN30Index: (data, date) => {
+        date = date || moment();
+
         let outData = []
         if (data && data.time && data.time.length) {
             outData = data.time.map((i, index) => {
                 let iTimeSplit = i.split(":")
                 return {
                     last: data.last[index],
-                    time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
+                    time: new Date(date.year(), date.month(), date.date(), parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
                 }
 
             }) ;
         }
         return outData;
     },
-    parseBuySellNNOutbound: (data) =>{
+    parseBuySellNNOutbound: (data, date) =>{
+        date = date || moment();
+
         let outData = []
-        if (data && data.time.length) {
+        if (data && data.time && data.time.length) {
             outData = data.time.map((i, index) => {
                 let iTimeSplit = i.split(":")
                 return {
                     price: data.netNN[index],
-                    time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
+                    time: new Date(date.year(), date.month(), date.date(), parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
                     buyPressure: data.buyPressure[index],
                     sellPressure: data.sellPressure[index]
                 }
@@ -59,7 +69,9 @@ const DataParser = {
         return outData;
     },
 
-    parseSuuF1Outbound: (data) =>{
+    parseSuuF1Outbound: (data, date) =>{
+        date = date || moment();
+
         let outData = []
         if (data && data.time && data.time.length) {
             outData = data.time.map((i, index) => {
@@ -73,7 +85,7 @@ const DataParser = {
                     NetBA: data.Net_BA[index],
                     NetBS: data['Net_BU&SD2'][index],
                     SMA: data.SMA[index],
-                    time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
+                    time: new Date(date.year(), date.month(), date.date(), parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
                 }
 
             }) ;
@@ -81,14 +93,15 @@ const DataParser = {
         return outData;
     },
 
-    parseArbitUnwind: (data) => {
+    parseArbitUnwind: (data, date) =>{
+        date = date || moment();
         let outData = []
         if (data && data.unwind && data.unwind.time && data.arbit.time.length) {
             outData = data.unwind.time.map((i, index) => {
 
                 let iTimeSplit = i.split(":")
                 return {
-                    time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
+                    time: new Date(date.year(), date.month(), date.date(), parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
                     radius: data.unwind.radius[index],
                     label: data.unwind.label[index],
                     x: data.unwind.x[index],
@@ -100,14 +113,15 @@ const DataParser = {
         return outData;
     },
 
-    parseArbit:(data) => {
+    parseArbit:(data, date) =>{
+        date = date || moment();
         let outData = []
         if (data && data.arbit && data.arbit.time && data.arbit.time.length) {
             outData = data.arbit.time.map((i, index) => {
 
                 let iTimeSplit = i.split(":")
                 return {
-                    time: new Date(2021, 1, 1, parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
+                    time: new Date(date.year(), date.month(), date.date(), parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
                     radius: data.arbit.radius[index],
                     label: data.arbit.label[index],
                     x: data.arbit.x[index],

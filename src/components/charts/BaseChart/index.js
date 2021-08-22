@@ -68,6 +68,21 @@ export default class BaseChart extends React.Component {
     return options;
   }
 
+  activeSlider(options) {
+    options = options || this.chartOptions;
+    options = this.mergeOptions(options, {
+      navigator: {
+        enabled: true,
+        height: 0,
+        width: 0,
+        slider: {
+        },
+        axisX: {
+        }
+      },
+    })
+  }
+
   getChartOptions(options) {
     return options.charts[0];
   }

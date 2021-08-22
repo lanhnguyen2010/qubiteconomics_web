@@ -33,18 +33,6 @@ export default class BuySellPressureChart extends LineChart {
       yValueFormatString: "#,##0.00"
     })
 
-    options = this.mergeOptions(options, {
-      navigator: {
-        enabled: true,
-        height: 0,
-        width: 0,
-        slider: {
-        },
-        axisX: {
-        }
-      },
-    })
-
     options.minMarginRight = 50;
 
     return options;

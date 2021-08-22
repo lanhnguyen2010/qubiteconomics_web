@@ -1,5 +1,4 @@
 import LineChart from "components/charts/LineChart";
-
 export default class BuyupSelldownChart extends LineChart {
 
   initChartInfo() {
@@ -66,8 +65,9 @@ export default class BuyupSelldownChart extends LineChart {
     let chartData = data.chartData;
     if (!bubblesData || !bubblesData.length || !chartData || !chartData.length) return;
 
-    var startTime =  new Date(2021, 1, 1, 9, 30, 0);
-    var endTime =  new Date(2021, 1, 1, 14, 30, 0);
+    let date = bubblesData[0].time;
+    var startTime =  new Date(date.getFullYear(), date.getMonth(), date.getDate(), 9, 30, 0);
+    var endTime =  new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 30, 0);
     var maxBU = Math.max.apply(Math, chartData.filter(x => x.time <= startTime).map(item => item.BU));
     var maxSD = Math.max.apply(Math, chartData.filter(x => x.time <= startTime).map(item => item.SD));
     var maxBUEnd = Math.max.apply(Math, chartData.filter(x => x.time >= endTime).map(item => item.BU));
@@ -101,9 +101,10 @@ export default class BuyupSelldownChart extends LineChart {
   }
 
   appendData(data) {
-    if (data && data.bubblesData && data.chartData){
-      var startTime =  new Date(2021, 1, 1, 9, 30, 0);
-      var endTime =  new Date(2021, 1, 1, 14, 30, 0);
+    if (data && data.bubblesData && data.chartData) {
+      let date = data.bubblesData[0].time;
+      var startTime =  new Date(date.getFullYear(), date.getMonth(), date.getDate(), 9, 30, 0);
+      var endTime =  new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 30, 0);
 
       this.chart.appendData([
         data.bubblesData.map(item => ({ x: item.time, y: item.y, markerSize: item.radius/2, name: item.label})),

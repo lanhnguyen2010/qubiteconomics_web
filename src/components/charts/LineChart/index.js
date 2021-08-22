@@ -117,9 +117,9 @@ export default class LineChart extends BaseChart {
             }
           },
           axisX: {
-            valueFormatString: "HH:mm",
             interval: 30,
             intervalType: "minute",
+            valueFormatString: "DD-MM HH:mm",
             labelFontSize: labelFontSize,
             labelFontFamily: fontFamily,
             lineThickness: 0.4,

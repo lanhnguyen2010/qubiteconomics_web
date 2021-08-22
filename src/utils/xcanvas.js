@@ -1,5 +1,6 @@
-import { merge } from '@amcharts/amcharts4/.internal/core/utils/Object';
+import { stringify } from '@amcharts/amcharts4/.internal/core/utils/Utils';
 import * as markerjs2 from 'lib/marker/markerjs2.js';
+import { string } from 'prop-types';
 class EventBus {
   on (event, callback) {
     document.addEventListener(event, (e) => callback(e.detail));
@@ -80,6 +81,7 @@ class XCanvasJSManager {
     }
 
     this.calculateInterval();
+    this.calculateInterval(true);
   }
 
   getMaxDpsTime() {
@@ -184,12 +186,20 @@ class XCanvasJSManager {
     if (index !== -1) this.renderQueue.splice(index, 1);
 
     // Render it
-    this.chartsManager[chartIndex].render(true);
+    if (this.chartsManager[chartIndex]) {
+      this.chartsManager[chartIndex].render(true);
+    }
   }
 
-  calculateInterval() {
-    var maxViewport = this.maxViewportTime || this.maxViewRangeTime;
-    var minViewport = this.minViewportTime || this.minViewRangeTime;
+  calculateInterval(slider) {
+    let minViewport = this.minViewportTime || this.minViewRangeTime;
+    let maxViewport = this.maxViewportTime || this.maxViewRangeTime;
+
+    // Slider mode, use the range time
+    if (slider) {
+      minViewport = this.minViewRangeTime;
+      maxViewport = this.maxViewRangeTime;
+    }
 
     if (!minViewport || !maxViewport) {
       // Not ready, take the min/max from charts
@@ -204,39 +214,56 @@ class XCanvasJSManager {
       });
     }
 
-    let date = new Date(minViewport);
-    let scaleBreatStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 11, 30, 0).getTime();
-    let scaleBreatEnd = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 13, 0, 0).getTime();
+    let diffTime = maxViewport - minViewport;
 
-    let diff = maxViewport - minViewport;
-    if (minViewport < scaleBreatStart && maxViewport > scaleBreatEnd) {
-      diff -= (scaleBreatEnd - scaleBreatStart);
-    }
-    diff /= 1000;
-    diff = this.roundNumber(diff, true, 1000);
+    let breaks = this.chartsManager[0].getAxisXOptions().scaleBreaks.customBreaks;
+    breaks.forEach(breakItem => {
+      let start = breakItem.startValue;
+      let end = breakItem.endValue;
 
-    let asMinute = true;
+      if (minViewport < start && maxViewport > end) {
+        diffTime -= (end - start);
+      }
+    });
+
+    diffTime /= 1000 * 60;
+    diffTime = this.roundNumber(diffTime, true, 1000);
+
+    let intervalType = "minute";
     let labelWidth = 80;
-    if (diff < 180) {
-      asMinute = false;
+    let labelAngle = 0;
+
+    if (diffTime < 180) {
+      intervalType = "second"
       labelWidth = 120;
+    } else if (diffTime > 480) {
+      intervalType = "hour"
+      labelWidth = 200;
+      labelAngle = -10;
     } else {
-      diff /= 60;
+      diffTime /= 60;
     }
 
-    let steps = 0;
+    let width = 0;
     for (var i = 0; i < this.chartsManager.length; i++) {
       let mgr = this.chartsManager[i];
       if (mgr.ready && mgr.chart.container) {
-        let width = mgr.chart.container.clientWidth;
+        width = mgr.chart.container.clientWidth;
         if (width) {
-          steps = width / labelWidth;
           break;
         }
       }
     }
 
+    let steps = width / labelWidth;
     if (steps <= 0) steps = 1;
+
+    let diff = diffTime;
+    if (intervalType === "second") {
+      diff = diffTime * 60;
+    } else if (intervalType === "hour") {
+      diff = diffTime / 60;
+    }
 
     let interval = parseInt(diff / steps);
     if (interval > 20) {
@@ -244,17 +271,22 @@ class XCanvasJSManager {
     }
     if (interval < 0) interval = 1;
 
+    let labelFormat = "HH:mm";
+    if (intervalType === "second") {
+      labelFormat = "HH:mm:ss";
+    } else if (intervalType === "hour") {
+      labelFormat = "DD-MM HH:mm";
+    }
+
+    this.log(() => `Interval is ${interval} ${intervalType} with diffs: ${diff}, steps ${steps}, width: ${width} over labelW = ${labelWidth}. Diff in mn ${diffTime}. Format: ${labelFormat}`);
+
     this.chartsManager.forEach(mgr => {
-      let axisX = mgr.getAxisXOptions();
-      if (asMinute) {
-        axisX.interval = interval;
-        axisX.intervalType = "minute";
-        axisX.valueFormatString = "HH:mm";
-      } else {
-        axisX.interval = interval;
-        axisX.intervalType = "second";
-        axisX.valueFormatString = "HH:mm:ss";
-      }
+      let axisX = slider ? mgr.getOptions().navigator.axisX : mgr.getAxisXOptions();
+      axisX.interval = interval;
+      axisX.intervalType = intervalType;
+      axisX.valueFormatString = labelFormat;
+      axisX.labelMaxWidth = labelWidth;
+      axisX.labelAngle = labelAngle;
     });
   }
 
@@ -354,6 +386,12 @@ class XCanvasJSManager {
       mgr.getChart().toolTip.hide();
     });
     return;
+  }
+
+  log(fMsg) {
+    if (this.debug) {
+      console.log(fMsg());
+    }
   }
 }
 
@@ -556,10 +594,12 @@ class XCanvasJS {
 
       let axisX = this.getAxisXOptions();
       let interval = 0;
-      if (axisX.intervalType === "minute") {
-        interval = axisX.interval * 60 * 1000;
-      } else {
+      if (axisX.intervalType === "hour") {
+        interval = axisX.interval * 60 * 60 * 1000;
+      } else if (axisX.intervalType === "second") {
         interval = axisX.interval * 1000;
+      } else {
+        interval = axisX.interval * 60 * 1000;
       }
 
       var newViewportMin, newViewportMax;
@@ -658,21 +698,11 @@ class XCanvasJS {
 
     if (!this.minDpsTime || !this.maxDpsTime) return;
 
+    this.setScaleBreaks();
+
     if (this.manager.debug) {
       console.log(this.chartInfo, new Date(this.minDpsTime), new Date(this.maxDpsTime));
     }
-
-    var date = new Date(this.maxDpsTime);
-    this.getAxisXOptions().scaleBreaks = {
-      customBreaks: [{
-        lineThickness: 0,
-        collapsibleThreshold: "0%",
-        spacing: 0,
-        startValue: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 11, 30, 0),
-        endValue: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 13, 0, 0)
-      }]
-    };
-    this.getOptions().navigator.axisX.scaleBreaks = this.getAxisXOptions().scaleBreaks;
 
     if (!this.ready) {
       this.ready = true;
@@ -681,6 +711,46 @@ class XCanvasJS {
     else {
       this.getManager().registerRender(this.getIndex(), false);
     }
+  }
+
+  setScaleBreaks() {
+    // Scale breaks
+    let breaks = [];
+    let fromDate = new Date(this.minDpsTime); fromDate.setHours(0, 0, 0);
+    let toDate = new Date(this.maxDpsTime); toDate.setHours(0, 0, 0);
+
+    while (fromDate <= toDate) {
+      let date = fromDate;
+      breaks.push({
+        lineThickness: 0,
+        collapsibleThreshold: "0%",
+        spacing: 0,
+        startValue: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0),
+        endValue: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 9, 29, 0)
+      })
+      breaks.push({
+          lineThickness: 0,
+          collapsibleThreshold: "0%",
+          spacing: 0,
+          startValue: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 11, 29, 0),
+          endValue: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 59, 0)
+      })
+      breaks.push({
+        lineThickness: 0,
+        collapsibleThreshold: "0%",
+        spacing: 0,
+        startValue: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 29, 0),
+        endValue: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59)
+      })
+
+      fromDate.setDate(fromDate.getDate() + 1);
+    }
+    this.getAxisXOptions().scaleBreaks = {
+      customBreaks: breaks
+    };
+    this.getOptions().navigator.axisX.scaleBreaks = this.getAxisXOptions().scaleBreaks;
+
+    // this.log(() => `Breakdowns ${stringify(breaks)}`)
   }
 
   appendData(dataPointsList) {
@@ -728,6 +798,8 @@ class XCanvasJS {
 
       this.getChartOptions().data[index].dataPoints = currentDps;
     });
+
+    this.setScaleBreaks();
   }
 
   syncViewRange() {
@@ -736,7 +808,7 @@ class XCanvasJS {
 
     this.getChartOptions().data.forEach((data) => {
       let dps = data.dataPoints;
-      if (!dps.length) {
+      if (!dps || !dps.length) {
         return;
       }
 
@@ -855,15 +927,6 @@ class XCanvasJS {
         finalStripline.thickness = 0;
       }
       axisY.stripLines[index] = finalStripline;
-    }
-  }
-
-  setInterval(value) {
-    if (!this.ready) return;
-
-    if (this.getAxisXOptions().interval !== value) {
-      this.hasPendingChanges = true;
-      this.getAxisXOptions().interval = value;
     }
   }
 

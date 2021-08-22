@@ -64,39 +64,46 @@ export default class VN30DerivativeChart extends LineChart {
   setCorlor(chartData) {
     var isPSOnTop = true;
     this.chart.getAxisXOptions().stripLines = [];
-    var PSData = chartData[1];
+    var psData = chartData[1];
     var VNIndex30Data = chartData[0];
-    var lastValue = PSData[0].x;
+    if (!psData || !psData.length) {
+      return;
+    }
+    if (!VNIndex30Data || !VNIndex30Data.length) {
+      return;
+    }
+
+    var lastValue = psData[0].x;
     var lastIndex = 0;
-    for (var i = 0; i < PSData.length; i++) {
-      if (PSData[i]) {
-        var nearestPoint = this.getNearestPoint(lastIndex, PSData[i].x, VNIndex30Data);
+    for (var i = 0; i < psData.length; i++) {
+      if (psData[i]) {
+        var nearestPoint = this.getNearestPoint(lastIndex, psData[i].x, VNIndex30Data);
         lastIndex = nearestPoint.index;
         if (isPSOnTop) {
-          if ((lastIndex > 0 && nearestPoint.dataPoint.y >= PSData[i].y && ((PSData[i].x - lastValue) > 1000*60)) || i == PSData.length - 1) {
+          if ((lastIndex > 0 && nearestPoint.dataPoint.y >= psData[i].y && ((psData[i].x - lastValue) > 1000*60)) || i == psData.length - 1) {
             isPSOnTop = false;
             this.chart.getAxisXOptions().stripLines.push({
               startValue: lastValue,
-              endValue: PSData[i].x,
+              endValue: psData[i].x,
               color: "red",
               thickness:0,
               opacity: .3
             })
-            lastValue = PSData[i].x;
+            lastValue = psData[i].x;
 
           }
         }
         else {
-          if ((lastIndex > 0 && nearestPoint.dataPoint.y <= PSData[i].y && ((PSData[i].x - lastValue) > 1000*60)) || i == PSData.length - 1) {
+          if ((lastIndex > 0 && nearestPoint.dataPoint.y <= psData[i].y && ((psData[i].x - lastValue) > 1000*60)) || i == psData.length - 1) {
             isPSOnTop = true;
             this.chart.getAxisXOptions().stripLines.push({
               startValue: lastValue,
-              endValue: PSData[i].x,
+              endValue: psData[i].x,
               color: "green",
               thickness:0,
               opacity: .3
             })
-            lastValue = PSData[i].x;
+            lastValue = psData[i].x;
 
           }
         }

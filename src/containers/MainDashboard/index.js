@@ -76,6 +76,7 @@ class MainDashboardScreen extends React.Component {
     this.chartRefs.push(this.NETBUSDChartRef = React.createRef());
     this.chartRefs.push(this.F1BidVAskVChartRef = React.createRef());
     this.chartRefs.push(this.NetBSChartRef = React.createRef());
+
     this.selectedDate = new Date();
     this.updateChart = this.updateChart.bind(this);
 
@@ -96,6 +97,7 @@ class MainDashboardScreen extends React.Component {
   }
 
   componentDidMount() {
+    this.BuySellPressureChartRef.current.activeSlider();
     this.chartRefs.forEach((ref, index) => ref.current.configureChartRelation("DB01", index));
 
     let dateString;
@@ -182,6 +184,7 @@ class MainDashboardScreen extends React.Component {
     this.FBFSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
     this.F1BidVAskVChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
     this.NetBSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
+    
   }
 
   async onDatePicked(date) {
