@@ -35,6 +35,7 @@ class XCanvasJSManager {
 
     this.debug = new URL(window.location.href).searchParams.get("debug") == "true";
     this.selected = -1;
+    this.priorityChartIndex = 4;
   }
 
   register(mgr) {
@@ -141,7 +142,7 @@ class XCanvasJSManager {
     {
       setTimeout(() => {
         this.triggerRender();
-      }, 300);
+      }, 100);
     }
   }
 
@@ -160,12 +161,18 @@ class XCanvasJSManager {
   }
 
   registerRenderCharts(notifyChanges, triggerIndex, forceRenderTrigger) {
+    if (forceRenderTrigger && this.chartsManager[triggerIndex]) {
+      this.renderChart(triggerIndex);
+
+      // The main chart with slider, should priority update to have better feedback
+      if (triggerIndex !== this.priorityChartIndex) this.renderChart(this.priorityChartIndex);
+    }
+
     this.chartsManager.forEach(mgr => {
-      if (triggerIndex === mgr.getIndex()) {
-        if (forceRenderTrigger) {
-          this.renderChart(triggerIndex);
+      if (forceRenderTrigger) {
+        if (triggerIndex === mgr.getIndex() || this.priorityChartIndex === mgr.getIndex()) {
+          return;
         }
-        return;
       }
       this.registerRender(mgr.getIndex(), notifyChanges);
     });
