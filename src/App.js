@@ -1,18 +1,23 @@
 import React from 'react';
 import {
   BrowserRouter as Router,
-  Route
+  Route,
+  Switch
 } from 'react-router-dom';
 import { lifecycle } from 'recompose';
 import { Provider } from "react-redux";
 
 import store from './store'
 import MainDashboard from './containers/MainDashboard'
+import Demo from './containers/Demo'
 
 const AppStateLess = () => (
   <Provider store={store}>
     <Router>
-      <Route path="" component={MainDashboard}/>
+      <Switch>      
+        <Route path="/demo" component={Demo} />
+        <Route path="/" component={MainDashboard} />
+      </Switch>
     </Router>
   </Provider>
 );

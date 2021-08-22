@@ -1,5 +1,5 @@
 import Constants from "common/Constants";
-import { requestPost } from "services/request";
+import { requestPost, request } from "services/request";
 
 const StockAPI = {
     fetchPSOutbound: async (data) => {
@@ -28,7 +28,12 @@ const StockAPI = {
 
     fetchArbitUnwind: async (data) => {
         return await requestPost(Constants.BASE_URL + Constants.ARBIT_UNWIND_URL, data);
+    },
+
+    fetchCandlestick: async (data) => {
+        return await request("https://canvasjs.com/data/docs/ltceur2018.json", data);
     }
+
 }
 
 
