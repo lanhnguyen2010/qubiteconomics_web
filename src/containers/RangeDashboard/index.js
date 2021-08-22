@@ -7,8 +7,9 @@ import { Container, Row, Col } from 'react-bootstrap';
 import CanvasJSReact from 'lib/canvasjs.stock.react';
 import { XCanvasJSManager } from 'utils/xcanvas';
 
-import VN30DerivativeChart from "components/charts/main_charts/VN30DerivativeChart";
-import BuySellPressureChart from "components/charts/main_charts/BuySellPressureChart";
+import BuyupSelldownChart from "components/charts/main_charts/BuyupSelldownChart";
+import NETBUSDChart from "components/charts/main_charts/NETBUSDChart";
+
 import StockAPI from 'services/StockAPI';
 import DataParser from 'common/DataParser';
 
@@ -56,8 +57,8 @@ class RangeDashboardScreen extends React.Component {
     super(props);
 
     this.chartRefs = [];
-    this.chartRefs.push(this.VN30DerivativeChartRef = React.createRef());
-    this.chartRefs.push(this.BuySellPressureChartRef = React.createRef());
+    this.chartRefs.push(this.BuyupSelldownChartRef = React.createRef());
+    this.chartRefs.push(this.NETBUSDChartRef = React.createRef());
 
     this.toDate = this.correctDate(moment()).startOf('day');
     this.fromDate = this.toDate.clone();
@@ -81,7 +82,7 @@ class RangeDashboardScreen extends React.Component {
   }
 
   componentDidMount() {
-    this.BuySellPressureChartRef.current.activeSlider();
+    this.NETBUSDChartRef.current.activeSlider();
 
     this.chartRefs.forEach((ref, index) => ref.current.configureChartRelation("DB02", index));
     this.fetchData(this.fromDate, this.toDate);
@@ -111,16 +112,19 @@ class RangeDashboardScreen extends React.Component {
     let request = { day: this.formatDate(date) };
     let requestBody = _.pickBy(request);
 
-    let buysellNN  = await StockAPI.fetchBuySellNNOutbound(requestBody);
-    let ps         = await StockAPI.fetchPSOutbound(requestBody);
-    let vn30Index  = await StockAPI.fetchVN30IndexdOutbound(requestBody);
+    const busd        = await StockAPI.fetchBusdOutbound(requestBody);
+    const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
+
+    var busdData = DataParser.parseBusdOutbound(busd, date);
+    let arbitData = DataParser.parseArbit(arbitUnwind, date);
+    let arbitUnwidData = DataParser.parseArbitUnwind(arbitUnwind, date);
 
     if (first) {
-        this.VN30DerivativeChartRef.current.updateData({PS: DataParser.parsePSOutbound(ps, date), VNIndex30: DataParser.parseVN30Index(vn30Index, date)});
-        this.BuySellPressureChartRef.current.updateData(DataParser.parseBuySellNNOutbound(buysellNN, date));
+      this.BuyupSelldownChartRef.current.updateData({chartData: busdData, bubblesData: arbitData});
+      this.NETBUSDChartRef.current.updateData({chartData: busdData, bubblesData: arbitUnwidData});
     } else {
-        this.VN30DerivativeChartRef.current.appendData({PS: DataParser.parsePSOutbound(ps, date), VNIndex30: DataParser.parseVN30Index(vn30Index, date)});
-        this.BuySellPressureChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN, date));
+      this.BuyupSelldownChartRef.current.appendData({chartData: busdData, bubblesData: arbitData});
+      this.NETBUSDChartRef.current.appendData({chartData: busdData, bubblesData: arbitUnwidData});
     }
   }
 
@@ -130,10 +134,10 @@ class RangeDashboardScreen extends React.Component {
         <Row style={styles.rowContainer}>
           <Col style={{paddingLeft: 20, paddingRight: 20}}>
             <Row style={styles.rowCol1}>
-              <VN30DerivativeChart ref={this.VN30DerivativeChartRef} />
+              <BuyupSelldownChart ref={this.BuyupSelldownChartRef} />
             </Row>
             <Row style={styles.rowCol1}>
-              <BuySellPressureChart ref={this.BuySellPressureChartRef} />
+              <NETBUSDChart ref={this.NETBUSDChartRef} />
             </Row>
           </Col>
         </Row>
