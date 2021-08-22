@@ -5991,6 +5991,7 @@ var MarkerArea = /** @class */ (function () {
             this.toolbar.setSelectMode();
         }
         this.addUndoStep();
+        this.close();
     };
     MarkerArea.prototype.colorChanged = function (color) {
         if (this.settings.defaultColorsFollowCurrentColors) {
