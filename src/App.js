@@ -1,7 +1,8 @@
 import React from 'react';
 import {
   BrowserRouter as Router,
-  Route
+  Route,
+  Switch
 } from 'react-router-dom';
 import { lifecycle } from 'recompose';
 import { Provider } from "react-redux";
@@ -9,12 +10,16 @@ import { Provider } from "react-redux";
 import store from './store'
 import MainDashboard from './containers/MainDashboard'
 import RangeDashboard from './containers/RangeDashboard'
+import Demo from './containers/Demo'
 
 const AppStateLess = () => (
   <Provider store={store}>
     <Router>
-      <Route exact path="/" component={MainDashboard}/>
-      <Route path="/range" component={RangeDashboard}/>
+      <Switch>
+        <Route path="/range" component={RangeDashboard}/>
+        <Route path="/demo" component={Demo} />
+        <Route exact path="/" component={MainDashboard}/>
+      </Switch>
     </Router>
   </Provider>
 );

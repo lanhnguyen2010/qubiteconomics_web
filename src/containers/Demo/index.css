@@ -1,0 +1,53 @@
+.canvasjs-chart-canvas{
+    /* border-radius: 4px; */
+    box-shadow: none;
+}
+
+.canvasjs-chart-tooltip{
+    right: auto !important;
+    left: 10px !important;
+    top: 15px !important;
+    bottom: auto !important;
+    box-shadow: none !important;
+    background: none !important;
+}
+
+.react-datepicker__input-container input{
+    font-family: 'Roboto,sans-serif' !important;
+    padding-left: 5px;
+}
+.disabled-date {
+    pointer-events: none;
+    color: #ccc;
+}
+
+.canvasjs-chart-toolbar button:hover {
+    background: white !important;
+}
+
+.canvasjs-chart-toolbar button img {
+    filter: none !important;
+}
+
+.__markerjs2_ img {
+    opacity: 0;
+}
+.__markerjs2_ > div > div:nth-child(2) {
+    background: transparent !important;
+}
+
+.__markerjs2_ {
+    pointer-events: none !important;
+}
+
+.__markerjs2_toolbar {
+}
+.__markerjs2_toolbar, .__markerjs2_toolbox {
+    pointer-events: auto !important;
+    opacity: .9;
+}
+.__markerjs2_ svg {
+}
+.__markerjs2_ svg g {
+    pointer-events: auto !important;
+}

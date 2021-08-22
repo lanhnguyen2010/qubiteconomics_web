@@ -87,6 +87,10 @@ export default class BaseChart extends React.Component {
     return options.charts[0];
   }
 
+  getFullChartsOptions(){
+    return this.chartOptions;
+  }
+
   configureChartRelation(id, index) {
     this.chart.configureChartRelation(id, index);
   }

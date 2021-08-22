@@ -418,6 +418,7 @@ class XCanvasJS {
     this.maxDpsTime = 0;
 
     this.ready = false;
+    this.ignorePrerender = false;
   }
 
   init(chart, chartInfo, chartOptions) {
@@ -1116,7 +1117,9 @@ class XCanvasJS {
   }
 
   render(notifyChanges) {
+    if (!this.ignorePrerender) {
     this.beforeRender();
+    }
     this.chart.render();
 
     if (notifyChanges) {
