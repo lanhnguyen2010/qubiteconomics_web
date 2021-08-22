@@ -596,9 +596,9 @@ var Toolbar = /** @class */ (function () {
         actionButtonBlock.style.whiteSpace = 'nowrap';
         this.uiContainer.appendChild(actionButtonBlock);
         this.addActionButton(actionButtonBlock, CursorIcon, 'select');
-        this.addActionButton(actionButtonBlock, DeleteIcon, 'delete');
+        // this.addActionButton(actionButtonBlock, DeleteIcon, 'delete');
         if (this.uiStyleSettings.undoButtonVisible) {
-            this.addActionButton(actionButtonBlock, UndoIcon, 'undo');
+            // this.addActionButton(actionButtonBlock, UndoIcon, 'undo');
         }
         if (this.uiStyleSettings.redoButtonVisible) {
             this.addActionButton(actionButtonBlock, RedoIcon, 'redo');
@@ -645,7 +645,7 @@ var Toolbar = /** @class */ (function () {
         resultButtonBlock.style.whiteSpace = 'nowrap';
         this.uiContainer.appendChild(resultButtonBlock);
         this.addActionButton(resultButtonBlock, CheckIcon, 'render');
-        this.addActionButton(resultButtonBlock, CloseIcon, 'close');
+        // this.addActionButton(resultButtonBlock, CloseIcon, 'close');
         this.markerjsContainer.appendChild(this.uiContainer);
         this.setSelectMode();
         this.setCurrentMarker();
@@ -5338,7 +5338,7 @@ var MarkerArea = /** @class */ (function () {
             this.toolbar.uiContainer.style.visibility = "visible";
             this._isOpen = true;
         }
-
+        this.positionUI();
         this.eventListener.forEach(function (listener) { return listener("open"); });
     };
     /**
@@ -5497,7 +5497,7 @@ var MarkerArea = /** @class */ (function () {
     MarkerArea.prototype.resize = function (newWidth, newHeight) {
         var scaleX = newWidth / this.imageWidth;
         var scaleY = newHeight / this.imageHeight;
-        this.imageWidth = Math.round(newWidth);
+        this.imageWidth = Math.round(newWidth) - 30;
         this.imageHeight = Math.round(newHeight) - this.getDiffHeight();
         this.editingTarget.src = this.target.src;
         this.editingTarget.width = this.imageWidth;
@@ -5653,7 +5653,7 @@ var MarkerArea = /** @class */ (function () {
                         : 0;
                     this.coverDiv.style.top = coverTop + "px";
                     this.coverDiv.style.left = this.getX() + "px";
-                    this.coverDiv.style.width = this.target.offsetWidth.toString() + "px";
+                    this.coverDiv.style.width = this.getWidth() + "px";
                     //this.coverDiv.style.height = `${this.target.offsetHeight.toString()}px`;
                     this.coverDiv.style.zIndex = '5';
                     // flex causes the ui to stretch when toolbox has wider nowrap panels
@@ -6102,7 +6102,10 @@ var MarkerArea = /** @class */ (function () {
         this.positionUI();
     };
     MarkerArea.prototype.getX = function () {
-        return this.target.parentElement.parentElement.offsetLeft + 4;
+        return this.target.parentElement.parentElement.offsetLeft + 5;
+    };
+    MarkerArea.prototype.getWidth = function () {
+        return this.target.offsetWidth;
     };
     MarkerArea.prototype.getY = function () {
         var coverTop = this.target.offsetTop > Style.settings.toolbarHeight

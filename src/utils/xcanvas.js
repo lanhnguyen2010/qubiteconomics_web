@@ -159,9 +159,14 @@ class XCanvasJSManager {
     this.renderQueue.push(index);
   }
 
-  registerRenderCharts(notifyChanges, triggerIndex) {
+  registerRenderCharts(notifyChanges, triggerIndex, forceRenderTrigger) {
     this.chartsManager.forEach(mgr => {
-      if (triggerIndex && triggerIndex === mgr.getIndex()) return;
+      if (triggerIndex === mgr.getIndex()) {
+        if (forceRenderTrigger) {
+          this.renderChart(triggerIndex);
+        }
+        return;
+      }
       this.registerRender(mgr.getIndex(), notifyChanges);
     });
   }
@@ -279,7 +284,7 @@ class XCanvasJSManager {
   fireReadyEvent() {
     if (this.isReady()) {
       this.initViewRange();
-      this.registerRenderCharts(true, -1);
+      this.registerRenderCharts(true);
     }
   }
 
@@ -565,8 +570,7 @@ class XCanvasJS {
       if (newViewportMax > mgr.maxViewRangeTime) newViewportMax = mgr.maxViewRangeTime;
 
       mgr.setViewport(newViewportMin, newViewportMax);
-      mgr.renderChart(this.getIndex());
-      mgr.registerRenderCharts(true, -1);
+      mgr.registerRenderCharts(true, this.getIndex(), true);
     }
     finally
     {
@@ -1039,7 +1043,6 @@ class XCanvasJS {
         this.buildStripLine(value, index);
       }
     })
-
   }
 
   render(notifyChanges) {
@@ -1056,11 +1059,8 @@ class XCanvasJS {
 
   onRangeChanged(event) {
     if (event.trigger === "reset") {
-      let minDpsTime = Math.min(...this.manager.chartsManager.map(mgr => { return mgr.minDpsTime }));
-      let maxDpsTime = Math.min(...this.manager.chartsManager.map(mgr => { return mgr.maxDpsTime }));
-
-      this.getManager().setViewport(minDpsTime, maxDpsTime);
-      this.getManager().registerRenderCharts(true, this.getIndex());
+      this.getManager().setViewport(this.manager.minViewRangeTime, this.manager.maxViewRangeTime);
+      this.getManager().registerRenderCharts(true, this.getIndex(), true);
     } else if (event.trigger === "marker") {
       this.activeMarker();
     }
