@@ -28,26 +28,3 @@
 .canvasjs-chart-toolbar button img {
     filter: none !important;
 }
-
-.__markerjs2_ img {
-    opacity: 0;
-}
-.__markerjs2_ > div > div:nth-child(2) {
-    background: transparent !important;
-}
-
-.__markerjs2_ {
-    pointer-events: none !important;
-}
-
-.__markerjs2_toolbar {
-}
-.__markerjs2_toolbar, .__markerjs2_toolbox {
-    pointer-events: auto !important;
-    opacity: .9;
-}
-.__markerjs2_ svg {
-}
-.__markerjs2_ svg g {
-    pointer-events: auto !important;
-}

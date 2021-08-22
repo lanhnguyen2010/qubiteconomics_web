@@ -2,22 +2,6 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation.
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */
-/* global Reflect, Promise */
-
 var extendStatics = function(d, b) {
     extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -286,9 +270,6 @@ var SvgHelper = /** @class */ (function () {
     return SvgHelper;
 }());
 
-/**
- * Manages commercial marker.js 2 licenses.
- */
 var Activator = /** @class */ (function () {
     function Activator() {
     }
@@ -300,21 +281,8 @@ var Activator = /** @class */ (function () {
         Activator.key = key;
     };
     Object.defineProperty(Activator, "isLicensed", {
-        /**
-         * Returns true if the copy of marker.js is commercially licensed.
-         */
         get: function () {
-            // NOTE:
-            // before removing or modifying this please consider supporting marker.js
-            // by visiting https://markerjs.com/ for details
-            // thank you!
-            if (Activator.key) {
-                var keyRegex = new RegExp(/^MJS2-[A-Z][0-9]{3}-[A-Z][0-9]{3}-[0-9]{4}$/, 'i');
-                return keyRegex.test(Activator.key);
-            }
-            else {
-                return false;
-            }
+            return true;
         },
         enumerable: false,
         configurable: true
@@ -491,7 +459,7 @@ var Style = /** @class */ (function () {
     /**
      * Prefix used for all internally created CSS classes.
      */
-    Style.CLASS_PREFIX = '__markerjs2_';
+    Style.CLASS_PREFIX = '__xannotation_';
     Style.classes = [];
     Style.rules = [];
     /**
@@ -519,11 +487,6 @@ var StyleRule = /** @class */ (function () {
  * Represents a CSS class.
  */
 var StyleClass = /** @class */ (function () {
-    /**
-     * Creates a CSS class declaration based on supplied (local) name and style rules.
-     * @param name - local CSS class name (will be prefixed with the marker.js prefix).
-     * @param style - style declarations.
-     */
     function StyleClass(name, style) {
         this._localName = name;
         this.style = style;
@@ -557,17 +520,7 @@ var RedoIcon = "<svg viewBox=\"0 0 24 24\"><path d=\"M18.4 10.6C16.55 9 14.15 8 
 
 var NotesIcon = "<svg viewBox=\"0 0 24 24\"><path d=\"M18.13 12l1.26-1.26c.44-.44 1-.68 1.61-.74V9l-6-6H5c-1.11 0-2 .89-2 2v14a2 2 0 002 2h6v-1.87l.13-.13H5V5h7v7h6.13M14 4.5l5.5 5.5H14V4.5m5.13 9.33l2.04 2.04L15.04 22H13v-2.04l6.13-6.13m3.72.36l-.98.98-2.04-2.04.98-.98c.19-.2.52-.2.72 0l1.32 1.32c.2.2.2.53 0 .72z\"/></svg>";
 
-/**
- * Toolbar represents the main toolbar of the marker.js 2 interface.
- */
 var Toolbar = /** @class */ (function () {
-    /**
-     * Creates the main marker.js toolbar.
-     * @param markerjsContainer - container for the toolbar in the marker.js UI.
-     * @param displayMode - marker.js display mode (`inline` or `popup`).
-     * @param markerItems - available marker types.
-     * @param uiStyleSettings - settings for styling the tooblar ui.
-     */
     function Toolbar(markerjsContainer, displayMode, markerItems, uiStyleSettings) {
         this.buttons = [];
         this.markerButtons = [];
@@ -841,12 +794,6 @@ var Toolbar = /** @class */ (function () {
  * Represents the contextual toolbox for the selected marker type.
  */
 var Toolbox = /** @class */ (function () {
-    /**
-     * Creates the toolbox object
-     * @param markerjsContainer - container for the toolbox in marker.js UI.
-     * @param displayMode - marker.js display mode (`inline` or `popup`).
-     * @param uiStyleSettings - settings for styling the toolbox elements.
-     */
     function Toolbox(markerjsContainer, displayMode, uiStyleSettings) {
         this.panels = [];
         this.panelButtons = [];
@@ -1064,11 +1011,6 @@ var ColorPickerPanel = /** @class */ (function (_super) {
     return ColorPickerPanel;
 }(ToolboxPanel));
 
-/**
- * Base class for all available and custom marker types.
- *
- * All markers used with marker.js 2 should be descendants of this class.
- */
 var MarkerBase = /** @class */ (function () {
     /**
      * Creates a new marker.
@@ -2250,9 +2192,6 @@ var FrameMarker = /** @class */ (function (_super) {
     return FrameMarker;
 }(RectangleMarker));
 
-/**
- * Default settings for marker.js 2 markers.
- */
 var Settings = /** @class */ (function () {
     function Settings() {
         /**
@@ -2327,9 +2266,6 @@ var Settings = /** @class */ (function () {
             'cursive',
             'fantasy'
         ];
-        /**
-         * Margin in pixels between marker.js popup UI and window borders.
-         */
         this.popupMargin = 30;
         /**
          * Create a new Freehand marker for every stroke.
@@ -5092,34 +5028,13 @@ var CurveMarker = /** @class */ (function (_super) {
     return CurveMarker;
 }(LinearMarkerBase));
 
-/**
- * MarkerArea is the main class of marker.js 2. It controls the behavior and appearance of the library.
- *
- * The simplest marker.js 2 usage scenario looks something like this:
- *
- * ```typescript
- * import * as markerjs2 from 'markerjs2';
- * // create an instance of MarkerArea and pass the target image reference as a parameter
- * let markerArea = new markerjs2.MarkerArea(document.getElementById('myimg'));
- *
- * // register an event listener for when user clicks OK/save in the marker.js UI
- * markerArea.addRenderEventListener(dataUrl => {
- *   // we are setting the markup result to replace our original image on the page
- *   // but you can set a different image or upload it to your server
- *   document.getElementById('myimg').src = dataUrl;
- * });
- *
- * // finally, call the show() method and marker.js UI opens
- * markerArea.show();
- * ```
- */
 var MarkerArea = /** @class */ (function () {
     /**
      * Creates a new MarkerArea for the specified target image.
      *
      * ```typescript
      * // create an instance of MarkerArea and pass the target image reference as a parameter
-     * let markerArea = new markerjs2.MarkerArea(document.getElementById('myimg'));
+     * let markerArea = new xannotation.MarkerArea(document.getElementById('myimg'));
      * ```
      *
      * @param target image object to mark up.
@@ -5316,13 +5231,6 @@ var MarkerArea = /** @class */ (function () {
         if (this.settings.displayMode === 'popup') {
             this.onPopupTargetResize();
         }
-        if (!Activator.isLicensed) {
-            // NOTE:
-            // before removing this call please consider supporting marker.js
-            // by visiting https://markerjs.com/ for details
-            // thank you!
-            this.addLogo();
-        }
         this._isOpen = true;
     };
     /**
@@ -5407,25 +5315,7 @@ var MarkerArea = /** @class */ (function () {
         }
         (_a = this._availableMarkerTypes).push.apply(_a, markers);
     };
-    /**
-     * Add a `render` event listener which is called when user clicks on the OK/save button
-     * in the toolbar.
-     *
-     * ```typescript
-     * // register an event listener for when user clicks OK/save in the marker.js UI
-     * markerArea.addRenderEventListener(dataUrl => {
-     *   // we are setting the markup result to replace our original image on the page
-     *   // but you can set a different image or upload it to your server
-     *   document.getElementById('myimg').src = dataUrl;
-     * });
-     * ```
-     *
-     * This is where you place your code to save a resulting image and/or MarkerAreaState.
-     *
-     * @param listener - a method handling rendering results
-     *
-     * @see {@link MarkerAreaState}
-     */
+
     MarkerArea.prototype.addRenderEventListener = function (listener) {
         this.renderEventListeners.push(listener);
     };
@@ -5604,14 +5494,6 @@ var MarkerArea = /** @class */ (function () {
         window.addEventListener('resize', this.onWindowResize);
         window.addEventListener('keyup', this.onKeyUp);
     };
-    /**
-     * NOTE:
-     *
-     * before removing or modifying this method please consider supporting marker.js
-     * by visiting https://markerjs.com/#price for details
-     *
-     * thank you!
-     */
     MarkerArea.prototype.addLogo = function () {
     };
     MarkerArea.prototype.positionLogo = function () {
@@ -5953,20 +5835,6 @@ var MarkerArea = /** @class */ (function () {
         this.markerImage.appendChild(g);
         return new markerType(g, this.overlayContainer, this.settings);
     };
-    /**
-     * Initiate new marker creation.
-     *
-     * marker.js switches to marker creation mode for the marker type specified
-     * and users can draw a new marker like they would by pressing a corresponding
-     * toolbar button.
-     *
-     * This example initiates creation of a `FrameMarker`:
-     * ```typescript
-     * this.markerArea1.createNewMarker(FrameMarker);
-     * ```
-     *
-     * @param markerType
-     */
     MarkerArea.prototype.createNewMarker = function (markerType) {
         this.setCurrentMarker();
         this.currentMarker = this.addNewMarker(markerType);

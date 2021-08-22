@@ -1,6 +1,5 @@
-import { stringify } from '@amcharts/amcharts4/.internal/core/utils/Utils';
-import * as markerjs2 from 'lib/marker/markerjs2.js';
-import { string } from 'prop-types';
+import * as xanotation from './xanotation.js';
+
 class EventBus {
   on (event, callback) {
     document.addEventListener(event, (e) => callback(e.detail));
@@ -563,15 +562,15 @@ class XCanvasJS {
 
   activeMarker() {
     if (!this.markerArea) {
-      this.markerArea = new markerjs2.MarkerArea(this.chart.container);
+      this.markerArea = new xanotation.MarkerArea(this.chart.container);
 
       this.markerArea.availableMarkerTypes = [
-        markerjs2.LineMarker,
-        markerjs2.ArrowMarker,
-        markerjs2.HighlightMarker,
-        markerjs2.CalloutMarker,
-        markerjs2.MeasurementMarker,
-        markerjs2.CurveMarker
+        xanotation.LineMarker,
+        xanotation.ArrowMarker,
+        xanotation.HighlightMarker,
+        xanotation.CalloutMarker,
+        xanotation.MeasurementMarker,
+        xanotation.CurveMarker
       ]
     }
 

@@ -12,6 +12,8 @@ import MainDashboard from './containers/MainDashboard'
 import RangeDashboard from './containers/RangeDashboard'
 import Demo from './containers/Demo'
 
+import "./App.css";
+
 const AppStateLess = () => (
   <Provider store={store}>
     <Router>

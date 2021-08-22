@@ -1,38 +1,16 @@
-.App {
-  text-align: center;
+.__xannotation_ img {
+  opacity: 0;
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.__xannotation_ > div > div:nth-child(2) {
+  background: transparent !important;
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.__xannotation_ {
+  pointer-events: none !important;
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.__xannotation_toolbar, .__xannotation_toolbox {
+  pointer-events: auto !important;
+  opacity: .9;
 }
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.__xannotation_ svg g {
+  pointer-events: auto !important;
 }
