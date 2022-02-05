@@ -213,7 +213,7 @@ class XCanvasJSManager {
       });
     }
 
-    let diffTime = maxViewport - minViewport;
+    let diffTimeInMn = maxViewport - minViewport;
 
     let breaks = this.chartsManager[0].getAxisXOptions().scaleBreaks.customBreaks;
     breaks.forEach(breakItem => {
@@ -221,26 +221,24 @@ class XCanvasJSManager {
       let end = breakItem.endValue;
 
       if (minViewport < start && maxViewport > end) {
-        diffTime -= (end - start);
+        diffTimeInMn -= (end - start);
       }
     });
 
-    diffTime /= 1000 * 60;
-    diffTime = this.roundNumber(diffTime, true, 1000);
+    diffTimeInMn /= (1000 * 60);
+    diffTimeInMn = this.roundNumber(diffTimeInMn, true, 1000);
 
     let intervalType = "minute";
     let labelWidth = 80;
     let labelAngle = 0;
 
-    if (diffTime < 180) {
+    if (diffTimeInMn < 180) {
       intervalType = "second"
       labelWidth = 120;
-    } else if (diffTime > 480) {
+    } else if (diffTimeInMn > 480) {
       intervalType = "hour"
       labelWidth = 200;
       labelAngle = -10;
-    } else {
-      diffTime /= 60;
     }
 
     let width = 0;
@@ -257,18 +255,18 @@ class XCanvasJSManager {
     let steps = width / labelWidth;
     if (steps <= 0) steps = 1;
 
-    let diff = diffTime;
+    let diff = diffTimeInMn;
     if (intervalType === "second") {
-      diff = diffTime * 60;
-    } else if (intervalType === "hour") {
-      diff = diffTime / 60;
+      diff = diffTimeInMn * 60;
+    } else if (intervalType === "hour") { 
+      diff = diffTimeInMn / 60;
     }
 
-    let interval = parseInt(diff / steps);
+    let interval = diff <= steps ? diff : parseInt(diff / steps);
     if (interval > 20) {
       interval = this.roundNumber(interval, true, 1000);
     }
-    if (interval < 0) interval = 1;
+    if (interval <= 0) interval = 1;
 
     let labelFormat = "HH:mm";
     if (intervalType === "second") {
@@ -277,7 +275,7 @@ class XCanvasJSManager {
       labelFormat = "DD-MM HH:mm";
     }
 
-    this.log(() => `Interval is ${interval} ${intervalType} with diffs: ${diff}, steps ${steps}, width: ${width} over labelW = ${labelWidth}. Diff in mn ${diffTime}. Format: ${labelFormat}`);
+    this.log(() => `Interval is ${interval} ${intervalType} with diffs: ${diff}, steps ${steps}, width: ${width} over labelW = ${labelWidth}. Diff in mn ${diffTimeInMn}. Format: ${labelFormat}`);
 
     this.chartsManager.forEach(mgr => {
       let axisX = slider ? mgr.getOptions().navigator.axisX : mgr.getAxisXOptions();
@@ -506,9 +504,6 @@ class XCanvasJS {
                 this.crosshairShowed = true;
               }
             }
-            /*,labelFormatter: function(e){
-              return  "‎‎‎‎‏‏‎ ‎  " + e.value;
-            }*/
           },
           data: []
         }
@@ -613,8 +608,26 @@ class XCanvasJS {
         newViewportMax = viewportMax + interval;
       }
 
+      if (this.debug) {
+        console.log("Zoom", {
+          newViewportMin,
+          newViewportMax,
+          minViewRangeTime: mgr.minViewRangeTime,
+          maxViewRangeTime: mgr.maxViewRangeTime
+        });
+      }
+
       if (newViewportMin < mgr.minViewRangeTime) newViewportMin = mgr.minViewRangeTime;
       if (newViewportMax > mgr.maxViewRangeTime) newViewportMax = mgr.maxViewRangeTime;
+
+      if (this.debug) {
+        console.log("Zoom", {
+          newViewportMin,
+          newViewportMax,
+          minViewRangeTime: mgr.minViewRangeTime,
+          maxViewRangeTime: mgr.maxViewRangeTime
+        });
+      }
 
       mgr.setViewport(newViewportMin, newViewportMax);
       mgr.registerRenderCharts(true, this.getIndex(), true);
