@@ -112,13 +112,15 @@ class XCanvasJSManager {
         minTime = mgr.minDpsTime;
         maxTime = mgr.maxDpsTime;
       } else {
-        if (minTime > mgr.minDpsTime) minTime = mgr.minDpsTime;
-        if (maxTime < mgr.maxDpsTime) maxTime = mgr.maxDpsTime;
+        if (mgr.minDpsTime > 0 && minTime > mgr.minDpsTime) minTime = mgr.minDpsTime;
+        if (mgr.maxDpsTime > 0 && maxTime < mgr.maxDpsTime) maxTime = mgr.maxDpsTime;
       }
     })
 
     minTime = minTime - (15 * 60 * 1000);
     maxTime = maxTime + (15 * 60 * 1000);
+
+    if (minTime < 0) minTime = 0;
 
     this.setViewRange(minTime, maxTime);
     if (syncViewport || !this.minViewportTime) {
@@ -596,9 +598,10 @@ class XCanvasJS {
       } else {
         interval = axisX.interval * 60 * 1000;
       }
-
+      
       var newViewportMin, newViewportMax;
 
+      let minRange = 5 * 60 * 1000;
       if (event.deltaY < 0) {
         newViewportMin = viewportMin + interval;
         newViewportMax = viewportMax - interval;
@@ -608,6 +611,21 @@ class XCanvasJS {
         newViewportMax = viewportMax + interval;
       }
 
+      let breaks = mgr.chartsManager[0].getAxisXOptions().scaleBreaks.customBreaks;
+      for (var breakIndex = 0; breakIndex < breaks.length; breakIndex++) {
+        let breakItem = breaks[breakIndex];
+        let breakStart = breakItem.startValue.getTime();
+        let breakEnd = breakItem.endValue.getTime();
+
+        if (newViewportMin >= breakStart && newViewportMin < breakEnd) {
+          newViewportMin = breakEnd;
+        }
+        if (newViewportMax >= breakStart && newViewportMax < breakEnd) {
+          newViewportMax = breakEnd;
+          break;
+        }
+      }
+
       if (this.debug) {
         console.log("Zoom", {
           newViewportMin,
@@ -615,6 +633,10 @@ class XCanvasJS {
           minViewRangeTime: mgr.minViewRangeTime,
           maxViewRangeTime: mgr.maxViewRangeTime
         });
+      }
+
+      if ((newViewportMax - newViewportMin) <= minRange) {
+        newViewportMax = newViewportMin + minRange;
       }
 
       if (newViewportMin < mgr.minViewRangeTime) newViewportMin = mgr.minViewRangeTime;

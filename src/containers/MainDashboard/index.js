@@ -202,6 +202,8 @@ class MainDashboardScreen extends React.Component {
   async fetchData(dateStr) {
     clearInterval(this.callTimerID);
 
+    console.log("Date", dateStr);
+
     let request = { day: dateStr, endTime: ""};
     if (this.modeSimulate) {
       request.endTime = "10:20:00";
