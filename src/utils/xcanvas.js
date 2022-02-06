@@ -131,15 +131,7 @@ class XCanvasJSManager {
   triggerRender() {
     if (!this.lockRender && this.renderQueue.length) {
       let chartIndex = this.renderQueue.shift();
-      let chartRenderInfo = this.registeredRenderCharts[chartIndex];
-
-      // Render
-      if (!this.chartsManager[chartIndex] || !this.chartsManager[chartIndex].ready) {
-        // Not ready yet, register again to render later
-        this.registerRender(chartIndex, chartRenderInfo.notifyChanges);
-      } else {
-        this.chartsManager[chartIndex].render(chartRenderInfo.notifyChanges);
-      }
+      this.renderChart(chartIndex);
     }
 
     {
@@ -155,12 +147,12 @@ class XCanvasJSManager {
       this.registeredRenderCharts[index] = {
         notifyChanges
       }
+      this.renderQueue.push(index);
     } else {
       this.registeredRenderCharts[index] = {
         notifyChanges: notifyChanges || item.notifyChanges
       }
     }
-    this.renderQueue.push(index);
   }
 
   registerRenderCharts(notifyChanges, triggerIndex, forceRenderTrigger) {
@@ -182,11 +174,8 @@ class XCanvasJSManager {
   }
 
   renderChart(chartIndex) {
-    // Remove from queue
-    var index = this.renderQueue.indexOf(chartIndex);
-    if (index !== -1) this.renderQueue.splice(index, 1);
+    delete this.registeredRenderCharts[chartIndex];
 
-    // Render it
     if (this.chartsManager[chartIndex]) {
       this.chartsManager[chartIndex].render(true);
     }
@@ -563,11 +552,7 @@ class XCanvasJS {
 
       this.markerArea.availableMarkerTypes = [
         xanotation.LineMarker,
-        xanotation.ArrowMarker,
-        xanotation.HighlightMarker,
-        xanotation.CalloutMarker,
-        xanotation.MeasurementMarker,
-        xanotation.CurveMarker
+        xanotation.ArrowMarker
       ]
     }
 
@@ -700,38 +685,35 @@ class XCanvasJS {
   }
 
   updateData(dataPointsList) {
-    if (!dataPointsList || !dataPointsList.length) {
-      this.getManager().registerRender(this.getIndex());
-      return;
+    if (dataPointsList && dataPointsList.length) {
+      this.dataPoints = [];
+      dataPointsList.forEach(dps => this.dataPoints.push(dps));
+
+      let iFirstIndex = -1;
+      this.dataPoints.forEach((dps, index) => {
+        if (!dps.length) {
+          return;
+        }
+        if (iFirstIndex === -1) {
+          iFirstIndex = index;
+        }
+
+        var minDpsTime = dps[0].x.getTime();
+        var maxDpsTime = dps[dps.length - 1].x.getTime();
+
+        this.getChartOptions().data[index].dataPoints = dps;
+
+        if (index === iFirstIndex) {
+          this.minDpsTime = minDpsTime;
+          this.maxDpsTime = maxDpsTime;
+        } else {
+          if (this.minDpsTime > minDpsTime) this.minDpsTime = minDpsTime;
+          if (this.maxDpsTime < maxDpsTime) this.maxDpsTime = maxDpsTime;
+        }
+      })
+
+      if (!this.minDpsTime || !this.maxDpsTime) return;
     }
-
-    this.dataPoints = [];
-    dataPointsList.forEach(dps => this.dataPoints.push(dps));
-
-    let iFirstIndex = -1;
-    this.dataPoints.forEach((dps, index) => {
-      if (!dps.length) {
-        return;
-      }
-      if (iFirstIndex === -1) {
-        iFirstIndex = index;
-      }
-
-      var minDpsTime = dps[0].x.getTime();
-      var maxDpsTime = dps[dps.length - 1].x.getTime();
-
-      this.getChartOptions().data[index].dataPoints = dps;
-
-      if (index === iFirstIndex) {
-        this.minDpsTime = minDpsTime;
-        this.maxDpsTime = maxDpsTime;
-      } else {
-        if (this.minDpsTime > minDpsTime) this.minDpsTime = minDpsTime;
-        if (this.maxDpsTime < maxDpsTime) this.maxDpsTime = maxDpsTime;
-      }
-    })
-
-    if (!this.minDpsTime || !this.maxDpsTime) return;
 
     this.setScaleBreaks();
 
@@ -1150,11 +1132,64 @@ class XCanvasJS {
     })
   }
 
+  getAnnotation() {
+    if (!this.markerArea) return;
+
+    let state = this.markerArea.getState(true);
+
+    let axisX = this.getAxisX();
+    let axisY = this.getAxisY();
+
+    state.markers.forEach((marker) => {
+      if (!marker.computedValues) {
+        marker.vx1 = axisX.convertPixelToValue(marker.x1);
+        marker.vx2 = axisX.convertPixelToValue(marker.x2);
+        marker.vy1 = axisY.convertPixelToValue(marker.y1);
+        marker.vy2 = axisY.convertPixelToValue(marker.y2);
+        marker.computedValues = true;
+      }
+    });
+
+    return state;
+  }
+
+  refreshAnnotation(state) {
+    if (!state) return;
+
+    let axisX = this.getAxisX();
+    let axisY = this.getAxisY();
+
+    state.markers.forEach((marker) => {
+      marker.x1 = axisX.convertValueToPixel(marker.vx1);
+      marker.x2 = axisX.convertValueToPixel(marker.vx2);
+      marker.y1 = axisY.convertValueToPixel(marker.vy1);
+      marker.y2 = axisY.convertValueToPixel(marker.vy2);
+
+      if (marker.x1 < 0) marker.x1 = 0;
+      if (marker.x2 < 0) marker.x2 = 0;
+      if (marker.y1 < 0) marker.y1 = 0;
+      if (marker.y2 < 0) marker.y2 = 0;
+    });
+
+    this.markerArea.restoreState(state);
+  }
+
   render(notifyChanges) {
+    this.refresh(true, notifyChanges);
+  }
+
+  refresh(render, notifyChanges) {
     if (!this.ignorePrerender) {
-    this.beforeRender();
+      this.beforeRender();
     }
-    this.chart.render();
+
+    let annotationState = this.getAnnotation();
+
+    if (render) {
+      this.chart.render();
+    }
+
+    this.refreshAnnotation(annotationState);
 
     if (notifyChanges) {
       this.event.dispatch("setValue", {
@@ -1177,6 +1212,7 @@ class XCanvasJS {
     this.getManager().acquireRenderLock();
     try
     {
+      this.refresh(false);
       this.getManager().setViewport(event.minimum, event.maximum);
       this.getManager().registerRenderCharts(true, this.getIndex());
     }

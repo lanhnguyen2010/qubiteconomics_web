@@ -1097,7 +1097,7 @@ var MarkerBase = /** @class */ (function () {
      * @param target - direct event target element.
      */
     
-    MarkerBase.prototype.pointerDown = function (point, target) { };
+    MarkerBase.prototype.pointerDown = function (point, target) {};
     /**
      * Handles pointer (mouse, touch, stylus, etc.) double click event.
      *
@@ -1140,7 +1140,12 @@ var MarkerBase = /** @class */ (function () {
         return {
             typeName: MarkerBase.typeName,
             state: this.state,
-            notes: this.notes
+            notes: this.notes,
+            computedValues: this.computedValues,
+            vx1: this.vx1,
+            vx2: this.vx2,
+            vy1: this.vy1,
+            vy2: this.vy2
         };
     };
     /**
@@ -1151,6 +1156,14 @@ var MarkerBase = /** @class */ (function () {
     MarkerBase.prototype.restoreState = function (state) {
         this._state = state.state;
         this.notes = state.notes;
+
+        if (state.computedValues) {
+            this.computedValues = true;
+            this.vx1 = state.vx1;
+            this.vx2 = state.vx2;
+            this.vy1 = state.vy1;
+            this.vy2 = state.vy2;
+        }
     };
     /**
      * Scales marker. Used after the image resize.
@@ -2426,6 +2439,7 @@ var LinearMarkerBase = /** @class */ (function (_super) {
             this.y2 = this.manipulationStartY2 + point.y - this.manipulationStartY;
             this.adjustVisual();
             this.adjustControlBox();
+            this.computedValues = false;
         }
         else if (this.state === 'resize') {
             this.resize(point);
@@ -5387,8 +5401,8 @@ var MarkerArea = /** @class */ (function () {
     MarkerArea.prototype.resize = function (newWidth, newHeight) {
         var scaleX = newWidth / this.imageWidth;
         var scaleY = newHeight / this.imageHeight;
-        this.imageWidth = Math.round(newWidth) - 30;
-        this.imageHeight = Math.round(newHeight) - this.getDiffHeight();
+        this.imageWidth = Math.round(newWidth) - 4;
+        this.imageHeight = Math.round(newHeight) - 6;
         this.editingTarget.src = this.target.src;
         this.editingTarget.width = this.imageWidth;
         this.editingTarget.height = this.imageHeight;
@@ -5930,11 +5944,14 @@ var MarkerArea = /** @class */ (function () {
         if (this.touchPoints === 1 || ev.pointerType !== 'touch') {
             if (this.currentMarker !== undefined || this.isDragging) {
                 // don't swallow the event when editing text markers
-                if (this.currentMarker === undefined ||
-                    this.currentMarker.state !== 'edit') {
+                if (this.currentMarker === undefined || this.currentMarker.state !== 'edit') {
                     ev.preventDefault();
                 }
-                this.currentMarker.manipulate(this.clientToLocalCoordinates(ev.clientX, ev.clientY));
+
+                if (this.currentMarker)
+                {
+                    this.currentMarker.manipulate(this.clientToLocalCoordinates(ev.clientX, ev.clientY));
+                }
             }
         }
     };
@@ -5970,23 +5987,16 @@ var MarkerArea = /** @class */ (function () {
         this.positionUI();
     };
     MarkerArea.prototype.getX = function () {
-        return this.target.parentElement.parentElement.offsetLeft + 5;
+        return this.target.getBoundingClientRect().x;
     };
     MarkerArea.prototype.getWidth = function () {
-        return this.target.offsetWidth;
+        return this.target.getBoundingClientRect().width;
     };
     MarkerArea.prototype.getY = function () {
-        var coverTop = this.target.offsetTop > Style.settings.toolbarHeight
-        ? this.target.offsetTop - Style.settings.toolbarHeight
-        : 0;
-        return coverTop;
+        return  this.target.getBoundingClientRect().y;
     };
     MarkerArea.prototype.getDiffHeight = function () {
-        let diff = 0;
-        if (this.target.offsetTop < Style.settings.toolbarHeight) {
-            diff = Style.settings.toolbarHeight - this.target.offsetTop;
-        }
-        return diff;
+        return 0;
     };
     MarkerArea.prototype.positionUI = function () {
         this.setTopLeft();
