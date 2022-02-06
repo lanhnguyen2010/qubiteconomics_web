@@ -1,4 +1,4 @@
-import * as xanotation from './xanotation.js';
+import * as xannotation from './xanotation.js';
 
 class EventBus {
   on (event, callback) {
@@ -206,15 +206,18 @@ class XCanvasJSManager {
 
     let diffTimeInMn = maxViewport - minViewport;
 
-    let breaks = this.chartsManager[0].getAxisXOptions().scaleBreaks.customBreaks;
-    breaks.forEach(breakItem => {
-      let start = breakItem.startValue;
-      let end = breakItem.endValue;
-
-      if (minViewport < start && maxViewport > end) {
-        diffTimeInMn -= (end - start);
-      }
-    });
+    let scaleBreaks = this.chartsManager[0].getAxisXOptions().scaleBreaks;
+    if (scaleBreaks) {
+      let breaks = scaleBreaks.customBreaks;
+      breaks.forEach(breakItem => {
+        let start = breakItem.startValue;
+        let end = breakItem.endValue;
+  
+        if (minViewport < start && maxViewport > end) {
+          diffTimeInMn -= (end - start);
+        }
+      });
+    }
 
     diffTimeInMn /= (1000 * 60);
     diffTimeInMn = this.roundNumber(diffTimeInMn, true, 1000);
@@ -548,11 +551,12 @@ class XCanvasJS {
 
   activeMarker() {
     if (!this.markerArea) {
-      this.markerArea = new xanotation.MarkerArea(this.chart.container);
+      this.markerArea = new xannotation.MarkerArea(this.chart.container);
 
       this.markerArea.availableMarkerTypes = [
-        xanotation.LineMarker,
-        xanotation.ArrowMarker
+        xannotation.LineMarker,
+        xannotation.ArrowMarker,
+        xannotation.MeasurementMarker
       ]
     }
 
