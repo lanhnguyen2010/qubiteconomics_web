@@ -2,34 +2,109 @@ import React from 'react';
 import {
   BrowserRouter as Router,
   Route,
-  Switch
+  Switch,
+  Redirect
 } from 'react-router-dom';
-import { lifecycle } from 'recompose';
-import { Provider } from "react-redux";
+import { lifecycle, withState, compose } from 'recompose';
+import { Provider } from 'react-redux';
 
-import store from './store'
-import MainDashboard from './containers/MainDashboard'
-import RangeDashboard from './containers/RangeDashboard'
-import Demo from './containers/Demo'
+import store from './store';
+import MainDashboard from './containers/MainDashboard';
+import RangeDashboard from './containers/RangeDashboard';
+import Demo from './containers/Demo';
+import LoginScreen from './containers/Login'; // import your LoginScreen
 
-import "./App.css";
+import './App.css';
 
-const AppStateLess = () => (
+// A helper component to restrict access to protected routes.
+const PrivateRoute = ({ component: Component, isAuthenticated, user, ...rest }) => (
+  <Route
+    {...rest}
+    render={(props) =>
+      isAuthenticated ? (
+        <Component {...props} user={user} />
+      ) : (
+        <Redirect to="/login" />
+      )
+    }
+  />
+);
+
+// The stateless (presentational) App component.
+const AppStateLess = ({ isAuthenticated, setIsAuthenticated, user, setUser }) => (
   <Provider store={store}>
     <Router>
       <Switch>
-        <Route path="/range" component={RangeDashboard}/>
-        <Route path="/demo" component={Demo} />
-        <Route exact path="/" component={MainDashboard}/>
+        {/* Login route */}
+        <Route
+          path="/login"
+          render={(props) => (
+            <LoginScreen
+              {...props}
+              setAuthInfo={(loggedInUser) => {
+                setIsAuthenticated(true);
+                setUser(loggedInUser);
+              }}
+            />
+          )}
+        />
+
+        {/* Protected routes */}
+        <PrivateRoute
+          path="/range"
+          component={RangeDashboard}
+          isAuthenticated={isAuthenticated}
+        />
+        <PrivateRoute
+          path="/demo"
+          component={Demo}
+          isAuthenticated={isAuthenticated}
+        />
+
+        {/* MainDashboard can also be protected or public, your call */}
+        <Route
+          exact
+          path="/dashboard"
+          render={(props) => (
+            <MainDashboard
+              {...props}
+              isAuthenticated={isAuthenticated}
+            />
+          )}
+        />
+
+        {/* Redirect any unknown routes to /login */}
+        <Redirect to="/dashboard" />
       </Switch>
     </Router>
   </Provider>
 );
 
-const App = lifecycle({
-  componentDidMount() {
-      document.title = "Stock chart"
-  }
-})(AppStateLess);
+// Enhance with local state and lifecycle hooks
+const enhance = compose(
+  withState('isAuthenticated', 'setIsAuthenticated', false),
+  withState('user', 'setUser', null),
+  lifecycle({
+    componentDidMount() {
+      document.title = 'Stock chart';
 
+      // On mount, check if there's an existing user session
+      // fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/user`, {
+      //   credentials: 'include', // important to send cookies
+      // })
+      //   .then((res) => res.json())
+      //   .then((data) => {
+      //     if (data.user) {
+      //       this.props.setIsAuthenticated(true);
+      //       this.props.setUser(data.user);
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.error('Auth check failed:', err);
+      //   });
+    },
+  })
+);
+
+const App = enhance(AppStateLess);
 export default App;

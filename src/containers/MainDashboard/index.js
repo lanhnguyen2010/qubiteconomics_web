@@ -20,8 +20,10 @@ import DatePicker from "react-datepicker";
 import ChartInfo from "components/widgets/ChartInfo/index";
 import StockAPI from 'services/StockAPI';
 import DataParser from 'common/DataParser';
+import { request } from "services/request";
 
 import "./index.css";
+import { generateArbitUnwindMockData, generateBusdMockData, generateBuySellNNMockData, generatePSMockData, generateSuuF1OutboundMockData, generateVN30IndexMockData } from "mockData/mockDataChart";
 
 const CanvasJS = CanvasJSReact.CanvasJS;
 CanvasJS.addColorSet("customColorSet1",
@@ -62,9 +64,9 @@ const styles = {
 }
 
 class MainDashboardScreen extends React.Component {
-
   constructor(props) {
     super(props);
+    this.handleToken();
 
     this.chartRefs = [];
     this.chartRefs.push(this.VN30DerivativeChartRef = React.createRef());
@@ -200,15 +202,17 @@ class MainDashboardScreen extends React.Component {
   }
 
   async fetchData(dateStr) {
+    const dataTest = await request("https://ssi.hungdao.dev/api/charts/index", null);
+    console.log(dataTest);
     clearInterval(this.callTimerID);
 
     console.log("Date", dateStr);
 
-    let request = { day: dateStr, endTime: ""};
+    let requestData = { day: dateStr, endTime: ""};
     if (this.modeSimulate) {
-      request.endTime = "10:20:00";
+      requestData.endTime = "10:20:00";
     }
-    const requestBody = _.pickBy(request);
+    const requestBody = _.pickBy(requestData);
 
     await this.fetchSuuF1(requestBody);
     await this.fetchBuySellNN(requestBody);
@@ -224,14 +228,16 @@ class MainDashboardScreen extends React.Component {
   }
 
   async fetchBuySellNN(requestBody) {
-    let buysellNN = await StockAPI.fetchBuySellNNOutbound(requestBody);
+    // let buysellNN = await StockAPI.fetchBuySellNNOutbound(requestBody);
+    const buysellNN = generateBuySellNNMockData();
     let parsedData = DataParser.parseBuySellNNOutbound(buysellNN);
     this.ForeignDerivativeChartRef.current.updateData(parsedData);
     this.BuySellPressureChartRef.current.updateData(parsedData);
   }
 
   async fetchSuuF1(requestBody) {
-    const suuF1 = await StockAPI.fetchSuuF1Outbound(requestBody);
+    // const suuF1 = await StockAPI.fetchSuuF1Outbound(requestBody);
+    const suuF1 = generateSuuF1OutboundMockData();
     this.SuuF1ChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
     this.FBFSChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
     this.F1BidVAskVChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
@@ -239,15 +245,45 @@ class MainDashboardScreen extends React.Component {
   }
 
   async fetchOthers(requestBody) {
-    const ps = await StockAPI.fetchPSOutbound(requestBody);
-    const vn30Index = await StockAPI.fetchVN30IndexdOutbound(requestBody);
-    const busd = await StockAPI.fetchBusdOutbound(requestBody);
+    // const ps = await StockAPI.fetchPSOutbound(requestBody);
+    // const vn30Index = await StockAPI.fetchVN30IndexdOutbound(requestBody);
+    // const busd = await StockAPI.fetchBusdOutbound(requestBody);
+    const ps = generatePSMockData();
+    const vn30Index = generateVN30IndexMockData();
+    const busd = generateBusdMockData();
     this.VN30DerivativeChartRef.current.updateData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(vn30Index)});
 
-    const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
+    // const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
+    const arbitUnwind = generateArbitUnwindMockData();
     const busdData = DataParser.parseBusdOutbound(busd);
     this.BuyupSelldownChartRef.current.updateData({chartData: busdData, bubblesData: DataParser.parseArbit(arbitUnwind)});
     this.NETBUSDChartRef.current.updateData({chartData: busdData, bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
+  }
+
+  parseFragment() {
+    const fragment = window.location.hash.substring(1); // remove the #
+    const params = {};
+    fragment.split('&').forEach(pair => {
+      const [key, value] = pair.split('=');
+      params[key] = decodeURIComponent(value);
+    });
+    return params;
+  }
+
+  handleToken() {
+    // On page load, check if token is in the URL fragment.
+    const params = this.parseFragment();
+    console.log('params', params);
+    let token = params.token;
+    if (token) {
+      // Optionally, store the token for future API calls:
+      console.log('token', token);
+      localStorage.setItem('token', params.token);
+      // You might also want to remove the token from the URL to clean it up:
+      window.history.replaceState(null, "", window.location.pathname);
+    } else {
+      token = localStorage.getItem('token');
+    }
   }
 
   render() {
