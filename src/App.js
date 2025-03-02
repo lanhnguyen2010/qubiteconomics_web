@@ -12,7 +12,9 @@ import store from './store';
 import MainDashboard from './containers/MainDashboard';
 import RangeDashboard from './containers/RangeDashboard';
 import Demo from './containers/Demo';
-import LoginScreen from './containers/Login'; // import your LoginScreen
+import LoginScreen from './containers/Login';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 
 import './App.css';
 
@@ -33,6 +35,7 @@ const PrivateRoute = ({ component: Component, isAuthenticated, user, ...rest }) 
 // The stateless (presentational) App component.
 const AppStateLess = ({ isAuthenticated, setIsAuthenticated, user, setUser }) => (
   <Provider store={store}>
+  <GoogleOAuthProvider clientId="999210900704-3v8dr8q3iol8ttnapdt36o0jtvbjmbd8.apps.googleusercontent.com">
     <Router>
       <Switch>
         {/* Login route */}
@@ -77,6 +80,7 @@ const AppStateLess = ({ isAuthenticated, setIsAuthenticated, user, setUser }) =>
         <Redirect to="/dashboard" />
       </Switch>
     </Router>
+    </GoogleOAuthProvider>
   </Provider>
 );
 

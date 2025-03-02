@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  envoy:
+    image: envoyproxy/envoy:v1.26-latest
+    ports:
+      - "8000:8000"    # gRPC-Web listener
+      - "9901:9901"    # Admin interface
+    volumes:
+      - ./envoy.yml:/etc/envoy/envoy.yaml:ro
+    command: /usr/local/bin/envoy -c /etc/envoy/envoy.yaml --log-level debug

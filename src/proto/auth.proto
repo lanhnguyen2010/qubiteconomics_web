@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package auth;
+
+// AuthService provides Google authentication via gRPC.
+service AuthService {
+  rpc GoogleAuth (GoogleAuthRequest) returns (GoogleAuthResponse) {}
+}
+
+// GoogleAuthRequest carries the Google ID token.
+message GoogleAuthRequest {
+  string id_token = 1;
+}
+
+// User contains basic user info.
+message User {
+  string google_id = 1;
+  string email = 2;
+  string username = 3;
+  string profile_picture = 4;
+}
+
+// GoogleAuthResponse contains user info and a JWT access token.
+message GoogleAuthResponse {
+  User user = 1;
+  string access_token = 2;
+}
