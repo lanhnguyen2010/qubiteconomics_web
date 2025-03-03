@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package user;
+
+// Google SSO Login Request
+message GoogleSSORequest {
+  string id_token = 1; // The Google ID token from the client
+}
+
+// Response with authenticated user info
+message GoogleSSOResponse {
+  User user = 1;
+  string access_token = 2; // JWT for session management
+}
+
+// User information
+message User {
+  string id = 1;
+  string username = 2;
+  string firstname = 3;
+  string lastname = 4;
+  string email = 5;
+  string google_id = 6;
+  string profile_picture = 7;
+  string created_at = 8;
+}
+
+// Define User Service with Google SSO
+service UserService {
+  rpc GoogleSSO(GoogleSSORequest) returns (GoogleSSOResponse);
+}

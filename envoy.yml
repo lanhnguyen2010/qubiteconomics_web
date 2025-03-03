@@ -53,7 +53,7 @@ static_resources:
                   address:
                     socket_address:
                       address: "0.tcp.ap.ngrok.io" # GRPC Backend
-                      port_value: 17291
+                      port_value: 13398
 
 admin:
   access_log_path: "/tmp/admin_access.log"

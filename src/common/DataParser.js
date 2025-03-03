@@ -1,21 +1,33 @@
 import moment from "moment-timezone";
 
 const DataParser = {
-    parsePSOutbound: (data, date) => {
-        date = date || moment();
+    // parsePSOutbound: (data, date) => {
+    //     date = date || moment();
 
+    //     let outData = []
+    //     if (data && data.time && data.time.length) {
+    //         outData = data.time.map((i, index) => {
+    //             let iTimeSplit = i.split(":")
+    //             return {
+    //                 price: data.price[index],
+    //                 time: new Date(date.year(), date.month(), date.date(), parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
+    //             }
+    //         }) ;
+    //     }
+    //     return outData;
+    // },
+    parsePSOutbound: (data) => {
         let outData = []
-        if (data && data.time && data.time.length) {
-            outData = data.time.map((i, index) => {
-                let iTimeSplit = i.split(":")
-                return {
-                    price: data.price[index],
-                    time: new Date(date.year(), date.month(), date.date(), parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
-                }
-            }) ;
-        }
+        outData = data.map((i) => {
+            return {
+                price: i.smoothedLast,
+                time: new Date(i.timestamp.seconds * 1000),
+            }
+        })
+        console.log("outData PS", outData);
         return outData;
     },
+
 
     parseBusdOutbound: (data, date) => {
         date = date || moment();
@@ -35,22 +47,34 @@ const DataParser = {
         }
         return outData;
     },
-    parseVN30Index: (data, date) => {
-        date = date || moment();
+    // parseVN30Index: (data, date) => {
+    //     date = date || moment();
 
+    //     let outData = []
+    //     if (data && data.time && data.time.length) {
+    //         outData = data.time.map((i, index) => {
+    //             let iTimeSplit = i.split(":")
+    //             return {
+    //                 last: data.last[index],
+    //                 time: new Date(date.year(), date.month(), date.date(), parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
+    //             }
+
+    //         }) ;
+    //     }
+    //     return outData;
+    // },
+    parseVN30Index: (data, ) => {
         let outData = []
-        if (data && data.time && data.time.length) {
-            outData = data.time.map((i, index) => {
-                let iTimeSplit = i.split(":")
-                return {
-                    last: data.last[index],
-                    time: new Date(date.year(), date.month(), date.date(), parseInt(iTimeSplit[0]), parseInt(iTimeSplit[1]), parseInt(iTimeSplit[2])),
-                }
-
-            }) ;
-        }
+        outData = data.map((i) => {
+            return {
+                last: i.smoothedLast,
+                time: new Date(i.timestamp.seconds * 1000),
+            }
+        })
+        console.log("outData VN30Index", outData);
         return outData;
     },
+    
     parseBuySellNNOutbound: (data, date) =>{
         date = date || moment();
 

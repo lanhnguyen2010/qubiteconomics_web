@@ -20,10 +20,12 @@ import DatePicker from "react-datepicker";
 import ChartInfo from "components/widgets/ChartInfo/index";
 import StockAPI from 'services/StockAPI';
 import DataParser from 'common/DataParser';
-import { request } from "services/request";
 
 import "./index.css";
 import { generateArbitUnwindMockData, generateBusdMockData, generateBuySellNNMockData, generatePSMockData, generateSuuF1OutboundMockData, generateVN30IndexMockData } from "mockData/mockDataChart";
+import { ChartServiceClient } from "grpc/chart_grpc_web_pb";
+import { getVN30PS } from "services/ChartServiceClient";
+import { Timestamp } from "google-protobuf/google/protobuf/timestamp_pb";
 
 const CanvasJS = CanvasJSReact.CanvasJS;
 CanvasJS.addColorSet("customColorSet1",
@@ -62,6 +64,9 @@ const styles = {
     height: '28vh', width: '33vw', marginTop: 10, overflow: 'auto' 
   }
 }
+
+const client = new ChartServiceClient(process.env.REACT_APP_ENVOY_URL);
+
 
 class MainDashboardScreen extends React.Component {
   constructor(props) {
@@ -202,8 +207,6 @@ class MainDashboardScreen extends React.Component {
   }
 
   async fetchData(dateStr) {
-    const dataTest = await request("https://ssi.hungdao.dev/api/charts/index", null);
-    console.log(dataTest);
     clearInterval(this.callTimerID);
 
     console.log("Date", dateStr);
@@ -245,11 +248,12 @@ class MainDashboardScreen extends React.Component {
   }
 
   async fetchOthers(requestBody) {
-    // const ps = await StockAPI.fetchPSOutbound(requestBody);
-    // const vn30Index = await StockAPI.fetchVN30IndexdOutbound(requestBody);
-    // const busd = await StockAPI.fetchBusdOutbound(requestBody);
-    const ps = generatePSMockData();
-    const vn30Index = generateVN30IndexMockData();
+    const responseVN30PS = await getVN30PS();
+    console.log("VN30Index", responseVN30PS);
+    const ps = responseVN30PS.psList;
+    const vn30Index = responseVN30PS.vn30List;
+    console.log("PS", ps);
+    console.log("VN30Index", vn30Index);
     const busd = generateBusdMockData();
     this.VN30DerivativeChartRef.current.updateData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(vn30Index)});
 

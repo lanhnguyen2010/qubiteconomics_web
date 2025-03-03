@@ -18,6 +18,8 @@ function LoginScreen() {
         return;
       }
       console.log('gRPC Response:', response.toObject());
+      window.location.href = '/dashboard';
+      localStorage.setItem('token', response.getAccessToken());
     });
   };
 

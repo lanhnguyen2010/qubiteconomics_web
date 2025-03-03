@@ -8,13 +8,13 @@ import {
 import { lifecycle, withState, compose } from 'recompose';
 import { Provider } from 'react-redux';
 
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 import store from './store';
 import MainDashboard from './containers/MainDashboard';
 import RangeDashboard from './containers/RangeDashboard';
 import Demo from './containers/Demo';
 import LoginScreen from './containers/Login';
-import { GoogleOAuthProvider } from '@react-oauth/google';
-
 
 import './App.css';
 
@@ -32,54 +32,56 @@ const PrivateRoute = ({ component: Component, isAuthenticated, user, ...rest }) 
   />
 );
 
-// The stateless (presentational) App component.
+// Presentational App component
 const AppStateLess = ({ isAuthenticated, setIsAuthenticated, user, setUser }) => (
   <Provider store={store}>
-  <GoogleOAuthProvider clientId="999210900704-3v8dr8q3iol8ttnapdt36o0jtvbjmbd8.apps.googleusercontent.com">
-    <Router>
-      <Switch>
-        {/* Login route */}
-        <Route
-          path="/login"
-          render={(props) => (
-            <LoginScreen
-              {...props}
-              setAuthInfo={(loggedInUser) => {
-                setIsAuthenticated(true);
-                setUser(loggedInUser);
-              }}
-            />
-          )}
-        />
+    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+      <Router>
+        <Switch>
+          {/* Root route: Decide where to go based on isAuthenticated */}
+          <Route exact path="/">
+            {isAuthenticated ? <Redirect to="/dashboard" /> : <Redirect to="/login" />}
+          </Route>
 
-        {/* Protected routes */}
-        <PrivateRoute
-          path="/range"
-          component={RangeDashboard}
-          isAuthenticated={isAuthenticated}
-        />
-        <PrivateRoute
-          path="/demo"
-          component={Demo}
-          isAuthenticated={isAuthenticated}
-        />
+          {/* Login route: If already authenticated, skip login and go to dashboard */}
+          <Route
+            path="/login"
+            render={(props) =>
+              isAuthenticated ? (
+                <Redirect to="/dashboard" />
+              ) : (
+                <LoginScreen
+                  {...props}
+                  setAuthInfo={(loggedInUser) => {
+                    setIsAuthenticated(true);
+                    setUser(loggedInUser);
+                  }}
+                />
+              )
+            }
+          />
 
-        {/* MainDashboard can also be protected or public, your call */}
-        <Route
-          exact
-          path="/dashboard"
-          render={(props) => (
-            <MainDashboard
-              {...props}
-              isAuthenticated={isAuthenticated}
-            />
-          )}
-        />
+          {/* Protected routes */}
+          <PrivateRoute
+            path="/dashboard"
+            component={MainDashboard}
+            isAuthenticated={isAuthenticated}
+          />
+          <PrivateRoute
+            path="/range"
+            component={RangeDashboard}
+            isAuthenticated={isAuthenticated}
+          />
+          <PrivateRoute
+            path="/demo"
+            component={Demo}
+            isAuthenticated={isAuthenticated}
+          />
 
-        {/* Redirect any unknown routes to /login */}
-        <Redirect to="/dashboard" />
-      </Switch>
-    </Router>
+          {/* Catch-all: go back to "/" to decide login vs. dashboard */}
+          <Redirect to="/" />
+        </Switch>
+      </Router>
     </GoogleOAuthProvider>
   </Provider>
 );
@@ -92,20 +94,16 @@ const enhance = compose(
     componentDidMount() {
       document.title = 'Stock chart';
 
-      // On mount, check if there's an existing user session
-      // fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/user`, {
-      //   credentials: 'include', // important to send cookies
-      // })
-      //   .then((res) => res.json())
-      //   .then((data) => {
-      //     if (data.user) {
-      //       this.props.setIsAuthenticated(true);
-      //       this.props.setUser(data.user);
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.error('Auth check failed:', err);
-      //   });
+      // On app init, check if token exists in localStorage
+      const token = localStorage.getItem('token');
+      console.log('token@@@', token);
+
+      if (token) {
+        // If token found, assume user is authenticated
+        this.props.setIsAuthenticated(true);
+        // You could store more user info here (e.g. decode token)
+        this.props.setUser({ token });
+      }
     },
   })
 );

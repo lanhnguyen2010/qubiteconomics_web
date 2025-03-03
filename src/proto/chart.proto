@@ -1,0 +1,45 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+package chart_data;
+
+
+// ChartService provides data retrieval using a time range.
+service ChartService {
+  rpc VN30PS (VN30PSRequest) returns (VN30PSResponse) {}
+  rpc FBFS (FBFSRequest) returns (FBFSResponse) {}
+}
+
+// VN30PS
+
+message VN30PSRequest {
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+}
+
+message VN30PSDataPoint {
+  google.protobuf.Timestamp timestamp = 1;
+  double smoothed_last = 2;
+}
+
+message VN30PSResponse {
+  repeated VN30PSDataPoint vn30 = 1;
+  repeated VN30PSDataPoint ps = 2;
+}
+
+// FBFS
+
+message FBFSRequest {
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+}
+
+message FBFSDataPoint {
+  google.protobuf.Timestamp timestamp = 1;
+  int64 volume = 2;
+}
+
+message FBFSResponse {
+  repeated FBFSDataPoint fb = 1;
+  repeated FBFSDataPoint fs = 2;
+}
