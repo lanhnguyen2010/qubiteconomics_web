@@ -23,9 +23,7 @@ import DataParser from 'common/DataParser';
 
 import "./index.css";
 import { generateArbitUnwindMockData, generateBusdMockData, generateBuySellNNMockData, generatePSMockData, generateSuuF1OutboundMockData, generateVN30IndexMockData } from "mockData/mockDataChart";
-import { ChartServiceClient } from "grpc/chart_grpc_web_pb";
-import { getVN30PS } from "services/ChartServiceClient";
-import { Timestamp } from "google-protobuf/google/protobuf/timestamp_pb";
+import { getVN30PS, getFbFs } from "services/ChartServiceClient";
 
 const CanvasJS = CanvasJSReact.CanvasJS;
 CanvasJS.addColorSet("customColorSet1",
@@ -64,9 +62,6 @@ const styles = {
     height: '28vh', width: '33vw', marginTop: 10, overflow: 'auto' 
   }
 }
-
-const client = new ChartServiceClient(process.env.REACT_APP_ENVOY_URL);
-
 
 class MainDashboardScreen extends React.Component {
   constructor(props) {
@@ -175,22 +170,22 @@ class MainDashboardScreen extends React.Component {
       }
     }
 
-    const ps = await StockAPI.fetchPSOutbound(requestBody);
-    const vn30index = await StockAPI.fetchVN30IndexdOutbound(requestBody);
-    const busd = await StockAPI.fetchBusdOutbound(requestBody);
-    const buysellNN = await StockAPI.fetchBuySellNNOutbound(requestBody);
-    const suuF1 = await StockAPI.fetchSuuF1Outbound(requestBody);
-    const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
+    // const ps = await StockAPI.fetchPSOutbound(requestBody);
+    // const vn30index = await StockAPI.fetchVN30IndexdOutbound(requestBody);
+    // const busd = await StockAPI.fetchBusdOutbound(requestBody);
+    // const buysellNN = await StockAPI.fetchBuySellNNOutbound(requestBody);
+    // const suuF1 = await StockAPI.fetchSuuF1Outbound(requestBody);
+    // const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
 
-    this.VN30DerivativeChartRef.current.appendData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(vn30index)});
-    this.BuyupSelldownChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbit(arbitUnwind)});
-    this.NETBUSDChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
-    this.ForeignDerivativeChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
-    this.BuySellPressureChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
-    this.SuuF1ChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
-    this.FBFSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
-    this.F1BidVAskVChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
-    this.NetBSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
+    // this.VN30DerivativeChartRef.current.appendData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(vn30index)});
+    // this.BuyupSelldownChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbit(arbitUnwind)});
+    // this.NETBUSDChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
+    // this.ForeignDerivativeChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
+    // this.BuySellPressureChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
+    // this.SuuF1ChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
+    // this.FBFSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
+    // this.F1BidVAskVChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
+    // this.NetBSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
     
   }
 
@@ -206,6 +201,7 @@ class MainDashboardScreen extends React.Component {
     this.fetchData(dateString);
   }
 
+
   async fetchData(dateStr) {
     clearInterval(this.callTimerID);
 
@@ -217,9 +213,15 @@ class MainDashboardScreen extends React.Component {
     }
     const requestBody = _.pickBy(requestData);
 
-    await this.fetchSuuF1(requestBody);
-    await this.fetchBuySellNN(requestBody);
-    await this.fetchOthers(requestBody);
+    const startTimestampSeconds = 1740992400;
+    // const startTimestampSeconds = new Date().setUTCHours(9, 0, 0, 0) / 1000 
+    const endTimestampSeconds = new Date().setUTCHours(15, 0, 0, 0) / 1000 
+    console.log("startTimestampSeconds", startTimestampSeconds);
+    console.log("endTimestampSeconds", endTimestampSeconds);
+    // await this.fetchSuuF1(requestBody);
+    // await this.fetchBuySellNN(requestBody);
+    await this.fetchOthers(startTimestampSeconds, endTimestampSeconds);
+    await this.fetchFbFs(startTimestampSeconds, endTimestampSeconds);
 
     let chartManager = XCanvasJSManager.getInstance("DB01");
     chartManager.initViewRange();
@@ -247,21 +249,30 @@ class MainDashboardScreen extends React.Component {
     this.NetBSChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
   }
 
-  async fetchOthers(requestBody) {
-    const responseVN30PS = await getVN30PS();
-    console.log("VN30Index", responseVN30PS);
+  async fetchOthers(startTimestampSeconds, endTimestampSeconds) {
+    const responseVN30PS = await getVN30PS(startTimestampSeconds, endTimestampSeconds);
     const ps = responseVN30PS.psList;
     const vn30Index = responseVN30PS.vn30List;
-    console.log("PS", ps);
-    console.log("VN30Index", vn30Index);
-    const busd = generateBusdMockData();
+
+    // const ps = generatePSMockData(5000);
+    // const vn30Index = generateVN30IndexMockData(5000);
+    // const busd = generateBusdMockData();
     this.VN30DerivativeChartRef.current.updateData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(vn30Index)});
 
     // const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
-    const arbitUnwind = generateArbitUnwindMockData();
-    const busdData = DataParser.parseBusdOutbound(busd);
-    this.BuyupSelldownChartRef.current.updateData({chartData: busdData, bubblesData: DataParser.parseArbit(arbitUnwind)});
-    this.NETBUSDChartRef.current.updateData({chartData: busdData, bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
+    // const arbitUnwind = generateArbitUnwindMockData();
+    // const busdData = DataParser.parseBusdOutbound(busd);
+    // this.BuyupSelldownChartRef.current.updateData({chartData: busdData, bubblesData: DataParser.parseArbit(arbitUnwind)});
+    // this.NETBUSDChartRef.current.updateData({chartData: busdData, bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
+  }
+
+  async fetchFbFs(startTimestampSeconds, endTimestampSeconds) {
+    const responseFBFS = await getFbFs(startTimestampSeconds, endTimestampSeconds);
+    const fb = responseFBFS.fbList;
+    const fs = responseFBFS.fsList;
+    console.log("FBFS", responseFBFS);
+    console.log("FB", fb);
+    this.FBFSChartRef.current.updateData({FB: DataParser.parseFBFS(fb), FS: DataParser.parseFBFS(fs)});
   }
 
   parseFragment() {

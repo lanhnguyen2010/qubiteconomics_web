@@ -35,19 +35,18 @@ export default class FBFSChart extends LineChart {
   }
 
   updateData(chartData) {
-    if (!chartData || !chartData.length) return;
-
+    if (!chartData || !chartData.FB || !chartData.FS) return;
     this.chart.updateData([
-      chartData.map(item => ({ x: item.time, y: item.foreignerBuyVolume })),
-      chartData.map(item => ({ x: item.time, y: item.foreignerSellVolume }))
+      chartData.FB.map(item => ({ x: item.time, y: item.volume })),
+      chartData.FS.map(item => ({ x: item.time, y: item.volume }))
     ])
   }
 
   appendData(data) {
-    if (!data || !data.length) return;
+    if (!data || !data.FB || !data.FS) return;
     this.chart.appendData([
-      data.map(item => ({ x: item.time, y: item.foreignerBuyVolume })),
-      data.map(item => ({ x: item.time, y: item.foreignerSellVolume }))
+      data.FB.map(item => ({ x: item.time, y: item.volume })),
+      data.FS.map(item => ({ x: item.time, y: item.volume }))
     ])
   }
 }

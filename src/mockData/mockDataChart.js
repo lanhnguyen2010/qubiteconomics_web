@@ -15,7 +15,7 @@ export function generateSuuF1OutboundMockData(length = 100) {
   };
 
   // Set a starting time of 09:30:00 on the current day
-  const startTime = moment().hour(9).minute(30).second(0);
+  const startTime = moment().hour(17).minute(30).second(0);
 
   for (let i = 0; i < length; i++) {
     // Generate time string by adding i minutes to the starting time
@@ -42,7 +42,7 @@ export function generatePSMockData(length = 100) {
   };
 
   // Set a starting time of 09:30:00 on the current day
-  const startTime = moment().hour(9).minute(30).second(0);
+  const startTime = moment().hour(17).minute(30).second(0);
 
   for (let i = 0; i < length; i++) {
     // Each entry is one minute apart
@@ -65,7 +65,7 @@ export function generateBusdMockData(length = 100) {
   };
 
   // Set a starting time of 09:30:00 on the current day
-  const startTime = moment().hour(9).minute(30).second(0);
+  const startTime = moment().hour(17).minute(30).second(0);
 
   for (let i = 0; i < length; i++) {
     // Generate a time string, one minute apart
@@ -88,7 +88,7 @@ export function generateVN30IndexMockData(length = 100) {
   };
 
   // Start at 09:30:00 on the current day
-  const startTime = moment().hour(9).minute(30).second(0);
+  const startTime = moment().hour(17).minute(30).second(0);
 
   for (let i = 0; i < length; i++) {
     // Generate a time string, one minute apart
@@ -110,7 +110,7 @@ export function generateBuySellNNMockData(length = 100) {
   };
 
   // Set a starting time of 09:30:00 on the current day
-  const startTime = moment().hour(9).minute(30).second(0);
+  const startTime = moment().hour(17).minute(30).second(0);
 
   for (let i = 0; i < length; i++) {
     // Generate a time string one minute apart
@@ -148,7 +148,7 @@ export function generateArbitUnwindMockData(length = 100) {
   };
 
   // Set a starting time of 09:30:00 on the current day
-  const startTime = moment().hour(9).minute(30).second(0);
+  const startTime = moment().hour(17).minute(30).second(0);
 
   for (let i = 0; i < length; i++) {
     const timeStr = startTime.clone().add(i, "minutes").format("HH:mm:ss");
@@ -186,7 +186,7 @@ export function generateArbitMockData(length = 100) {
     };
   
     // Start at 09:30:00 on the current day
-    const startTime = moment().hour(9).minute(30).second(0);
+    const startTime = moment().hour(17).minute(30).second(0);
   
     for (let i = 0; i < length; i++) {
       const timeStr = startTime.clone().add(i, 'minutes').format('HH:mm:ss');
