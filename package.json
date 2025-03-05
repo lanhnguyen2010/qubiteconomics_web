@@ -44,11 +44,10 @@
     "web-vitals": "^4.2.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "preinstall": "npm install --force",
+    "build": "npm run preinstall && npm run compile"
   },
+
   "eslintConfig": {
     "extends": [
       "react-app",
