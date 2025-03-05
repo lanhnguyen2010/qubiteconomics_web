@@ -212,10 +212,9 @@ class MainDashboardScreen extends React.Component {
       requestData.endTime = "10:20:00";
     }
     const requestBody = _.pickBy(requestData);
-
-    const startTimestampSeconds = 1740992400;
-    // const startTimestampSeconds = new Date().setUTCHours(9, 0, 0, 0) / 1000 
-    const endTimestampSeconds = new Date().setUTCHours(15, 0, 0, 0) / 1000 
+    const d = new Date(new Date().setDate(new Date().getDate() - 1));
+    const startTimestampSeconds = d.setHours(9, 0, 0, 0) / 1000; 
+    const endTimestampSeconds = d.setHours(15, 0, 0, 0) / 1000;
     console.log("startTimestampSeconds", startTimestampSeconds);
     console.log("endTimestampSeconds", endTimestampSeconds);
     // await this.fetchSuuF1(requestBody);
@@ -251,6 +250,7 @@ class MainDashboardScreen extends React.Component {
 
   async fetchOthers(startTimestampSeconds, endTimestampSeconds) {
     const responseVN30PS = await getVN30PS(startTimestampSeconds, endTimestampSeconds);
+    console.log("responseVN30PS", responseVN30PS);
     const ps = responseVN30PS.psList;
     const vn30Index = responseVN30PS.vn30List;
 
@@ -268,11 +268,8 @@ class MainDashboardScreen extends React.Component {
 
   async fetchFbFs(startTimestampSeconds, endTimestampSeconds) {
     const responseFBFS = await getFbFs(startTimestampSeconds, endTimestampSeconds);
-    const fb = responseFBFS.fbList;
-    const fs = responseFBFS.fsList;
     console.log("FBFS", responseFBFS);
-    console.log("FB", fb);
-    this.FBFSChartRef.current.updateData({FB: DataParser.parseFBFS(fb), FS: DataParser.parseFBFS(fs)});
+    this.FBFSChartRef.current.updateData(DataParser.parseFBFS(responseFBFS));
   }
 
   parseFragment() {
