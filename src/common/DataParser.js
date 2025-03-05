@@ -4,34 +4,39 @@ const DataParser = {
   parsePSOutbound: (data) => {
     let outData = [];
     outData = data.map((i) => {
-      const d = new Date(i.timestamp.seconds * 1000);
       return {
         price: i.smoothedLast,
-        time: new Date(d.setUTCHours(d.getUTCHours() - 7)),
+        time: new Date(i.timestamp.seconds * 1000),
       };
     });
     return outData;
   },
 
   parseVN30Index: (data) => {
+    console.log("data VN30", data);
     let outData = [];
     outData = data.map((i) => {
-      const d = new Date(i.timestamp.seconds * 1000);
       return {
         last: i.smoothedLast,
-        time: new Date(d.setUTCHours(d.getUTCHours() - 7)),
+        time: new Date(i.timestamp.seconds * 1000),
       };
     });
+    console.log("outData VN30", outData);
     return outData;
   },
 
   parseFBFS: (data) => {
+    const { fbList, fsList } = data;
     let outData = [];
-    outData = data.map((i) => {
-      const d = new Date(i.timestamp.seconds * 1000);
+  
+    outData = fbList.map((fbItem, index) => {
+      const fsItem = fsList[index];
+  
       return {
-        volume: i.volume,
-        time: new Date(d.setUTCHours(d.getUTCHours() - 7)),
+        time: new Date(fbItem.timestamp.seconds * 1000),                
+        fbVolume: fbItem.volume,          
+        fsVolume: fsItem.volume,          
+        net: fbItem.volume - fsItem.volume 
       };
     });
     console.log("outData FBFS", outData);
