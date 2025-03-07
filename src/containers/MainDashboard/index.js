@@ -170,6 +170,11 @@ class MainDashboardScreen extends React.Component {
       }
     }
 
+    const startTimestampSeconds = new Date(requestBody.startTime).getTime() / 1000;
+    const endTimestampSeconds = new Date(requestBody.endTime).getTime() / 1000;
+    const responseVN30PS = await getVN30PS(startTimestampSeconds, endTimestampSeconds);
+    const responseFBFS = await getFbFs(startTimestampSeconds, endTimestampSeconds);
+
     // const ps = await StockAPI.fetchPSOutbound(requestBody);
     // const vn30index = await StockAPI.fetchVN30IndexdOutbound(requestBody);
     // const busd = await StockAPI.fetchBusdOutbound(requestBody);
@@ -177,13 +182,13 @@ class MainDashboardScreen extends React.Component {
     // const suuF1 = await StockAPI.fetchSuuF1Outbound(requestBody);
     // const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
 
-    // this.VN30DerivativeChartRef.current.appendData({PS: DataParser.parsePSOutbound(ps), VNIndex30: DataParser.parseVN30Index(vn30index)});
+    this.VN30DerivativeChartRef.current.appendData({PS: DataParser.parsePSOutbound(responseVN30PS.psList), VNIndex30: DataParser.parseVN30Index(responseVN30PS.vn30List)});
     // this.BuyupSelldownChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbit(arbitUnwind)});
     // this.NETBUSDChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
     // this.ForeignDerivativeChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
     // this.BuySellPressureChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
     // this.SuuF1ChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
-    // this.FBFSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
+    this.FBFSChartRef.current.appendData(DataParser.parseFBFS(responseFBFS));
     // this.F1BidVAskVChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
     // this.NetBSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
     
@@ -211,12 +216,10 @@ class MainDashboardScreen extends React.Component {
     if (this.modeSimulate) {
       requestData.endTime = "10:20:00";
     }
-    const requestBody = _.pickBy(requestData);
-    const d = new Date(new Date().setDate(new Date().getDate() - 1));
-    const startTimestampSeconds = d.setHours(9, 0, 0, 0) / 1000; 
-    const endTimestampSeconds = d.setHours(15, 0, 0, 0) / 1000;
-    console.log("startTimestampSeconds", startTimestampSeconds);
-    console.log("endTimestampSeconds", endTimestampSeconds);
+    const startTimestampSeconds = new Date(dateStr).setHours(9, 0, 0, 0) / 1000; 
+    const endTimestampSeconds = new Date(dateStr).setHours(15, 0, 0, 0) / 1000;
+    console.log("startTimestampSeconds in fetchData", startTimestampSeconds);
+    console.log("endTimestampSeconds in fetchData", endTimestampSeconds);
     // await this.fetchSuuF1(requestBody);
     // await this.fetchBuySellNN(requestBody);
     await this.fetchOthers(startTimestampSeconds, endTimestampSeconds);

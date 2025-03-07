@@ -27,22 +27,35 @@ const DataParser = {
 
   parseFBFS: (data) => {
     const { fbList, fsList } = data;
-    let outData = [];
-  
-    outData = fbList.map((fbItem, index) => {
-      const fsItem = fsList[index];
-  
-      return {
-        time: new Date(fbItem.timestamp.seconds * 1000),                
-        fbVolume: fbItem.volume,          
-        fsVolume: fsItem.volume,          
-        net: fbItem.volume - fsItem.volume 
-      };
+    let outDataHashMap = new Map();
+    fbList.forEach((fbItem) => {
+      outDataHashMap.set(fbItem.timestamp.seconds * 1000, { fbVolume: fbItem.volume });
     });
+    fsList.forEach((fsItem) => {
+      if (outDataHashMap.has(fsItem.timestamp.seconds * 1000)) {
+        outDataHashMap.set(fsItem.timestamp.seconds * 1000, { ...outDataHashMap.get(fsItem.timestamp.seconds * 1000), fsVolume: fsItem.volume });
+      } else {
+        outDataHashMap.set(fsItem.timestamp.seconds * 1000, { fsVolume: fsItem.volume });
+      }
+    });
+
+    let outData = [];
+    let lastestFbVolume = 0;
+    let lastestFsVolume = 0;
+    console.log("outDataHashMap FBFS", outDataHashMap);
+    outDataHashMap.forEach((value, key) => {
+      lastestFbVolume = value.fbVolume || lastestFbVolume;
+      lastestFsVolume = value.fsVolume || lastestFsVolume;
+      outData.push({
+        time: key,
+        fbVolume: lastestFbVolume,
+        fsVolume: lastestFsVolume,
+        net: lastestFbVolume - lastestFsVolume
+      });
+    })
     console.log("outData FBFS", outData);
     return outData;
   },
-
     // parsePSOutbound: (data, date) => {
     //   date = date || moment();
 
