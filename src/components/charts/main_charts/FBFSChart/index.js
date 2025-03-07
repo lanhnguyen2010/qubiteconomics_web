@@ -56,11 +56,12 @@ export default class FBFSChart extends LineChart {
     ])
   }
 
-  appendData(data) {
-    if (!data || !data.FB || !data.FS) return;
+  appendData(chartData) {
+    if (!chartData || !chartData.FB || !chartData.FS) return;
     this.chart.appendData([
-      data.FB.map(item => ({ x: item.time, y: item.volume })),
-      data.FS.map(item => ({ x: item.time, y: item.volume }))
+      chartData.map(item => ({ x: item.time, y: item.fbVolume })),
+      chartData.map(item => ({ x: item.time, y: item.fsVolume })),
+      chartData.map(item => ({ x: item.time, y: item.net }))
     ])
   }
 }
