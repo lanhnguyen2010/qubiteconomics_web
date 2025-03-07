@@ -1,23 +1,40 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useTable } from "react-table";
-import "./index.css"; // Import the CSS file
-
-// Initial mock data
-const initialUsers = [
-  { id: 1, name: "John Doe", email: "john@example.com", role: "Admin" },
-  { id: 2, name: "Jane Smith", email: "jane@example.com", role: "User" },
-  { id: 3, name: "Alice Johnson", email: "alice@example.com", role: "Admin" },
-];
+import "./index.css"; 
+import { getUserList, addUser, updateUser, deleteUser } from "services/UserServiceClient";
 
 const UserScreen = () => {
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState([]); // Start with an empty list
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [formData, setFormData] = useState({ name: "", email: "" });
   const [userToDelete, setUserToDelete] = useState(null);
 
-  // Filter users based on search query
+  // Initialize the API client (adjust the host as needed)
+  // Fetch users from the API when the component mounts
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await getUserList();
+        console.log("fetchUsers: ", response);
+        // Assuming response.getUserList() returns an array of user objects from the protobuf message
+        const fetchedUsers = response.userList.map((user) => ({
+          id: user.id,
+          name: user.username, // mapping username to name for display
+          email: user.email,
+          role: user.role,
+        }));
+        setUsers(fetchedUsers);
+      } catch (err) {
+        console.error("Failed to fetch users:", err);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  // Filter users based on the search query
   const filteredUsers = useMemo(() => {
     if (!searchQuery) return users;
     return users.filter(
@@ -50,16 +67,10 @@ const UserScreen = () => {
         Header: "Actions",
         Cell: ({ row }) => (
           <div className="action-buttons">
-            <button
-              className="edit-button"
-              onClick={() => handleEdit(row.original)}
-            >
+            <button className="edit-button" onClick={() => handleEdit(row.original)}>
               Edit
             </button>
-            <button
-              className="delete-button"
-              onClick={() => setUserToDelete(row.original)}
-            >
+            <button className="delete-button" onClick={() => setUserToDelete(row.original)}>
               Delete
             </button>
           </div>
@@ -71,8 +82,7 @@ const UserScreen = () => {
 
   // Create table instance
   const tableInstance = useTable({ columns, data: filteredUsers });
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    tableInstance;
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance;
 
   // Handlers
   const handleSearchChange = (e) => {
@@ -97,21 +107,54 @@ const UserScreen = () => {
     setFormData({ name: "", email: "" });
   };
 
-  const handleFormSubmit = (e) => {
+  // Submit handler for add/edit form that calls the API
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (editingUser) {
-      // Update existing user
-      setUsers(
-        users.map((user) =>
-          user.id === editingUser.id ? { ...user, ...formData } : user
-        )
-      );
-    } else {
-      // Add new user with a new id
-      const newId = users.length ? Math.max(...users.map((u) => u.id)) + 1 : 1;
-      setUsers([...users, { id: newId, ...formData }]);
+    try {
+      if (editingUser) {
+        // Update existing user via API
+        const response = await updateUser({
+          id: editingUser.id,
+          username: formData.name, // using name as username
+          firstname: formData.name, // simple mapping (adjust as needed)
+          lastname: "",
+          email: formData.email,
+          password_hash: "", // default or unchanged; adjust per your logic
+          role: editingUser.role || "User",
+        });
+        console.log("updateUser: ", response);
+        const updatedUser = {
+          id: response.getUser().getId(),
+          name: response.getUser().getUsername(),
+          email: response.getUser().getEmail(),
+          role: response.getUser().getRole(),
+        };
+        setUsers((prev) =>
+          prev.map((user) => (user.id === updatedUser.id ? updatedUser : user))
+        );
+      } else {
+        // Add new user via API
+        const response = await addUser({
+          username: formData.name,
+          firstname: formData.name,
+          lastname: "",
+          email: formData.email,
+          password_hash: "",
+          role: "User", // default role
+        });
+        console.log("addUser: ", response);
+        const newUser = {
+          id: response.getUser().getId(),
+          name: response.getUser().getUsername(),
+          email: response.getUser().getEmail(),
+          role: response.getUser().getRole(),
+        };
+        setUsers((prev) => [...prev, newUser]);
+      }
+      closeModal();
+    } catch (err) {
+      console.error("Error submitting form:", err);
     }
-    closeModal();
   };
 
   const handleChange = (e) => {
@@ -119,10 +162,16 @@ const UserScreen = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleDeleteConfirmed = () => {
+  // Handler for confirming deletion via API call
+  const handleDeleteConfirmed = async () => {
     if (userToDelete) {
-      setUsers(users.filter((user) => user.id !== userToDelete.id));
-      setUserToDelete(null);
+      try {
+        await deleteUser(userToDelete.id);
+        setUsers((prev) => prev.filter((user) => user.id !== userToDelete.id));
+        setUserToDelete(null);
+      } catch (err) {
+        console.error("Error deleting user:", err);
+      }
     }
   };
 
@@ -175,10 +224,7 @@ const UserScreen = () => {
           })}
           {rows.length === 0 && (
             <tr>
-              <td
-                colSpan={columns.length}
-                style={{ textAlign: "center", padding: "20px" }}
-              >
+              <td colSpan={columns.length} style={{ textAlign: "center", padding: "20px" }}>
                 No users found.
               </td>
             </tr>
@@ -225,8 +271,7 @@ const UserScreen = () => {
           <div className="modal-content">
             <h2>Confirm Delete</h2>
             <p>
-              Are you sure you want to delete{" "}
-              <strong>{userToDelete.name}</strong>?
+              Are you sure you want to delete <strong>{userToDelete.name}</strong>?
             </p>
             <div className="confirm-buttons">
               <button className="delete-button" onClick={handleDeleteConfirmed}>

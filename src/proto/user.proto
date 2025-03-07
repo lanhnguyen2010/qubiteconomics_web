@@ -1,16 +1,18 @@
 syntax = "proto3";
 
-package user;
+package ssi_user;
 
-// Google SSO Login Request
-message GoogleSSORequest {
-  string id_token = 1; // The Google ID token from the client
+import "google/protobuf/empty.proto";
+
+service UserService {
+  rpc UserList(google.protobuf.Empty) returns (UserListResponse);
+  rpc AddUser(AddUserRequest) returns (AddUserResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
 }
 
-// Response with authenticated user info
-message GoogleSSOResponse {
-  User user = 1;
-  string access_token = 2; // JWT for session management
+message UserListResponse {
+  repeated User user = 1;
 }
 
 // User information
@@ -20,12 +22,37 @@ message User {
   string firstname = 3;
   string lastname = 4;
   string email = 5;
-  string google_id = 6;
-  string profile_picture = 7;
-  string created_at = 8;
+  string password_hash = 6;
+  string role = 7;
 }
 
-// Define User Service with Google SSO
-service UserService {
-  rpc GoogleSSO(GoogleSSORequest) returns (GoogleSSOResponse);
+message AddUserRequest {
+  string username = 2;
+  string firstname = 3;
+  string lastname = 4;
+  string email = 5;
+  string password_hash = 6;
+  string role = 1;
+}
+
+message AddUserResponse {
+  User user = 1; // The newly created user
+}
+
+message UpdateUserRequest {
+  string id = 1;
+  string username = 2;
+  string firstname = 3;
+  string lastname = 4;
+  string email = 5;
+  string password_hash = 6;
+  string role = 7;
+}
+
+message UpdateUserResponse {
+  User user = 1; // The updated user
+}
+
+message DeleteUserRequest {
+  string id = 1;
 }
