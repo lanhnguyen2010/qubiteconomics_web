@@ -48,7 +48,7 @@ export default class FBFSChart extends LineChart {
   }
 
   updateData(chartData) {
-    if (!chartData || !chartData.fbVolume || !chartData.fsVolume || !chartData.net) return;
+    if (!chartData) return;
     this.chart.updateData([
       chartData.map(item => ({ x: item.time, y: item.fbVolume })),
       chartData.map(item => ({ x: item.time, y: item.fsVolume })),
@@ -57,7 +57,7 @@ export default class FBFSChart extends LineChart {
   }
 
   appendData(chartData) {
-    if (!chartData || !chartData.fbVolume || !chartData.fsVolume || !chartData.net) return;
+    if (!chartData) return;
     this.chart.appendData([
       chartData.map(item => ({ x: item.time, y: item.fbVolume })),
       chartData.map(item => ({ x: item.time, y: item.fsVolume })),
