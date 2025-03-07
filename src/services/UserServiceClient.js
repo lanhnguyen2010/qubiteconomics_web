@@ -13,7 +13,7 @@ const metadata = {
   Authorization: `Bearer ${token}`,
 };
 
-export function getListUser() {
+export function getUserList() {
   return new Promise((resolve, reject) => {
     client.userList(new Empty(), metadata, (err, response) => {
       if (err) {
