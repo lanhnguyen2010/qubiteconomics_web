@@ -96,7 +96,6 @@ const enhance = compose(
 
       // On app init, check if token exists in localStorage
       const token = localStorage.getItem('token');
-      console.log('token@@@', token);
 
       if (token) {
         // If token found, assume user is authenticated

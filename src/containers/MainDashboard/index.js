@@ -87,7 +87,7 @@ class MainDashboardScreen extends React.Component {
 
     this.realTimeDate = new URL(window.location.href).searchParams.get("rt");
     if (!this.realTimeDate) {
-      this.realTimeDate = moment().format('yyyy_MM_DD');
+      this.realTimeDate = moment().format('yyyy/MM/DD');
       this.modeSimulate = false;
       this.forceDate = new URL(window.location.href).searchParams.get("fd");
     } else {
@@ -114,7 +114,7 @@ class MainDashboardScreen extends React.Component {
           currentDate.add(-2, 'day')
           this.selectedDate = new Date(currentDate);
         }
-        dateString = currentDate.format('yyyy_MM_DD');
+        dateString = currentDate.format('yyyy/MM/DD');
       }
     }
 
@@ -196,7 +196,7 @@ class MainDashboardScreen extends React.Component {
 
   async onDatePicked(date) {
     this.selectedDate = date;
-    const dateString = moment(date).format('yyyy_MM_DD');
+    const dateString = moment(date).format('yyyy/MM/DD');
 
     let chartManager = XCanvasJSManager.getInstance("DB01");
     chartManager.clear();
