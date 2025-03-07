@@ -47,7 +47,7 @@ const DataParser = {
       lastestFbVolume = value.fbVolume || lastestFbVolume;
       lastestFsVolume = value.fsVolume || lastestFsVolume;
       outData.push({
-        time: key,
+        time: new Date(key),
         fbVolume: lastestFbVolume,
         fsVolume: lastestFsVolume,
         net: lastestFbVolume - lastestFsVolume
