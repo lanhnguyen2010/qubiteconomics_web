@@ -63,10 +63,9 @@ const styles = {
   }
 }
 
-class MainDashboardScreen extends React.Component {
+class MainChartScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.handleToken();
 
     this.chartRefs = [];
     this.chartRefs.push(this.VN30DerivativeChartRef = React.createRef());
@@ -275,32 +274,6 @@ class MainDashboardScreen extends React.Component {
     this.FBFSChartRef.current.updateData(DataParser.parseFBFS(responseFBFS));
   }
 
-  parseFragment() {
-    const fragment = window.location.hash.substring(1); // remove the #
-    const params = {};
-    fragment.split('&').forEach(pair => {
-      const [key, value] = pair.split('=');
-      params[key] = decodeURIComponent(value);
-    });
-    return params;
-  }
-
-  handleToken() {
-    // On page load, check if token is in the URL fragment.
-    const params = this.parseFragment();
-    console.log('params', params);
-    let token = params.token;
-    if (token) {
-      // Optionally, store the token for future API calls:
-      console.log('token', token);
-      localStorage.setItem('token', params.token);
-      // You might also want to remove the token from the URL to clean it up:
-      window.history.replaceState(null, "", window.location.pathname);
-    } else {
-      token = localStorage.getItem('token');
-    }
-  }
-
   render() {
     return (
       <Container fluid style={styles.container}>
@@ -375,4 +348,4 @@ const mapStateToProps = (state) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(MainDashboardScreen);
+)(MainChartScreen);

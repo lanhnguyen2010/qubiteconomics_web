@@ -1,0 +1,98 @@
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+  }
+  
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    background-color: #343a40;
+    color: #fff;
+    width: 200px;
+    transition: width 0.3s ease;
+    padding: 10px;
+  }
+  
+  .sidebar.collapsed {
+    width: 60px;
+  }
+  
+  .sidebar-header {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .toggle-button {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  
+  .sidebar-content {
+    flex: 1; 
+  }
+  
+  .sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+  }
+  
+  .sidebar-menu li {
+    margin: 5px 0;
+  }
+  
+  .sidebar-menu li a,
+  .logout-button {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    text-decoration: none;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .sidebar-menu li a:hover,
+  .logout-button:hover {
+    background-color: #495057;
+  }
+  
+  .sidebar-menu li a.active {
+    background-color: #495057;
+  }
+  
+  .sidebar-icon {
+    font-size: 20px;
+  }
+  
+  .sidebar.collapsed .sidebar-menu li a span,
+  .sidebar.collapsed .logout-button span {
+    display: none;
+  }
+
+  .sidebar-menu li a span,
+  .logout-button span {
+    margin-left: 8px;
+  }
+  
+  .sidebar.collapsed .sidebar-menu li a,
+  .sidebar.collapsed .logout-button {
+    justify-content: center;
+  }
+  
+  .sidebar-footer {
+    margin-top: auto; 
+  }
+  
+  .dashboard-content {
+    flex: 1;
+  }
+
+  .logout-button {
+    width: 100%;
+    color: #343a40 !important;
+  }
+  
