@@ -124,10 +124,10 @@ const UserScreen = () => {
         });
         console.log("updateUser: ", response);
         const updatedUser = {
-          id: response.getUser().getId(),
-          name: response.getUser().getUsername(),
-          email: response.getUser().getEmail(),
-          role: response.getUser().getRole(),
+          id: response.user.id,
+          name: response.user.username,
+          email: response.user.email,
+          role: response.user.role,
         };
         setUsers((prev) =>
           prev.map((user) => (user.id === updatedUser.id ? updatedUser : user))
@@ -144,10 +144,10 @@ const UserScreen = () => {
         });
         console.log("addUser: ", response);
         const newUser = {
-          id: response.getUser().getId(),
-          name: response.getUser().getUsername(),
-          email: response.getUser().getEmail(),
-          role: response.getUser().getRole(),
+          id: response.user.id,
+          name: response.user.username,
+          email: response.user.email,
+          role: response.user.role,
         };
         setUsers((prev) => [...prev, newUser]);
       }

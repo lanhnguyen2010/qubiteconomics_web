@@ -36,7 +36,7 @@ export function addUser(userData) {
     req.setEmail(userData.email);
     req.setPasswordHash(userData.password_hash);
 
-    this.client.addUser(req, (err, response) => {
+    client.addUser(req, (err, response) => {
       if (err) {
         return reject(err);
       }
@@ -57,7 +57,7 @@ export function updateUser(userData) {
     req.setPasswordHash(userData.password_hash);
     req.setRole(userData.role);
 
-    this.client.updateUser(req, (err, response) => {
+    client.updateUser(req, (err, response) => {
       if (err) {
         return reject(err);
       }
@@ -72,7 +72,7 @@ export function deleteUser(id) {
     const req = new DeleteUserRequest();
     req.setId(id);
 
-    this.client.deleteUser(req, (err, _response) => {
+    client.deleteUser(req, (err, _response) => {
       if (err) {
         return reject(err);
       }
