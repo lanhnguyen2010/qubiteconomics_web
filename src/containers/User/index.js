@@ -113,14 +113,12 @@ const UserScreen = () => {
     try {
       if (editingUser) {
         // Update existing user via API
+        console.log("editingUser: ", editingUser);
         const response = await updateUser({
           id: editingUser.id,
           username: formData.name, // using name as username
-          firstname: formData.name, // simple mapping (adjust as needed)
-          lastname: "",
           email: formData.email,
-          password_hash: "", // default or unchanged; adjust per your logic
-          role: editingUser.role || "User",
+          role: editingUser.role || "user",
         });
         console.log("updateUser: ", response);
         const updatedUser = {
@@ -134,9 +132,10 @@ const UserScreen = () => {
         );
       } else {
         // Add new user via API
+        console.log("formData: ", formData);
         const response = await addUser({
           username: formData.name,
-          firstname: formData.name,
+          firstname: "",
           lastname: "",
           email: formData.email,
           password_hash: "",
