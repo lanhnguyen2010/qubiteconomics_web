@@ -17,7 +17,6 @@ const UserScreen = () => {
     const fetchUsers = async () => {
       try {
         const response = await getUserList();
-        console.log("fetchUsers: ", response);
         // Assuming response.getUserList() returns an array of user objects from the protobuf message
         const fetchedUsers = response.userList.map((user) => ({
           id: user.id,
@@ -113,14 +112,12 @@ const UserScreen = () => {
     try {
       if (editingUser) {
         // Update existing user via API
-        console.log("editingUser: ", editingUser);
         const response = await updateUser({
           id: editingUser.id,
           username: formData.name, // using name as username
           email: formData.email,
           role: editingUser.role || "user",
         });
-        console.log("updateUser: ", response);
         const updatedUser = {
           id: response.user.id,
           name: response.user.username,
@@ -132,7 +129,6 @@ const UserScreen = () => {
         );
       } else {
         // Add new user via API
-        console.log("formData: ", formData);
         const response = await addUser({
           username: formData.name,
           firstname: "",
@@ -141,7 +137,6 @@ const UserScreen = () => {
           password_hash: "",
           role: "User", // default role
         });
-        console.log("addUser: ", response);
         const newUser = {
           id: response.user.id,
           name: response.user.username,
