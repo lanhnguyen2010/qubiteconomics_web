@@ -7,7 +7,8 @@ import {
 
 import { Empty } from "google-protobuf/google/protobuf/empty_pb";
 
-const client = new UserServiceClient(process.env.REACT_APP_ENVOY_URL);
+const client = new UserServiceClient(process.env.REACT_APP_ENVOY_URL,  {
+});
 const token = localStorage.getItem("token");
 const metadata = {
   Authorization: `Bearer ${token}`,
@@ -28,7 +29,6 @@ export function getUserList() {
 export function addUser(userData) {
   return new Promise((resolve, reject) => {
     const req = new AddUserRequest();
-    // Note: field order follows the proto definition (role is field 1)
     req.setRole(userData.role);
     req.setUsername(userData.username);
     req.setFirstname(userData.firstname);
@@ -36,7 +36,7 @@ export function addUser(userData) {
     req.setEmail(userData.email);
     req.setPasswordHash(userData.password_hash);
 
-    client.addUser(req, metadata, (err, response) => {
+    client.addUser(req, metadata,(err, response) => {
       if (err) {
         return reject(err);
       }
@@ -76,7 +76,7 @@ export function deleteUser(id) {
       if (err) {
         return reject(err);
       }
-      resolve().toObject();
+      resolve();
     });
   });
 }

@@ -30,9 +30,9 @@ const Dashboard = () => {
     <div className="dashboard-container">
       <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-header">
-          <button onClick={toggleSidebar} className="toggle-button">
+          {/* <button onClick={toggleSidebar} className="toggle-button">
             {isCollapsed ? ">>" : "<<"}
-          </button>
+          </button> */}
         </div>
         <div className="sidebar-content">
           <ul className="sidebar-menu">

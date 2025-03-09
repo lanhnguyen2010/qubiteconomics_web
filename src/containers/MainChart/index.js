@@ -56,10 +56,10 @@ const styles = {
     paddingTop: 10 
   },
   rowCol3: {
-    height: '24.8vh', paddingTop: 10 
+    height: '33vh', paddingTop: 10 
   },
   chartInfoContainer: {
-    height: '28vh', width: '33vw', marginTop: 10, overflow: 'auto' 
+    height: '60vh', width: '33vw', marginTop: 10, overflow: 'auto' 
   }
 }
 
@@ -70,15 +70,15 @@ class MainChartScreen extends React.Component {
     this.chartRefs = [];
     this.chartRefs.push(this.VN30DerivativeChartRef = React.createRef());
     this.chartRefs.push(this.ForeignDerivativeChartRef = React.createRef());
-    this.chartRefs.push(this.SuuF1ChartRef = React.createRef());
-    this.chartRefs.push(this.BuyupSelldownChartRef = React.createRef());
+    // this.chartRefs.push(this.SuuF1ChartRef = React.createRef());
+    // this.chartRefs.push(this.BuyupSelldownChartRef = React.createRef());
     this.chartRefs.push(this.BuySellPressureChartRef = React.createRef());
     this.chartRefs.push(this.FBFSChartRef = React.createRef());
     this.chartRefs.push(this.NETBUSDChartRef = React.createRef());
     this.chartRefs.push(this.F1BidVAskVChartRef = React.createRef());
     this.chartRefs.push(this.NetBSChartRef = React.createRef());
 
-    this.selectedDate = new Date();
+    this.selectedDate = this.handleSelectDate(new Date());
     this.updateChart = this.updateChart.bind(this);
 
     this.callTimerID = null;
@@ -98,6 +98,12 @@ class MainChartScreen extends React.Component {
   }
 
   componentDidMount() {
+    if (!sessionStorage.getItem('hasReloaded')) {
+      sessionStorage.setItem('hasReloaded', 'true');
+      window.location.reload();
+      return; 
+    }
+
     this.BuySellPressureChartRef.current.activeSlider();
     this.chartRefs.forEach((ref, index) => ref.current.configureChartRelation("DB01", index));
 
@@ -108,12 +114,8 @@ class MainChartScreen extends React.Component {
       if (this.forceDate) {
         dateString = this.forceDate;
       } else {
-        let currentDate = moment();
-        if (currentDate.day() === 0 ||currentDate.day() === 6){
-          currentDate.add(-2, 'day')
-          this.selectedDate = new Date(currentDate);
-        }
-        dateString = currentDate.format('yyyy/MM/DD');
+        this.selectedDate = this.handleSelectDate(new Date());
+        dateString = this.selectedDate
       }
     }
 
@@ -121,6 +123,7 @@ class MainChartScreen extends React.Component {
   }
 
   componentWillUnmount() {
+    sessionStorage.removeItem('hasReloaded');
     clearInterval(this.callTimerID);
   }
 
@@ -185,7 +188,7 @@ class MainChartScreen extends React.Component {
     // this.BuyupSelldownChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbit(arbitUnwind)});
     // this.NETBUSDChartRef.current.appendData({chartData: DataParser.parseBusdOutbound(busd), bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
     // this.ForeignDerivativeChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
-    // this.BuySellPressureChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
+    // this.BuySellPressureChartRef.current.appendData(DataParser.parseFBFS(responseFBFS));
     // this.SuuF1ChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
     this.FBFSChartRef.current.appendData(DataParser.parseFBFS(responseFBFS));
     // this.F1BidVAskVChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
@@ -274,6 +277,16 @@ class MainChartScreen extends React.Component {
     this.FBFSChartRef.current.updateData(DataParser.parseFBFS(responseFBFS));
   }
 
+  handleSelectDate(date) {
+    if (date.getDay() === 0) {
+      date.setDate(date.getDate() - 2);
+    }
+    if (date.getDay() === 6) {
+      date.setDate(date.getDate() - 1);
+    }
+    return date;
+  }
+
   render() {
     return (
       <Container fluid style={styles.container}>
@@ -283,7 +296,7 @@ class MainChartScreen extends React.Component {
               <VN30DerivativeChart ref={this.VN30DerivativeChartRef} />
             </Row>
             <Row style={styles.rowCol1}>
-              <BuyupSelldownChart ref={this.BuyupSelldownChartRef} />
+              <BuySellPressureChart ref={this.BuySellPressureChartRef} />
             </Row>
             <Row style={styles.rowCol1}>
               <NETBUSDChart ref={this.NETBUSDChartRef} />
@@ -292,9 +305,6 @@ class MainChartScreen extends React.Component {
           <Col style={{paddingLeft: 25, paddingRight: 25}}>
             <Row style={styles.rowCol1}>
               <ForeignDerivativeChart ref={this.ForeignDerivativeChartRef} />
-            </Row>
-            <Row style={styles.rowCol1}>
-              <BuySellPressureChart ref={this.BuySellPressureChartRef} />
             </Row>
             <Row style={styles.rowCol1}>
               <Col>
@@ -311,9 +321,6 @@ class MainChartScreen extends React.Component {
             
           </Col>
           <Col style={{paddingRight: 21}}>
-            <Row style={styles.rowCol3}>
-              <SuuF1Chart ref={this.SuuF1ChartRef} />
-            </Row>
             <Row style={styles.rowCol3}>
               <FBFSChart ref={this.FBFSChartRef} />
             </Row>

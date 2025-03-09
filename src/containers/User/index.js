@@ -135,7 +135,7 @@ const UserScreen = () => {
           lastname: "",
           email: formData.email,
           password_hash: "",
-          role: "User", // default role
+          role: "user", // default role
         });
         const newUser = {
           id: response.user.id,
