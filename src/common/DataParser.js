@@ -42,7 +42,6 @@ const DataParser = {
     let outData = [];
     let lastestFbVolume = 0;
     let lastestFsVolume = 0;
-    console.log("outDataHashMap FBFS", outDataHashMap);
     outDataHashMap.forEach((value, key) => {
       lastestFbVolume = value.fbVolume || lastestFbVolume;
       lastestFsVolume = value.fsVolume || lastestFsVolume;
@@ -53,7 +52,7 @@ const DataParser = {
         net: lastestFbVolume - lastestFsVolume
       });
     })
-    console.log("outData FBFS", outData);
+    outData.sort((a, b) => a.time - b.time);
     return outData;
   },
     // parsePSOutbound: (data, date) => {
