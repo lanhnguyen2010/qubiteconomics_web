@@ -80,29 +80,29 @@ const styles = {
 const rollingOptions = [
   {
     key: 1,
-    value: "1m"
+    value: "1m",
   },
   {
     key: 3,
-    value: "3m"
+    value: "3m",
   },
   {
     key: 5,
-    value: "5m"
+    value: "5m",
   },
   {
     key: 10,
-    value: "10m"
+    value: "10m",
   },
   {
     key: 15,
-    value: "15m"
+    value: "15m",
   },
   {
     key: 30,
-    value: "30m"
+    value: "30m",
   },
-]
+];
 
 class MainChartScreen extends React.Component {
   constructor(props) {
@@ -111,7 +111,7 @@ class MainChartScreen extends React.Component {
     this.state = {
       codeOptions: [],
       selectedCodes: [],
-      selectedRolling: '',
+      selectedRolling: "",
     };
 
     this.chartRefs = [];
@@ -230,7 +230,12 @@ class MainChartScreen extends React.Component {
     const responseFBFS = await getFbFs(startTimestampSeconds, null);
     console.log("this.state.selectedCodes: ", this.state.selectedCodes);
     console.log("this.state.selectedRolling: ", this.state.selectedRolling);
-    const responseBUSD = await getBusd(startTimestampSeconds, null, this.state.selectedCodes, this.state.selectedRolling);
+    const responseBUSD = await getBusd(
+      startTimestampSeconds,
+      null,
+      this.state.selectedCodes,
+      this.state.selectedRolling
+    );
     const dataBusdParse = DataParser.parseBusd(responseBUSD);
 
     this.VN30DerivativeChartRef.current.appendData({
@@ -247,16 +252,21 @@ class MainChartScreen extends React.Component {
 
   handleCodesChange = (newSelectedOptions) => {
     this.setState({ selectedCodes: newSelectedOptions });
-    // const startTimestampSeconds = new Date(this.selectedDate).setHours(9, 0, 0, 0) / 1000;
-    // const endTimestampSeconds = new Date(this.selectedDate).setHours(15, 0, 0, 0) / 1000;
-    console.log('this.selectedDate', this.selectedDate);
+    const startTimestampSeconds = new Date(this.selectedDate).setHours(9, 0, 0, 0) / 1000;
+    const endTimestampSeconds = new Date(this.selectedDate).setHours(15, 0, 0, 0) / 1000;
+    console.log("this.selectedDate", this.selectedDate);
+    this.fetchBusd(startTimestampSeconds, endTimestampSeconds, this.state.selectedCodes, this.state.selectedRolling)
   };
 
   handleRollingChange = (newSelectedOption) => {
-    this.setState({ selectedRolling: newSelectedOption ? newSelectedOption.key : null});
-    console.log('this.selectedDate', this.selectedDate);
-    // this.fetchBusd();
-  }
+    this.setState({
+      selectedRolling: newSelectedOption ? newSelectedOption.key : null,
+    });
+    const startTimestampSeconds = new Date(this.selectedDate).setHours(9, 0, 0, 0) / 1000;
+    const endTimestampSeconds = new Date(this.selectedDate).setHours(15, 0, 0, 0) / 1000;
+    console.log("this.selectedDate", this.selectedDate);
+    this.fetchBusd(startTimestampSeconds, endTimestampSeconds, this.state.selectedCodes, this.state.selectedRolling)
+  };
 
   async onDatePicked(date) {
     this.selectedDate = date;
@@ -383,15 +393,18 @@ class MainChartScreen extends React.Component {
               <VN30DerivativeChart ref={this.VN30DerivativeChartRef} />
             </Row>
             <Row style={styles.rowCol1}>
-              <BuySellPressureChart ref={this.BuySellPressureChartRef} />
+              {/* <ForeignDerivativeChart ref={this.ForeignDerivativeChartRef} /> */}
             </Row>
             <Row style={styles.rowCol1}>
-              <NETBUSDChart ref={this.NETBUSDChartRef} />
+              {/* <NETBUSDChart ref={this.NETBUSDChartRef} /> */}
             </Row>
           </Col>
           <Col style={{ paddingLeft: 25, paddingRight: 25 }}>
             <Row style={styles.rowCol1}>
-              {/* <ForeignDerivativeChart ref={this.ForeignDerivativeChartRef} /> */}
+              <NETBUSDChart ref={this.NETBUSDChartRef} />
+            </Row>
+            <Row style={styles.rowCol1}>
+              <BuySellPressureChart ref={this.BuySellPressureChartRef} />
             </Row>
             <Row style={styles.rowCol1}>
               <Col>
@@ -419,11 +432,11 @@ class MainChartScreen extends React.Component {
                     />
                   </Col>
                   <Col md={3}>
-                  <SingleSelectDropdown
-                    options={rollingOptions}
-                    placeholder="Select a rolling"
-                    onChange={this.handleRollingChange}
-                  />
+                    <SingleSelectDropdown
+                      options={rollingOptions}
+                      placeholder="Select a rolling"
+                      onChange={this.handleRollingChange}
+                    />
                   </Col>
                 </Row>
                 <Row style={styles.chartInfoContainer}>
