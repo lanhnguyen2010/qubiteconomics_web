@@ -70,12 +70,7 @@ class SingleSelectDropdown extends React.Component {
             <span className="selected-text">{selectedOption.value}</span>
           )}
 
-          {/* "x" to clear selection if something is selected */}
-          {selectedOption !== null && (
-            <span className="clear-single" onClick={this.clearSelection}>
-              &times;
-            </span>
-          )}
+          <span className="single-select-dropdown__caret" />
         </div>
 
         {/* Dropdown menu */}
