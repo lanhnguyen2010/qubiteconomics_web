@@ -1,3 +1,4 @@
+import { net } from "@amcharts/amcharts4/core";
 import moment from "moment-timezone";
 
 const DataParser = {
@@ -13,7 +14,6 @@ const DataParser = {
   },
 
   parseVN30Index: (data) => {
-    console.log("data VN30", data);
     let outData = [];
     outData = data.map((i) => {
       return {
@@ -21,7 +21,6 @@ const DataParser = {
         time: new Date(i.timestamp.seconds * 1000),
       };
     });
-    console.log("outData VN30", outData);
     return outData;
   },
 
@@ -53,6 +52,24 @@ const DataParser = {
       });
     })
     outData.sort((a, b) => a.time - b.time);
+    return outData;
+  },
+
+  parseBusd: (data) => {
+    const { busdList } = data;
+    let cumSum = 0;
+    let outData = [];
+    busdList.forEach((busdItem) => {
+      let net = busdItem.buyUp - busdItem.sellDown;
+      cumSum += net;
+      outData.push({
+        time: new Date(busdItem.timestamp.seconds * 1000),
+        buyUp: busdItem.buyUp,
+        sellDown: busdItem.sellDown,
+        net: net,
+        cumSum: cumSum,
+      })
+    })
     return outData;
   },
     // parsePSOutbound: (data, date) => {

@@ -28,3 +28,15 @@
 .canvasjs-chart-toolbar button img {
     filter: none !important;
 }
+
+.datePicker {
+    width: 100%;
+}
+
+.react-datepicker-wrapper,
+.react-datepicker__input-container,
+.react-datepicker__input-container input {
+    display: block;
+    width: 100%;
+    height: 38px;
+}

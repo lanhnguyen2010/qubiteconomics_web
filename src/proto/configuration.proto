@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package configuration;
+
+import "google/protobuf/empty.proto";
+
+// ParameterService provides CRUD operations for configuration parameters.
+service ParameterService {
+  rpc CreateParameter(CreateParameterRequest) returns (CreateParameterResponse);
+  rpc GetParameter(GetParameterRequest) returns (GetParameterResponse);
+  rpc UpdateParameter(UpdateParameterRequest) returns (UpdateParameterResponse);
+  rpc DeleteParameter(DeleteParameterRequest) returns (google.protobuf.Empty);
+  rpc ListParameters(ListParametersRequest) returns (ListParametersResponse);
+}
+
+// Parameter represents a configuration parameter.
+message Parameter {
+  string key = 1;  // Unique identifier for the parameter.
+  string value = 2; // Configuration value, equivalent to TEXT in Postgres.
+}
+
+// CreateParameterRequest holds the fields needed to create a new parameter.
+message CreateParameterRequest {
+  string key = 1;
+  string value = 2;
+}
+
+// CreateParameterResponse returns the created parameter.
+message CreateParameterResponse {
+  Parameter parameter = 1;
+}
+
+// GetParameterRequest requests a parameter by its key.
+message GetParameterRequest {
+  string key = 1;
+}
+
+// GetParameterResponse returns the requested parameter.
+message GetParameterResponse {
+  Parameter parameter = 1;
+}
+
+// UpdateParameterRequest holds the fields to update an existing parameter.
+message UpdateParameterRequest {
+  string key = 1;
+  string value = 2;
+}
+
+// UpdateParameterResponse returns the updated parameter.
+message UpdateParameterResponse {
+  Parameter parameter = 1;
+}
+
+// DeleteParameterRequest requests deletion of a parameter by key.
+message DeleteParameterRequest {
+  string key = 1;
+}
+
+// ListParametersRequest can include optional filtering (currently empty).
+message ListParametersRequest {}
+
+// ListParametersResponse returns a list of all parameters.
+message ListParametersResponse {
+  repeated Parameter parameters = 1;
+}

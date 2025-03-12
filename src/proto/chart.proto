@@ -1,13 +1,13 @@
 syntax = "proto3";
-import "google/protobuf/timestamp.proto";
 
 package chart_data;
 
+import "google/protobuf/timestamp.proto";
 
-// ChartService provides data retrieval using a time range.
 service ChartService {
   rpc VN30PS (VN30PSRequest) returns (VN30PSResponse) {}
   rpc FBFS (FBFSRequest) returns (FBFSResponse) {}
+  rpc RollingBUSD (RollingBUSDRequest) returns (RollingBUSDResponse) {}
 }
 
 // VN30PS
@@ -42,4 +42,22 @@ message FBFSDataPoint {
 message FBFSResponse {
   repeated FBFSDataPoint fb = 1;
   repeated FBFSDataPoint fs = 2;
+}
+
+// RollingBUSD
+message RollingBUSDRequest {
+  repeated string code_list = 1;
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+  int32 rolling_period = 4;
+}
+
+message RollingBUSDDataPoint {
+  google.protobuf.Timestamp timestamp = 1;
+  double buy_up = 2;
+  double sell_down = 3;
+}
+
+message RollingBUSDResponse {
+  repeated RollingBUSDDataPoint busd = 1;
 }

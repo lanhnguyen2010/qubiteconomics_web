@@ -198,5 +198,66 @@ proto.chart_data.ChartServicePromiseClient.prototype.fBFS =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.chart_data.RollingBUSDRequest,
+ *   !proto.chart_data.RollingBUSDResponse>}
+ */
+const methodDescriptor_ChartService_RollingBUSD = new grpc.web.MethodDescriptor(
+  '/chart_data.ChartService/RollingBUSD',
+  grpc.web.MethodType.UNARY,
+  proto.chart_data.RollingBUSDRequest,
+  proto.chart_data.RollingBUSDResponse,
+  /**
+   * @param {!proto.chart_data.RollingBUSDRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.chart_data.RollingBUSDResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.chart_data.RollingBUSDRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.chart_data.RollingBUSDResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.chart_data.RollingBUSDResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.chart_data.ChartServiceClient.prototype.rollingBUSD =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/chart_data.ChartService/RollingBUSD',
+      request,
+      metadata || {},
+      methodDescriptor_ChartService_RollingBUSD,
+      callback);
+};
+
+
+/**
+ * @param {!proto.chart_data.RollingBUSDRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.chart_data.RollingBUSDResponse>}
+ *     Promise that resolves to the response
+ */
+proto.chart_data.ChartServicePromiseClient.prototype.rollingBUSD =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/chart_data.ChartService/RollingBUSD',
+      request,
+      metadata || {},
+      methodDescriptor_ChartService_RollingBUSD);
+};
+
+
 module.exports = proto.chart_data;
 
