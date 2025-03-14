@@ -821,6 +821,7 @@ class XCanvasJS {
     });
 
     this.setScaleBreaks();
+    this.refresh(true, null);
   }
 
   syncViewRange() {
