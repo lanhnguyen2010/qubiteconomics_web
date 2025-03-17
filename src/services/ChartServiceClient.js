@@ -71,6 +71,7 @@ export function getBusd(startTimestampSeconds, endTimestampSeconds, codes, rolli
     request.setRollingPeriod(Number(rolling));
   }
 
+  console.log('request: ', request.toObject());
   return new Promise((resolve, reject) => {
     client.rollingBUSD(request, metadata, (err, response) => {
       if (err) {

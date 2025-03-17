@@ -251,20 +251,21 @@ class MainChartScreen extends React.Component {
   };
 
   handleCodesChange = (newSelectedOptions) => {
+    console.log("newSelectedOptions", newSelectedOptions);
     this.setState({ selectedCodes: newSelectedOptions });
     const startTimestampSeconds = new Date(this.selectedDate).setHours(9, 0, 0, 0) / 1000;
     const endTimestampSeconds = new Date(this.selectedDate).setHours(15, 0, 0, 0) / 1000;
-    console.log("this.selectedDate", this.selectedDate);
     this.fetchBusd(startTimestampSeconds, endTimestampSeconds, this.state.selectedCodes, this.state.selectedRolling)
   };
 
   handleRollingChange = (newSelectedOption) => {
+    console.log("newSelectedOption", newSelectedOption);
+    const rolling = newSelectedOption ? newSelectedOption.key : null;
     this.setState({
-      selectedRolling: newSelectedOption ? newSelectedOption.key : null,
+      selectedRolling: rolling,
     });
     const startTimestampSeconds = new Date(this.selectedDate).setHours(9, 0, 0, 0) / 1000;
     const endTimestampSeconds = new Date(this.selectedDate).setHours(15, 0, 0, 0) / 1000;
-    console.log("this.selectedDate", this.selectedDate);
     this.fetchBusd(startTimestampSeconds, endTimestampSeconds, this.state.selectedCodes, this.state.selectedRolling)
   };
 
