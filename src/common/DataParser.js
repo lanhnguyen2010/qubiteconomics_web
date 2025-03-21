@@ -57,17 +57,24 @@ const DataParser = {
 
   parseBusd: (data) => {
     const { busdList } = data;
-    let cumSum = 0;
     let outData = [];
     busdList.forEach((busdItem) => {
-      let net = busdItem.buyUp - busdItem.sellDown;
-      cumSum += net;
       outData.push({
         time: new Date(busdItem.timestamp.seconds * 1000),
         buyUp: busdItem.buyUp,
         sellDown: busdItem.sellDown,
-        net: net,
-        cumSum: cumSum,
+      })
+    })
+    return outData;
+  },
+  parseNetBusd: (data) => {
+    const { busdList } = data;
+    let outData = [];
+    busdList.forEach((busdItem) => {
+      outData.push({
+        time: new Date(busdItem.time.seconds * 1000),
+        net: busdItem.netbusd,
+        cumSum: busdItem.netcumsum
       })
     })
     return outData;

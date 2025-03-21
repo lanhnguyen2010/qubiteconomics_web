@@ -819,9 +819,9 @@ class XCanvasJS {
 
       this.getChartOptions().data[index].dataPoints = currentDps;
     });
-
     this.setScaleBreaks();
-    this.refresh(true, null);
+    this.refresh(true, true);
+
   }
 
   syncViewRange() {

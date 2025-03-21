@@ -4,10 +4,14 @@ package chart_data;
 
 import "google/protobuf/timestamp.proto";
 
+// ChartService provides data retrieval using a time range.
 service ChartService {
   rpc VN30PS (VN30PSRequest) returns (VN30PSResponse) {}
   rpc FBFS (FBFSRequest) returns (FBFSResponse) {}
   rpc RollingBUSD (RollingBUSDRequest) returns (RollingBUSDResponse) {}
+  rpc NetBUSD (NetBUSDRequest) returns (NetBUSDResponse) {}
+  rpc ForeignPS(ForeignPSRequest) returns (ForeignPSResponse);
+  rpc BidAskPS(BidAskPSRequest) returns (BidAskPSResponse);
 }
 
 // VN30PS
@@ -60,4 +64,56 @@ message RollingBUSDDataPoint {
 
 message RollingBUSDResponse {
   repeated RollingBUSDDataPoint busd = 1;
+}
+
+// NetBUSD
+message NetBUSDDataPoint {
+  google.protobuf.Timestamp time = 1;
+  double netBUSD = 2;
+  double netCumSum = 3;
+}
+
+message NetBUSDResponse {
+  repeated NetBUSDDataPoint busd = 1;
+}
+
+message NetBUSDRequest {
+  repeated string code_list = 1;
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+}
+
+// Foreign ps
+// ForeignPSDataPoint represents one row of the query result.
+message ForeignPSRequest {
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+}
+
+message ForeignPSDataPoint {
+  google.protobuf.Timestamp time = 1;
+  double fb = 2;
+  double fs = 3;
+}
+
+// ForeignPSResponse contains the list of data points.
+message ForeignPSResponse {
+  repeated ForeignPSDataPoint foreignPS = 1;
+}
+
+// BidAskPS
+message BidAskPSRequest {
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+}
+
+message BidAskPSDataPoint {
+  google.protobuf.Timestamp time = 1;
+  double bid = 2;
+  double ask = 3;
+}
+
+// BidAskPSResponse contains the list of data points.
+message BidAskPSResponse {
+  repeated BidAskPSDataPoint bidAsk = 1;
 }

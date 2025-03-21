@@ -259,5 +259,188 @@ proto.chart_data.ChartServicePromiseClient.prototype.rollingBUSD =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.chart_data.NetBUSDRequest,
+ *   !proto.chart_data.NetBUSDResponse>}
+ */
+const methodDescriptor_ChartService_NetBUSD = new grpc.web.MethodDescriptor(
+  '/chart_data.ChartService/NetBUSD',
+  grpc.web.MethodType.UNARY,
+  proto.chart_data.NetBUSDRequest,
+  proto.chart_data.NetBUSDResponse,
+  /**
+   * @param {!proto.chart_data.NetBUSDRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.chart_data.NetBUSDResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.chart_data.NetBUSDRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.chart_data.NetBUSDResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.chart_data.NetBUSDResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.chart_data.ChartServiceClient.prototype.netBUSD =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/chart_data.ChartService/NetBUSD',
+      request,
+      metadata || {},
+      methodDescriptor_ChartService_NetBUSD,
+      callback);
+};
+
+
+/**
+ * @param {!proto.chart_data.NetBUSDRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.chart_data.NetBUSDResponse>}
+ *     Promise that resolves to the response
+ */
+proto.chart_data.ChartServicePromiseClient.prototype.netBUSD =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/chart_data.ChartService/NetBUSD',
+      request,
+      metadata || {},
+      methodDescriptor_ChartService_NetBUSD);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.chart_data.ForeignPSRequest,
+ *   !proto.chart_data.ForeignPSResponse>}
+ */
+const methodDescriptor_ChartService_ForeignPS = new grpc.web.MethodDescriptor(
+  '/chart_data.ChartService/ForeignPS',
+  grpc.web.MethodType.UNARY,
+  proto.chart_data.ForeignPSRequest,
+  proto.chart_data.ForeignPSResponse,
+  /**
+   * @param {!proto.chart_data.ForeignPSRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.chart_data.ForeignPSResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.chart_data.ForeignPSRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.chart_data.ForeignPSResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.chart_data.ForeignPSResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.chart_data.ChartServiceClient.prototype.foreignPS =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/chart_data.ChartService/ForeignPS',
+      request,
+      metadata || {},
+      methodDescriptor_ChartService_ForeignPS,
+      callback);
+};
+
+
+/**
+ * @param {!proto.chart_data.ForeignPSRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.chart_data.ForeignPSResponse>}
+ *     Promise that resolves to the response
+ */
+proto.chart_data.ChartServicePromiseClient.prototype.foreignPS =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/chart_data.ChartService/ForeignPS',
+      request,
+      metadata || {},
+      methodDescriptor_ChartService_ForeignPS);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.chart_data.BidAskPSRequest,
+ *   !proto.chart_data.BidAskPSResponse>}
+ */
+const methodDescriptor_ChartService_BidAskPS = new grpc.web.MethodDescriptor(
+  '/chart_data.ChartService/BidAskPS',
+  grpc.web.MethodType.UNARY,
+  proto.chart_data.BidAskPSRequest,
+  proto.chart_data.BidAskPSResponse,
+  /**
+   * @param {!proto.chart_data.BidAskPSRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.chart_data.BidAskPSResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.chart_data.BidAskPSRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.chart_data.BidAskPSResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.chart_data.BidAskPSResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.chart_data.ChartServiceClient.prototype.bidAskPS =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/chart_data.ChartService/BidAskPS',
+      request,
+      metadata || {},
+      methodDescriptor_ChartService_BidAskPS,
+      callback);
+};
+
+
+/**
+ * @param {!proto.chart_data.BidAskPSRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.chart_data.BidAskPSResponse>}
+ *     Promise that resolves to the response
+ */
+proto.chart_data.ChartServicePromiseClient.prototype.bidAskPS =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/chart_data.ChartService/BidAskPS',
+      request,
+      metadata || {},
+      methodDescriptor_ChartService_BidAskPS);
+};
+
+
 module.exports = proto.chart_data;
 

@@ -1,5 +1,5 @@
 import { ChartServiceClient } from "../grpc/chart_grpc_web_pb";
-import { VN30PSRequest, FBFSRequest, RollingBUSDRequest } from "../grpc/chart_pb";
+import { VN30PSRequest, FBFSRequest, RollingBUSDRequest, ForeignPSRequest, BidAskPSRequest, NetBUSDRequest } from "../grpc/chart_pb";
 
 import { Timestamp } from "google-protobuf/google/protobuf/timestamp_pb";
 
@@ -74,6 +74,76 @@ export function getBusd(startTimestampSeconds, endTimestampSeconds, codes, rolli
   console.log('request: ', request.toObject());
   return new Promise((resolve, reject) => {
     client.rollingBUSD(request, metadata, (err, response) => {
+      if (err) {
+        console.error("gRPC Error:", err);
+        return reject(err);
+      }
+      resolve(response.toObject());
+    });
+  });
+}
+
+export function getForeignPS(startTimestampSeconds, endTimestampSeconds) {
+  const request = new ForeignPSRequest();
+
+  const startTimestamp = new Timestamp();
+  startTimestamp.setSeconds(startTimestampSeconds);
+
+  const endTimestamp = new Timestamp();
+  endTimestamp.setSeconds(endTimestampSeconds);
+
+  request.setStartTime(startTimestamp);
+  request.setEndTime(endTimestamp);
+
+  return new Promise((resolve, reject) => {
+    client.foreignPS(request, metadata, (err, response) => {
+      if (err) {
+        console.error("gRPC Error:", err);
+        return reject(err);
+      }
+      resolve(response.toObject());
+    });
+  });
+}
+
+export function getBidAskPs(startTimestampSeconds, endTimestampSeconds) {
+  const request = new BidAskPSRequest();
+
+  const startTimestamp = new Timestamp();
+  startTimestamp.setSeconds(startTimestampSeconds);
+
+  const endTimestamp = new Timestamp();
+  endTimestamp.setSeconds(endTimestampSeconds);
+
+  request.setStartTime(startTimestamp);
+  request.setEndTime(endTimestamp);
+
+  return new Promise((resolve, reject) => {
+    client.bidAskPS(request, metadata, (err, response) => {
+      if (err) {
+        console.error("gRPC Error:", err);
+        return reject(err);
+      }
+      resolve(response.toObject());
+    });
+  });
+}
+
+export function getNetBUSD(startTimestampSeconds, endTimestampSeconds, codes) {
+  const request = new NetBUSDRequest();
+
+  const startTimestamp = new Timestamp();
+  startTimestamp.setSeconds(startTimestampSeconds);
+
+  const endTimestamp = new Timestamp();
+  endTimestamp.setSeconds(endTimestampSeconds);
+
+  request.setStartTime(startTimestamp);
+  request.setEndTime(endTimestamp);
+  request.setCodeListList(codes);
+
+  return new Promise((resolve, reject) => {
+    client.netBUSD(request, metadata, (err, response) => {
       if (err) {
         console.error("gRPC Error:", err);
         return reject(err);

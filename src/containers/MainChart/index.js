@@ -1,7 +1,6 @@
 import { connect } from "react-redux";
 import React from "react";
 import moment from "moment-timezone";
-import _ from "lodash";
 import "react-datepicker/dist/react-datepicker.css";
 import { Container, Row, Col } from "react-bootstrap";
 import CanvasJSReact from "lib/canvasjs.stock.react";
@@ -32,9 +31,8 @@ import {
   generateSuuF1OutboundMockData,
   generateVN30IndexMockData,
 } from "mockData/mockDataChart";
-import { getVN30PS, getFbFs, getBusd } from "services/ChartServiceClient";
+import { getVN30PS, getFbFs, getBusd, getForeignPS, getBidAskPs, getNetBUSD } from "services/ChartServiceClient";
 import { getListParameter } from "services/ParameterServiceClient";
-import { width } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 
 const CanvasJS = CanvasJSReact.CanvasJS;
 CanvasJS.addColorSet("customColorSet1", [
@@ -70,7 +68,7 @@ const styles = {
     paddingTop: 10,
   },
   chartInfoContainer: {
-    height: "60vh",
+    height: "30vh",
     width: "33vw",
     marginTop: 10,
     overflow: "auto",
@@ -224,12 +222,11 @@ class MainChartScreen extends React.Component {
         this.reachEndTime = true;
       }
     }
+    console.log("requestBody: ", requestBody);
     const startTimestampSeconds =
       new Date(`${requestBody.day} ${requestBody.startTime}`).getTime() / 1000;
     const responseVN30PS = await getVN30PS(startTimestampSeconds, null);
     const responseFBFS = await getFbFs(startTimestampSeconds, null);
-    console.log("this.state.selectedCodes: ", this.state.selectedCodes);
-    console.log("this.state.selectedRolling: ", this.state.selectedRolling);
     const responseBUSD = await getBusd(
       startTimestampSeconds,
       null,
@@ -237,7 +234,6 @@ class MainChartScreen extends React.Component {
       this.state.selectedRolling
     );
     const dataBusdParse = DataParser.parseBusd(responseBUSD);
-
     this.VN30DerivativeChartRef.current.appendData({
       PS: DataParser.parsePSOutbound(responseVN30PS.psList),
       VNIndex30: DataParser.parseVN30Index(responseVN30PS.vn30List),
@@ -251,22 +247,24 @@ class MainChartScreen extends React.Component {
   };
 
   handleCodesChange = (newSelectedOptions) => {
-    console.log("newSelectedOptions", newSelectedOptions);
-    this.setState({ selectedCodes: newSelectedOptions });
-    const startTimestampSeconds = new Date(this.selectedDate).setHours(9, 0, 0, 0) / 1000;
-    const endTimestampSeconds = new Date(this.selectedDate).setHours(15, 0, 0, 0) / 1000;
-    this.fetchBusd(startTimestampSeconds, endTimestampSeconds, this.state.selectedCodes, this.state.selectedRolling)
+    this.setState({ selectedCodes: newSelectedOptions }, () => {
+      const startTimestampSeconds = new Date(this.selectedDate).setHours(9, 0, 0, 0) / 1000;
+      const endTimestampSeconds = new Date(this.selectedDate).setHours(15, 0, 0, 0) / 1000;
+      this.fetchBusd(startTimestampSeconds, endTimestampSeconds, this.state.selectedCodes, this.state.selectedRolling)
+      this.fetchNetBusd(startTimestampSeconds, endTimestampSeconds, this.state.selectedCodes);
+    });
   };
 
   handleRollingChange = (newSelectedOption) => {
-    console.log("newSelectedOption", newSelectedOption);
     const rolling = newSelectedOption ? newSelectedOption.key : null;
-    this.setState({
-      selectedRolling: rolling,
-    });
-    const startTimestampSeconds = new Date(this.selectedDate).setHours(9, 0, 0, 0) / 1000;
-    const endTimestampSeconds = new Date(this.selectedDate).setHours(15, 0, 0, 0) / 1000;
-    this.fetchBusd(startTimestampSeconds, endTimestampSeconds, this.state.selectedCodes, this.state.selectedRolling)
+    this.setState(
+      { selectedRolling: rolling }, 
+      () => {
+        const startTimestampSeconds = new Date(this.selectedDate).setHours(9, 0, 0, 0) / 1000;
+        const endTimestampSeconds = new Date(this.selectedDate).setHours(15, 0, 0, 0) / 1000;
+        this.fetchBusd(startTimestampSeconds, endTimestampSeconds, this.state.selectedCodes, this.state.selectedRolling);
+      }
+    );
   };
 
   async onDatePicked(date) {
@@ -304,6 +302,9 @@ class MainChartScreen extends React.Component {
     await this.fetchOthers(startTimestampSeconds, endTimestampSeconds);
     await this.fetchFbFs(startTimestampSeconds, endTimestampSeconds);
     await this.fetchBusd(startTimestampSeconds, endTimestampSeconds);
+    await this.fetchNetBusd(startTimestampSeconds, endTimestampSeconds);
+    // await this.fetchForeignPS(startTimestampSeconds, endTimestampSeconds);
+    // await this.fetchBidAskPS(startTimestampSeconds, endTimestampSeconds);
 
     let chartManager = XCanvasJSManager.getInstance("DB01");
     chartManager.initViewRange();
@@ -364,15 +365,45 @@ class MainChartScreen extends React.Component {
     this.FBFSChartRef.current.updateData(DataParser.parseFBFS(responseFBFS));
   }
 
-  async fetchBusd(startTimestampSeconds, endTimestampSeconds) {
+  async fetchForeignPS(startTimestampSeconds, endTimestampSeconds) {
+    const responseForeignPS = await getForeignPS(
+      startTimestampSeconds,
+      endTimestampSeconds
+    );
+    console.log("responseForeignPS", responseForeignPS);
+    // this.ForeignDerivativeChartRef.current.updateData(DataParser.parseFBFS(responseForeignPS));
+  }
+
+  async fetchBidAskPS(startTimestampSeconds, endTimestampSeconds) {
+    const responseBidAskPS = await getBidAskPs(
+      startTimestampSeconds,
+      endTimestampSeconds
+    );
+    console.log("responseBidAskPS", responseBidAskPS);
+    // this.BidAskChartRef.current.updateData(DataParser.parseBidAskPS(responseBidAskPS));
+  }
+
+  async fetchBusd(startTimestampSeconds, endTimestampSeconds, codes, rolling) {
     const responseBusd = await getBusd(
       startTimestampSeconds,
       endTimestampSeconds,
-      this.state.selectedCodes
+      codes,
+      rolling,
     );
     const dataBusdParse = DataParser.parseBusd(responseBusd);
+    console.log("dataBusdParse", dataBusdParse);
     this.BuySellPressureChartRef.current.updateData(dataBusdParse);
-    this.NETBUSDChartRef.current.updateData(dataBusdParse);
+  }
+
+  async fetchNetBusd(startTimestampSeconds, endTimestampSeconds, codes) {
+    const responseNetBusd = await getNetBUSD(
+      startTimestampSeconds,
+      endTimestampSeconds,
+      codes,
+    );
+    console.log("responseNetBusd", responseNetBusd);
+    const dataNetBusdParse = DataParser.parseNetBusd(responseNetBusd);
+    this.NETBUSDChartRef.current.updateData(dataNetBusdParse);
   }
 
   handleSelectDate(date) {
@@ -393,9 +424,9 @@ class MainChartScreen extends React.Component {
             <Row style={styles.rowCol1}>
               <VN30DerivativeChart ref={this.VN30DerivativeChartRef} />
             </Row>
-            <Row style={styles.rowCol1}>
-              {/* <ForeignDerivativeChart ref={this.ForeignDerivativeChartRef} /> */}
-            </Row>
+            {/* <Row style={styles.rowCol1}>
+              <ForeignDerivativeChart ref={this.ForeignDerivativeChartRef} />
+            </Row> */}
             <Row style={styles.rowCol1}>
               {/* <NETBUSDChart ref={this.NETBUSDChartRef} /> */}
             </Row>
@@ -452,8 +483,8 @@ class MainChartScreen extends React.Component {
             </Row>
             {/* <Row style={styles.rowCol3}>
               <F1BidVAskVChart ref={this.F1BidVAskVChartRef} />
-            </Row>
-            <Row style={styles.rowCol3}>
+            </Row> */}
+            {/* <Row style={styles.rowCol3}>
               <NetBSChart ref={this.NetBSChartRef} />
             </Row> */}
           </Col>
