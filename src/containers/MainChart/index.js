@@ -17,20 +17,11 @@ import BuyupSelldownChart from "components/charts/main_charts/BuyupSelldownChart
 import NETBUSDChart from "components/charts/main_charts/NETBUSDChart";
 import DatePicker from "react-datepicker";
 import ChartInfo from "components/widgets/ChartInfo/index";
-import StockAPI from "services/StockAPI";
 import DataParser from "common/DataParser";
 import MultiSelectDropdown from "components/MultiSelectDropdown";
 import SingleSelectDropdown from "components/SingleSelectDropdown";
 
 import "./index.css";
-import {
-  generateArbitUnwindMockData,
-  generateBusdMockData,
-  generateBuySellNNMockData,
-  generatePSMockData,
-  generateSuuF1OutboundMockData,
-  generateVN30IndexMockData,
-} from "mockData/mockDataChart";
 import { getVN30PS, getFbFs, getBusd, getForeignPS, getBidAskPs, getNetBUSD } from "services/ChartServiceClient";
 import { getListParameter } from "services/ParameterServiceClient";
 
@@ -115,13 +106,13 @@ class MainChartScreen extends React.Component {
     this.chartRefs = [];
     this.listCode = [];
     this.chartRefs.push((this.VN30DerivativeChartRef = React.createRef()));
-    // this.chartRefs.push((this.ForeignDerivativeChartRef = React.createRef()));
+    this.chartRefs.push((this.ForeignDerivativeChartRef = React.createRef()));
     // this.chartRefs.push(this.SuuF1ChartRef = React.createRef());
     // this.chartRefs.push(this.BuyupSelldownChartRef = React.createRef());
     this.chartRefs.push((this.BuySellPressureChartRef = React.createRef()));
     this.chartRefs.push((this.FBFSChartRef = React.createRef()));
     this.chartRefs.push((this.NETBUSDChartRef = React.createRef()));
-    // this.chartRefs.push((this.F1BidVAskVChartRef = React.createRef()));
+    this.chartRefs.push((this.F1BidVAskVChartRef = React.createRef()));
     // this.chartRefs.push((this.NetBSChartRef = React.createRef()));
 
     this.selectedDate = this.handleSelectDate(new Date());
@@ -234,6 +225,12 @@ class MainChartScreen extends React.Component {
       this.state.selectedRolling
     );
     const dataBusdParse = DataParser.parseBusd(responseBUSD);
+    const responseForeignPS = await getForeignPS(startTimestampSeconds, null);
+    const responseBidAskPS = await getBidAskPs(
+      startTimestampSeconds,
+      null
+    );
+
     this.VN30DerivativeChartRef.current.appendData({
       PS: DataParser.parsePSOutbound(responseVN30PS.psList),
       VNIndex30: DataParser.parseVN30Index(responseVN30PS.vn30List),
@@ -241,8 +238,8 @@ class MainChartScreen extends React.Component {
     this.NETBUSDChartRef.current.appendData(dataBusdParse);
     this.BuySellPressureChartRef.current.appendData(dataBusdParse);
     this.FBFSChartRef.current.appendData(DataParser.parseFBFS(responseFBFS));
-    // this.ForeignDerivativeChartRef.current.appendData(DataParser.parseBuySellNNOutbound(buysellNN));
-    // this.F1BidVAskVChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
+    this.ForeignDerivativeChartRef.current.appendData(DataParser.parseForeignPS(responseForeignPS.foreignpsList));
+    this.F1BidVAskVChartRef.current.appendData(DataParser.parseBidAskPS(responseBidAskPS.bidaskList));
     // this.NetBSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
   };
 
@@ -297,14 +294,12 @@ class MainChartScreen extends React.Component {
     const endTimestampSeconds = new Date(dateStr).setHours(15, 0, 0, 0) / 1000;
     console.log("startTimestampSeconds in fetchData", startTimestampSeconds);
     console.log("endTimestampSeconds in fetchData", endTimestampSeconds);
-    // await this.fetchSuuF1(requestBody);
-    // await this.fetchBuySellNN(requestBody);
     await this.fetchOthers(startTimestampSeconds, endTimestampSeconds);
     await this.fetchFbFs(startTimestampSeconds, endTimestampSeconds);
     await this.fetchBusd(startTimestampSeconds, endTimestampSeconds);
     await this.fetchNetBusd(startTimestampSeconds, endTimestampSeconds);
-    // await this.fetchForeignPS(startTimestampSeconds, endTimestampSeconds);
-    // await this.fetchBidAskPS(startTimestampSeconds, endTimestampSeconds);
+    await this.fetchForeignPS(startTimestampSeconds, endTimestampSeconds);
+    await this.fetchBidAskPS(startTimestampSeconds, endTimestampSeconds);
 
     let chartManager = XCanvasJSManager.getInstance("DB01");
     chartManager.initViewRange();
@@ -313,25 +308,6 @@ class MainChartScreen extends React.Component {
     if (moment(dateStr).format("yyyy/MM/DD") === this.realTimeDate) {
       this.callTimerID = setTimeout(this.updateChart, interval);
     }
-  }
-
-  async fetchBuySellNN(requestBody) {
-    // let buysellNN = await StockAPI.fetchBuySellNNOutbound(requestBody);
-    const buysellNN = generateBuySellNNMockData();
-    let parsedData = DataParser.parseBuySellNNOutbound(buysellNN);
-    this.ForeignDerivativeChartRef.current.updateData(parsedData);
-    this.BuySellPressureChartRef.current.updateData(parsedData);
-  }
-
-  async fetchSuuF1(requestBody) {
-    // const suuF1 = await StockAPI.fetchSuuF1Outbound(requestBody);
-    const suuF1 = generateSuuF1OutboundMockData();
-    this.SuuF1ChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
-    this.FBFSChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
-    this.F1BidVAskVChartRef.current.updateData(
-      DataParser.parseSuuF1Outbound(suuF1)
-    );
-    this.NetBSChartRef.current.updateData(DataParser.parseSuuF1Outbound(suuF1));
   }
 
   async fetchOthers(startTimestampSeconds, endTimestampSeconds) {
@@ -370,8 +346,7 @@ class MainChartScreen extends React.Component {
       startTimestampSeconds,
       endTimestampSeconds
     );
-    console.log("responseForeignPS", responseForeignPS);
-    // this.ForeignDerivativeChartRef.current.updateData(DataParser.parseFBFS(responseForeignPS));
+    this.ForeignDerivativeChartRef.current.updateData(DataParser.parseForeignPS(responseForeignPS.foreignpsList));
   }
 
   async fetchBidAskPS(startTimestampSeconds, endTimestampSeconds) {
@@ -379,8 +354,7 @@ class MainChartScreen extends React.Component {
       startTimestampSeconds,
       endTimestampSeconds
     );
-    console.log("responseBidAskPS", responseBidAskPS);
-    // this.BidAskChartRef.current.updateData(DataParser.parseBidAskPS(responseBidAskPS));
+    this.F1BidVAskVChartRef.current.updateData(DataParser.parseBidAskPS(responseBidAskPS.bidaskList));
   }
 
   async fetchBusd(startTimestampSeconds, endTimestampSeconds, codes, rolling) {
@@ -391,7 +365,6 @@ class MainChartScreen extends React.Component {
       rolling,
     );
     const dataBusdParse = DataParser.parseBusd(responseBusd);
-    console.log("dataBusdParse", dataBusdParse);
     this.BuySellPressureChartRef.current.updateData(dataBusdParse);
   }
 
@@ -401,7 +374,6 @@ class MainChartScreen extends React.Component {
       endTimestampSeconds,
       codes,
     );
-    console.log("responseNetBusd", responseNetBusd);
     const dataNetBusdParse = DataParser.parseNetBusd(responseNetBusd);
     this.NETBUSDChartRef.current.updateData(dataNetBusdParse);
   }
@@ -424,9 +396,9 @@ class MainChartScreen extends React.Component {
             <Row style={styles.rowCol1}>
               <VN30DerivativeChart ref={this.VN30DerivativeChartRef} />
             </Row>
-            {/* <Row style={styles.rowCol1}>
+            <Row style={styles.rowCol1}>
               <ForeignDerivativeChart ref={this.ForeignDerivativeChartRef} />
-            </Row> */}
+            </Row>
             <Row style={styles.rowCol1}>
               {/* <NETBUSDChart ref={this.NETBUSDChartRef} /> */}
             </Row>
@@ -481,9 +453,9 @@ class MainChartScreen extends React.Component {
             <Row style={styles.rowCol3}>
               <FBFSChart ref={this.FBFSChartRef} />
             </Row>
-            {/* <Row style={styles.rowCol3}>
+            <Row style={styles.rowCol3}>
               <F1BidVAskVChart ref={this.F1BidVAskVChartRef} />
-            </Row> */}
+            </Row>
             {/* <Row style={styles.rowCol3}>
               <NetBSChart ref={this.NetBSChartRef} />
             </Row> */}

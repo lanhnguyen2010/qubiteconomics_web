@@ -1,4 +1,3 @@
-import { net } from "@amcharts/amcharts4/core";
 import moment from "moment-timezone";
 
 const DataParser = {
@@ -52,6 +51,31 @@ const DataParser = {
       });
     })
     outData.sort((a, b) => a.time - b.time);
+    return outData;
+  },
+
+  parseForeignPS: (data) => {
+    let outData = [];
+    outData = data.map((i) => {
+      return {
+        time: new Date(i.time.seconds * 1000),
+        fb: i.fb,
+        fs: i.fs,
+        net: i.fb - i.fs
+      };
+    });
+    return outData;
+  },
+
+  parseBidAskPS: (data) => {
+    let outData = [];
+    outData = data.map((i) => {
+      return {
+        time: new Date(i.time.seconds * 1000),
+        bid: i.bid,
+        ask: i.ask,
+      };
+    });
     return outData;
   },
 

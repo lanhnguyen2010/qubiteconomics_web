@@ -15,14 +15,14 @@ export default class F1BidVAskVChart extends LineChart {
           key: "AskV",
           name: "AskV"
         },
-        {
-          key: "NetBA",
-          name: "NetBA"
-        },
-        {
-          key: "SMA",
-          name: "SMA"
-        }
+        // {
+        //   key: "NetBA",
+        //   name: "NetBA"
+        // },
+        // {
+        //   key: "SMA",
+        //   name: "SMA"
+        // }
       ]
     }
   }
@@ -40,24 +40,24 @@ export default class F1BidVAskVChart extends LineChart {
       xValueType: "dateTime",
       yValueFormatString: "#,##0.00"
     })
-    this.getChartOptions(options).data.push({
-      axisYType: "secondary",
-      type: "line",
-      showInLegend: true,
-      lineThickness: 1,
-      legendText: this.chartInfo.legends[2].name,
-      xValueType: "dateTime",
-      yValueFormatString: "#,##0.00"
-    })
-    this.getChartOptions(options).data.push({
-      axisYType: "secondary",
-      type: "line",
-      showInLegend: true,
-      lineThickness: 1,
-      legendText: this.chartInfo.legends[3].name,
-      xValueType: "dateTime",
-      yValueFormatString: "#,##0.00"
-    })
+    // this.getChartOptions(options).data.push({
+    //   axisYType: "secondary",
+    //   type: "line",
+    //   showInLegend: true,
+    //   lineThickness: 1,
+    //   legendText: this.chartInfo.legends[2].name,
+    //   xValueType: "dateTime",
+    //   yValueFormatString: "#,##0.00"
+    // })
+    // this.getChartOptions(options).data.push({
+    //   axisYType: "secondary",
+    //   type: "line",
+    //   showInLegend: true,
+    //   lineThickness: 1,
+    //   legendText: this.chartInfo.legends[3].name,
+    //   xValueType: "dateTime",
+    //   yValueFormatString: "#,##0.00"
+    // })
     return options;
   }
 
@@ -65,20 +65,16 @@ export default class F1BidVAskVChart extends LineChart {
     if (!chartData || !chartData.length) return;
 
     this.chart.updateData([
-      chartData.map(item => ({ x: item.time, y: item.BidV })),
-      chartData.map(item => ({ x: item.time, y: item.AskV })),
-      chartData.map(item => ({ x: item.time, y: item.NetBA })),
-      chartData.map(item => ({ x: item.time, y: item.SMA }))
+      chartData.map(item => ({ x: item.time, y: item.bid })),
+      chartData.map(item => ({ x: item.time, y: item.ask })),
     ])
   }
   appendData(data) {
     if (!data || !data.length) return;
 
     this.chart.appendData([
-      data.map(item => ({ x: item.time, y: item.BidV })),
-      data.map(item => ({ x: item.time, y: item.AskV })),
-      data.map(item => ({ x: item.time, y: item.NetBA })),
-      data.map(item => ({ x: item.time, y: item.SMA }))
+      data.map(item => ({ x: item.time, y: item.bid })),
+      data.map(item => ({ x: item.time, y: item.ask })),
     ])
   }
 }
