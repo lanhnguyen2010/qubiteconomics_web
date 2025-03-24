@@ -68,27 +68,27 @@ const styles = {
 
 const rollingOptions = [
   {
-    key: 1,
+    key: 1 * 60,
     value: "1m",
   },
   {
-    key: 3,
+    key: 3 * 60,
     value: "3m",
   },
   {
-    key: 5,
+    key: 5 * 60,
     value: "5m",
   },
   {
-    key: 10,
+    key: 10 * 60,
     value: "10m",
   },
   {
-    key: 15,
+    key: 15 * 60,
     value: "15m",
   },
   {
-    key: 30,
+    key: 30 * 60,
     value: "30m",
   },
 ];
