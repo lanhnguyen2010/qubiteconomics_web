@@ -56,7 +56,6 @@ export default class ChartInfo extends React.Component {
     let { charts } = this.state;
 
     let info = {};
-    console.log("charts", charts);
     charts.forEach(chart => {
       if (chart && chart.values) {
         info[chart.name] = {

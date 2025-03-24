@@ -6,7 +6,7 @@ class SingleSelectDropdown extends React.Component {
     super(props);
     this.state = {
       isOpen: false,
-      selectedOption: null // Will hold the full { key, value } object
+      selectedOption: null // Will hold the full { value, label } object
     };
     this.dropdownRef = React.createRef();
   }
@@ -35,9 +35,7 @@ class SingleSelectDropdown extends React.Component {
   };
 
   handleOptionSelect = (optionObject) => {
-    // optionObject = { key, value }
     this.setState({ selectedOption: optionObject, isOpen: false }, () => {
-      // Notify parent of the change if onChange is provided
       if (this.props.onChange) {
         this.props.onChange(optionObject);
       }
@@ -45,7 +43,6 @@ class SingleSelectDropdown extends React.Component {
   };
 
   clearSelection = (event) => {
-    // Prevent toggling the dropdown when clicking "x"
     event.stopPropagation();
     this.setState({ selectedOption: null }, () => {
       if (this.props.onChange) {
@@ -60,14 +57,11 @@ class SingleSelectDropdown extends React.Component {
 
     return (
       <div className="single-select-dropdown" ref={this.dropdownRef}>
-        {/* Input area (click to toggle dropdown) */}
         <div className="single-select-dropdown__input" onClick={this.toggleDropdown}>
-          {/* Show placeholder if nothing is selected */}
           {selectedOption === null ? (
             <span className="placeholder">{placeholder}</span>
           ) : (
-            // Display the value of the selected object
-            <span className="selected-text">{selectedOption.value}</span>
+            <span className="selected-text">{selectedOption.label}</span>
           )}
 
           <span className="single-select-dropdown__caret" />
@@ -79,10 +73,10 @@ class SingleSelectDropdown extends React.Component {
             {options.map((optionObject) => (
               <div
                 className="single-select-dropdown__option"
-                key={optionObject.key} 
+                key={optionObject.value} 
                 onClick={() => this.handleOptionSelect(optionObject)}
               >
-                {optionObject.value}
+                {optionObject.label}
               </div>
             ))}
           </div>

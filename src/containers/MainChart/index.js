@@ -23,7 +23,7 @@ import SingleSelectDropdown from "components/SingleSelectDropdown";
 
 import "./index.css";
 import { getVN30PS, getFbFs, getBusd, getForeignPS, getBidAskPs, getNetBUSD } from "services/ChartServiceClient";
-import { getListParameter } from "services/ParameterServiceClient";
+import { getParameter } from "services/ParameterServiceClient";
 
 const CanvasJS = CanvasJSReact.CanvasJS;
 CanvasJS.addColorSet("customColorSet1", [
@@ -65,33 +65,6 @@ const styles = {
     overflow: "auto",
   },
 };
-
-const rollingOptions = [
-  {
-    key: 1 * 60,
-    value: "1m",
-  },
-  {
-    key: 3 * 60,
-    value: "3m",
-  },
-  {
-    key: 5 * 60,
-    value: "5m",
-  },
-  {
-    key: 10 * 60,
-    value: "10m",
-  },
-  {
-    key: 15 * 60,
-    value: "15m",
-  },
-  {
-    key: 30 * 60,
-    value: "30m",
-  },
-];
 
 class MainChartScreen extends React.Component {
   constructor(props) {
@@ -157,9 +130,10 @@ class MainChartScreen extends React.Component {
         dateString = this.selectedDate;
       }
     }
+    this.getListCode();
+    this.getListRolling();
 
     this.fetchData(dateString);
-    this.getListCode();
   }
 
   componentWillUnmount() {
@@ -253,13 +227,14 @@ class MainChartScreen extends React.Component {
   };
 
   handleRollingChange = (newSelectedOption) => {
-    const rolling = newSelectedOption ? newSelectedOption.key : null;
+    const rolling = newSelectedOption ? newSelectedOption.value : null;
     this.setState(
       { selectedRolling: rolling }, 
       () => {
         const startTimestampSeconds = new Date(this.selectedDate).setHours(9, 0, 0, 0) / 1000;
         const endTimestampSeconds = new Date(this.selectedDate).setHours(15, 0, 0, 0) / 1000;
         this.fetchBusd(startTimestampSeconds, endTimestampSeconds, this.state.selectedCodes, this.state.selectedRolling);
+        this.fetchNetBusd(startTimestampSeconds, endTimestampSeconds, this.state.selectedCodes);
       }
     );
   };
@@ -276,10 +251,17 @@ class MainChartScreen extends React.Component {
     this.fetchData(dateString);
   }
 
-  async getListCode() {
-    const responseParameter = await getListParameter();
+  async getListRolling() {
+    const responseParameter = await getParameter("Rolling_options");
     this.setState({
-      codeOptions: JSON.parse(responseParameter.parametersList[0].value),
+      rollingOptions: JSON.parse(responseParameter?.parameter?.value),
+    });
+  }
+
+  async getListCode() {
+    const responseParameter = await getParameter("VN30_List");
+    this.setState({
+      codeOptions: JSON.parse(responseParameter?.parameter?.value),
     });
   }
 
@@ -437,7 +419,7 @@ class MainChartScreen extends React.Component {
                   </Col>
                   <Col md={3}>
                     <SingleSelectDropdown
-                      options={rollingOptions}
+                      options={this.state.rollingOptions}
                       placeholder="Select a rolling"
                       onChange={this.handleRollingChange}
                     />
