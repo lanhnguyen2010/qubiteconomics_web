@@ -15,6 +15,7 @@
     "create-react-class": "^15.7.0",
     "google-protobuf": "^3.21.4",
     "grpc-web": "^1.5.0",
+    "jwt-decode": "^4.0.0",
     "markerjs2": "^2.11.1",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.33",

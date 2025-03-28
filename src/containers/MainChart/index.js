@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import React from "react";
 import moment from "moment-timezone";
 import "react-datepicker/dist/react-datepicker.css";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Spinner  } from "react-bootstrap";
 import CanvasJSReact from "lib/canvasjs.stock.react";
 import { XCanvasJSManager } from "utils/xcanvas";
 
@@ -74,6 +74,7 @@ class MainChartScreen extends React.Component {
       codeOptions: [],
       selectedCodes: [],
       selectedRolling: "",
+      isLoading: true,
     };
 
     this.chartRefs = [];
@@ -266,6 +267,7 @@ class MainChartScreen extends React.Component {
   }
 
   async fetchData(dateStr) {
+    this.setState({ isLoading: true });
     clearInterval(this.callTimerID);
 
     let requestData = { day: dateStr, endTime: "" };
@@ -290,6 +292,8 @@ class MainChartScreen extends React.Component {
     if (moment(dateStr).format("yyyy/MM/DD") === this.realTimeDate) {
       this.callTimerID = setTimeout(this.updateChart, interval);
     }
+
+    this.setState({ isLoading: false });
   }
 
   async fetchOthers(startTimestampSeconds, endTimestampSeconds) {
@@ -373,6 +377,12 @@ class MainChartScreen extends React.Component {
   render() {
     return (
       <Container fluid style={styles.container}>
+        {/* Loading overlay */}
+        {this.state.isLoading && (
+          <div className="loading-overlay">
+            <Spinner animation="border" variant="primary" />
+          </div>
+        )}
         <Row style={styles.rowContainer}>
           <Col style={{ paddingLeft: 20 }}>
             <Row style={styles.rowCol1}>
