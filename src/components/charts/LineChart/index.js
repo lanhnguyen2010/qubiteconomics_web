@@ -7,6 +7,7 @@ export default class LineChart extends BaseChart {
 
   initChartOptions(options) {
     options = super.initChartOptions(options);
+    console.log('options', options);
 
     var fontSize = 11;
     var labelFontSize = 10;
@@ -102,7 +103,7 @@ export default class LineChart extends BaseChart {
                                 entry.dataSeries.color = '#4661EE';
                             }
                             if (entry.dataPoint.y != null) {
-                              let label = entry.dataPoint.y.toFixed(2)
+                              let label = typeof entry.dataPoint.y == 'number' ? entry.dataPoint.y.toFixed(2) : entry.dataPoint.y;
                               if (entry.dataPoint.name){
                                   label = entry.dataPoint.name;
                               }

@@ -201,16 +201,16 @@ proto.chart_data.ChartServicePromiseClient.prototype.fBFS =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.chart_data.RollingBUSDRequest,
+ *   !proto.chart_data.BUSDRequest,
  *   !proto.chart_data.RollingBUSDResponse>}
  */
 const methodDescriptor_ChartService_RollingBUSD = new grpc.web.MethodDescriptor(
   '/chart_data.ChartService/RollingBUSD',
   grpc.web.MethodType.UNARY,
-  proto.chart_data.RollingBUSDRequest,
+  proto.chart_data.BUSDRequest,
   proto.chart_data.RollingBUSDResponse,
   /**
-   * @param {!proto.chart_data.RollingBUSDRequest} request
+   * @param {!proto.chart_data.BUSDRequest} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -221,7 +221,7 @@ const methodDescriptor_ChartService_RollingBUSD = new grpc.web.MethodDescriptor(
 
 
 /**
- * @param {!proto.chart_data.RollingBUSDRequest} request The
+ * @param {!proto.chart_data.BUSDRequest} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -242,7 +242,7 @@ proto.chart_data.ChartServiceClient.prototype.rollingBUSD =
 
 
 /**
- * @param {!proto.chart_data.RollingBUSDRequest} request The
+ * @param {!proto.chart_data.BUSDRequest} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
@@ -262,16 +262,16 @@ proto.chart_data.ChartServicePromiseClient.prototype.rollingBUSD =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.chart_data.NetBUSDRequest,
+ *   !proto.chart_data.BUSDRequest,
  *   !proto.chart_data.NetBUSDResponse>}
  */
 const methodDescriptor_ChartService_NetBUSD = new grpc.web.MethodDescriptor(
   '/chart_data.ChartService/NetBUSD',
   grpc.web.MethodType.UNARY,
-  proto.chart_data.NetBUSDRequest,
+  proto.chart_data.BUSDRequest,
   proto.chart_data.NetBUSDResponse,
   /**
-   * @param {!proto.chart_data.NetBUSDRequest} request
+   * @param {!proto.chart_data.BUSDRequest} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -282,7 +282,7 @@ const methodDescriptor_ChartService_NetBUSD = new grpc.web.MethodDescriptor(
 
 
 /**
- * @param {!proto.chart_data.NetBUSDRequest} request The
+ * @param {!proto.chart_data.BUSDRequest} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -303,7 +303,7 @@ proto.chart_data.ChartServiceClient.prototype.netBUSD =
 
 
 /**
- * @param {!proto.chart_data.NetBUSDRequest} request The
+ * @param {!proto.chart_data.BUSDRequest} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
@@ -439,6 +439,67 @@ proto.chart_data.ChartServicePromiseClient.prototype.bidAskPS =
       request,
       metadata || {},
       methodDescriptor_ChartService_BidAskPS);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.chart_data.BuySellBubbleRequest,
+ *   !proto.chart_data.BuySellBubbleResponse>}
+ */
+const methodDescriptor_ChartService_BuySellBubble = new grpc.web.MethodDescriptor(
+  '/chart_data.ChartService/BuySellBubble',
+  grpc.web.MethodType.UNARY,
+  proto.chart_data.BuySellBubbleRequest,
+  proto.chart_data.BuySellBubbleResponse,
+  /**
+   * @param {!proto.chart_data.BuySellBubbleRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.chart_data.BuySellBubbleResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.chart_data.BuySellBubbleRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.chart_data.BuySellBubbleResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.chart_data.BuySellBubbleResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.chart_data.ChartServiceClient.prototype.buySellBubble =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/chart_data.ChartService/BuySellBubble',
+      request,
+      metadata || {},
+      methodDescriptor_ChartService_BuySellBubble,
+      callback);
+};
+
+
+/**
+ * @param {!proto.chart_data.BuySellBubbleRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.chart_data.BuySellBubbleResponse>}
+ *     Promise that resolves to the response
+ */
+proto.chart_data.ChartServicePromiseClient.prototype.buySellBubble =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/chart_data.ChartService/BuySellBubble',
+      request,
+      metadata || {},
+      methodDescriptor_ChartService_BuySellBubble);
 };
 
 

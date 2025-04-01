@@ -103,6 +103,33 @@ const DataParser = {
     })
     return outData;
   },
+  parseBuySellBubble: (data) => {
+    const { buyDataList, sellDataList } = data;
+    let outData = {
+      buyData: [],
+      sellData: [],};
+
+    outData.buyData = buyDataList.map((i) => {
+      return {
+        time: new Date(i.time.seconds * 1000),
+        radius: i.radius,
+        code: i.code,
+        last: i.last,
+        matchedVol: i.matchedVol,
+      };
+    });
+
+    outData.sellData = sellDataList.map((i) => {
+      return {
+        time: new Date(i.time.seconds * 1000),
+        radius: i.radius,
+        code: i.code,
+        last: i.last,
+        matchedVol: i.matchedVol,
+      };
+    });
+    return outData;
+  },
     // parsePSOutbound: (data, date) => {
     //   date = date || moment();
 

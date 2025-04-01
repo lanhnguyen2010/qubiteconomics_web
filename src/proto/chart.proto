@@ -8,10 +8,11 @@ import "google/protobuf/timestamp.proto";
 service ChartService {
   rpc VN30PS (VN30PSRequest) returns (VN30PSResponse) {}
   rpc FBFS (FBFSRequest) returns (FBFSResponse) {}
-  rpc RollingBUSD (RollingBUSDRequest) returns (RollingBUSDResponse) {}
-  rpc NetBUSD (NetBUSDRequest) returns (NetBUSDResponse) {}
+  rpc RollingBUSD (BUSDRequest) returns (RollingBUSDResponse) {}
+  rpc NetBUSD (BUSDRequest) returns (NetBUSDResponse) {}
   rpc ForeignPS(ForeignPSRequest) returns (ForeignPSResponse);
   rpc BidAskPS(BidAskPSRequest) returns (BidAskPSResponse);
+  rpc BuySellBubble(BuySellBubbleRequest) returns (BuySellBubbleResponse);
 }
 
 // VN30PS
@@ -49,7 +50,7 @@ message FBFSResponse {
 }
 
 // RollingBUSD
-message RollingBUSDRequest {
+message BUSDRequest {
   repeated string code_list = 1;
   google.protobuf.Timestamp start_time = 2;
   google.protobuf.Timestamp end_time = 3;
@@ -75,12 +76,6 @@ message NetBUSDDataPoint {
 
 message NetBUSDResponse {
   repeated NetBUSDDataPoint busd = 1;
-}
-
-message NetBUSDRequest {
-  repeated string code_list = 1;
-  google.protobuf.Timestamp start_time = 2;
-  google.protobuf.Timestamp end_time = 3;
 }
 
 // Foreign ps
@@ -116,4 +111,26 @@ message BidAskPSDataPoint {
 // BidAskPSResponse contains the list of data points.
 message BidAskPSResponse {
   repeated BidAskPSDataPoint bidAsk = 1;
+}
+
+// BuySellBubble
+
+message BuySellBubbleDataPoint {
+  google.protobuf.Timestamp time = 1;
+  string code = 2;
+  double last = 3;
+  double radius = 4;
+  double matched_vol = 5;
+}
+
+// Request for BuySellBubble data.
+message BuySellBubbleRequest {
+  google.protobuf.Timestamp start_time = 1;
+  google.protobuf.Timestamp end_time = 2;
+}
+
+// Response returns separate lists for Buy and Sell.
+message BuySellBubbleResponse {
+  repeated BuySellBubbleDataPoint buy_data = 1;
+  repeated BuySellBubbleDataPoint sell_data = 2;
 }
