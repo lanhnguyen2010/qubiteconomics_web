@@ -72,6 +72,10 @@ export default class BuyUpBubbleChart extends BaseChart {
         },
       },
       axisX: {
+        interval: 30,
+        intervalType: "minute",
+        valueFormatString: "HH:mm",
+        viewRange: 'default',
         labelFontSize: labelFontSize,
         labelFontFamily: fontFamily,
         lineThickness: 0.4,
@@ -133,4 +137,8 @@ export default class BuyUpBubbleChart extends BaseChart {
     const dataPoints = this.prepareDataPoints(data, "markerSize");
     this.chart.appendData([dataPoints]);
   }
+
+    mergeOptions(from, to) {
+      return _.merge(from, to);
+    }
 }

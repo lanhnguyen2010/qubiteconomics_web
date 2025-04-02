@@ -103,10 +103,12 @@ class XCanvasJSManager {
   }
 
   initViewRange() {
+    const isDefault = this.chartsManager[0].getAxisXOptions().viewRange === "default";
+    if (isDefault) {
+      return;
+    }
     var syncViewport = this.maxViewRangeTime - this.maxViewportTime <= (10 * 60 * 1000);
-    // console.log("this.maxViewRangeTime", this.maxViewRangeTime);
-    // console.log("this.maxViewportTime", this.maxViewportTime);
-    // console.log("syncViewport", syncViewport);
+
     let minTime, maxTime;
     this.chartsManager.forEach((mgr, index) => {
       if (index === 0) {
@@ -740,8 +742,6 @@ class XCanvasJS {
     let fromDate = new Date(this.minDpsTime); fromDate.setHours(0, 0, 0);
     let toDate = new Date(this.maxDpsTime); toDate.setHours(0, 0, 0);
 
-    console.log("fromDate: ", fromDate, "toDate: ", toDate);
-
     while (fromDate <= toDate) {
       let date = fromDate;
       breaks.push({
@@ -749,7 +749,7 @@ class XCanvasJS {
         collapsibleThreshold: "0%",
         spacing: 0,
         startValue: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0),
-        endValue: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 9, 29, 0)
+        endValue: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 9, 14, 0)
       })
       breaks.push({
           lineThickness: 0,
@@ -1100,41 +1100,41 @@ class XCanvasJS {
     })
     let axisY = this.getAxisYOptions();
     if (minY !== null && this.chart.container) {
-      if (axisY.disableAutoInterval !== true) {
-        let height = this.chart.container.clientHeight;
-        let steps = parseInt((height - 25) / 40);
-        if (steps < 5) steps = 5;
+      // if (axisY.disableAutoInterval !== true) {
+        // let height = this.chart.container.clientHeight;
+        // let steps = parseInt((height - 25) / 40);
+        // if (steps < 5) steps = 5;
   
-        let padding = parseInt(((maxY - minY) / height) * 5);
-        minY -= padding;
-        maxY += padding;
-        minViewportY -= padding;
-        maxViewportY += padding;
+        // let padding = parseInt(((maxY - minY) / height) * 5);
+        // minY -= padding;
+        // maxY += padding;
+        // minViewportY -= padding;
+        // maxViewportY += padding;
   
-        minY = this.roundNumber(minY, false);
-        maxY = this.roundNumber(maxY, true);
-        minViewportY = this.roundNumber(minViewportY, false);
-        maxViewportY = this.roundNumber(maxViewportY, true);
+        // minY = this.roundNumber(minY, false);
+        // maxY = this.roundNumber(maxY, true);
+        // minViewportY = this.roundNumber(minViewportY, false);
+        // maxViewportY = this.roundNumber(maxViewportY, true);
   
-        let computedInterval = Math.abs(parseInt((maxViewportY - minViewportY) / steps));
-        computedInterval = this.roundNumber(computedInterval, true, 100);
+        // let computedInterval = Math.abs(parseInt((maxViewportY - minViewportY) / steps));
+        // computedInterval = this.roundNumber(computedInterval, true, 100);
   
-        minY = this.roundNumber(minY, false, computedInterval);
-        maxY = this.roundNumber(maxY, true, computedInterval);
-        minViewportY = this.roundNumber(minViewportY, false, computedInterval);
-        maxViewportY = this.roundNumber(maxViewportY, true, computedInterval);
+        // minY = this.roundNumber(minY, false, computedInterval);
+        // maxY = this.roundNumber(maxY, true, computedInterval);
+        // minViewportY = this.roundNumber(minViewportY, false, computedInterval);
+        // maxViewportY = this.roundNumber(maxViewportY, true, computedInterval);
   
-        axisY.minimum = minY;
-        axisY.maximum = maxY;
-        axisY.viewportMinimum = minViewportY;
-        axisY.viewportMaximum = maxViewportY;
-        axisY.interval = computedInterval;
-      } else {
-        axisY.minimum = minY;
-        axisY.maximum = maxY;
-        axisY.viewportMinimum = minViewportY;
-        axisY.viewportMaximum = maxViewportY;
-      }
+        // axisY.minimum = minY;
+        // axisY.maximum = maxY;
+        // axisY.viewportMinimum = minViewportY;
+        // axisY.viewportMaximum = maxViewportY;
+        // axisY.interval = computedInterval;
+      // } else {
+        // axisY.minimum = minY;
+        // axisY.maximum = maxY;
+        // axisY.viewportMinimum = minViewportY;
+        // axisY.viewportMaximum = maxViewportY;
+      // }
     }
 
     this.dataPoints.forEach((_, index) => {

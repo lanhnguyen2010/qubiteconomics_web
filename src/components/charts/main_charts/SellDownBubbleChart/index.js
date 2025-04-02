@@ -8,7 +8,6 @@ export default class SellDownBubbleChart extends BaseChart {
     this.codeToIndex = {};
   }
 
-  
   prepareDataPoints(rawData, sizeProp = "markerSize") {
     const minMarkerSize = 5;
     const maxMarkerSize = 20;
@@ -41,9 +40,9 @@ export default class SellDownBubbleChart extends BaseChart {
     return {
       ...baseInfo,
       disableScaleBreaks: true,
-      key: "buyUpBubble",
-      name: "BuyUp Bubble Chart",
-      legends: [{ key: "buyUpBubble", name: "BuyUp Bubbles" }],
+      key: "sellDownBubble",
+      name: "SellDown Bubble Chart",
+      legends: [{ key: "sellDownBubble", name: "SellDown Bubbles" }],
     };
   }
 
@@ -72,6 +71,10 @@ export default class SellDownBubbleChart extends BaseChart {
         },
       },
       axisX: {
+        interval: 30,
+        intervalType: "minute",
+        valueFormatString: "HH:mm",
+        viewRange: 'default',
         labelFontSize: labelFontSize,
         labelFontFamily: fontFamily,
         lineThickness: 0.4,
@@ -80,7 +83,7 @@ export default class SellDownBubbleChart extends BaseChart {
       },
       axisY2: {
         interval: 1,
-        tickLength:0,
+        tickLength: 0,
         labelFontSize: labelFontSize,
         gridThickness: 0,
         lineThickness: 0,
@@ -92,8 +95,8 @@ export default class SellDownBubbleChart extends BaseChart {
           lineDashType: "dot",
           thickness: 0.7,
           opacity: 5,
-          trimText : false,
-          fixedWidth: 30
+          trimText: false,
+          fixedWidth: 30,
         },
         disableAutoInterval: true,
         labelFormatter: (e) => {
@@ -133,4 +136,9 @@ export default class SellDownBubbleChart extends BaseChart {
     const dataPoints = this.prepareDataPoints(data, "markerSize");
     this.chart.appendData([dataPoints]);
   }
+
+    mergeOptions(from, to) {
+      console.log("mergeOptions", from, to);
+      return _.merge(from, to);
+    }
 }

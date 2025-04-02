@@ -93,6 +93,7 @@ class MainBubbleChartScreen extends React.Component {
       return;
     }
 
+    this.SellDownBubbleChartRef.current.activeSlider();
     this.chartRefs.forEach((ref, index) =>
       ref.current.configureChartRelation("DB01", index)
     );
@@ -187,7 +188,6 @@ class MainBubbleChartScreen extends React.Component {
   }
 
   async fetchData(dateObj) {
-    console.log("dateObj in fetchData: ", dateObj);
     this.setState({ isLoading: true });
     const startTimestampSeconds = new Date(dateObj).setHours(9, 0, 0, 0) / 1000;
     const endTimestampSeconds = new Date(dateObj).setHours(15, 0, 0, 0) / 1000;
@@ -195,7 +195,7 @@ class MainBubbleChartScreen extends React.Component {
     await this.fetchBuySellBubble(startTimestampSeconds, endTimestampSeconds);
 
     let chartManager = XCanvasJSManager.getInstance("DB01");
-    chartManager.initViewRange();
+    chartManager.initViewRange(false);
     chartManager.registerRenderCharts(true);
 
     this.setState({ isLoading: false });
