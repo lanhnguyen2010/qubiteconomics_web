@@ -191,20 +191,20 @@ class MainChartScreen extends React.Component {
     console.log("requestBody: ", requestBody);
     const startTimestampSeconds =
       new Date(`${requestBody.day} ${requestBody.startTime}`).getTime() / 1000;
-    const responseVN30PS = await getVN30PS(startTimestampSeconds, null);
-    const responseFBFS = await getFbFs(startTimestampSeconds, null);
-    const responseBUSD = await getBusd(
-      startTimestampSeconds,
-      null,
-      this.state.selectedCodes,
-      this.state.selectedRolling
-    );
+    const [
+        responseVN30PS,
+        responseFBFS,
+        responseBUSD,
+        responseForeignPS,
+        responseBidAskPS
+      ] = await Promise.all([
+        getVN30PS(startTimestampSeconds, null),
+        getFbFs(startTimestampSeconds, null),
+        getBusd(startTimestampSeconds, null, this.state.selectedCodes, this.state.selectedRolling),
+        getForeignPS(startTimestampSeconds, null),
+        getBidAskPs(startTimestampSeconds, null)
+      ]);
     const dataBusdParse = DataParser.parseBusd(responseBUSD);
-    const responseForeignPS = await getForeignPS(startTimestampSeconds, null);
-    const responseBidAskPS = await getBidAskPs(
-      startTimestampSeconds,
-      null
-    );
 
     this.VN30DerivativeChartRef.current.appendData({
       PS: DataParser.parsePSOutbound(responseVN30PS.psList),
@@ -278,12 +278,15 @@ class MainChartScreen extends React.Component {
     const endTimestampSeconds = new Date(dateStr).setHours(15, 0, 0, 0) / 1000;
     console.log("startTimestampSeconds in fetchData", startTimestampSeconds);
     console.log("endTimestampSeconds in fetchData", endTimestampSeconds);
-    await this.fetchOthers(startTimestampSeconds, endTimestampSeconds);
-    await this.fetchFbFs(startTimestampSeconds, endTimestampSeconds);
-    await this.fetchBusd(startTimestampSeconds, endTimestampSeconds);
-    await this.fetchNetBusd(startTimestampSeconds, endTimestampSeconds);
-    await this.fetchForeignPS(startTimestampSeconds, endTimestampSeconds);
-    await this.fetchBidAskPS(startTimestampSeconds, endTimestampSeconds);
+    await Promise.all([
+      this.fetchOthers(startTimestampSeconds, endTimestampSeconds),
+      this.fetchFbFs(startTimestampSeconds, endTimestampSeconds),
+      this.fetchBusd(startTimestampSeconds, endTimestampSeconds),
+      this.fetchNetBusd(startTimestampSeconds, endTimestampSeconds),
+      this.fetchForeignPS(startTimestampSeconds, endTimestampSeconds),
+      this.fetchBidAskPS(startTimestampSeconds, endTimestampSeconds)
+    ]);
+  
 
     let chartManager = XCanvasJSManager.getInstance("DB01");
     chartManager.initViewRange();
