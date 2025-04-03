@@ -164,10 +164,10 @@ class MainBubbleChartScreen extends React.Component {
     console.log("requestBody: ", requestBody);
     const startTimestampSeconds =
       new Date(`${requestBody.day} ${requestBody.startTime}`).getTime() / 1000;
-    
+
     const responseBuySellBubble = await getBuySellBubble(
       startTimestampSeconds,
-      null,
+      null
     );
     const dataParse = DataParser.parseBuySellBubble(responseBuySellBubble);
     this.BuyUpBubbleChartRef.current.appendData(dataParse.buyData);
@@ -188,17 +188,21 @@ class MainBubbleChartScreen extends React.Component {
   }
 
   async fetchData(dateObj) {
-    this.setState({ isLoading: true });
-    const startTimestampSeconds = new Date(dateObj).setHours(9, 0, 0, 0) / 1000;
-    const endTimestampSeconds = new Date(dateObj).setHours(15, 0, 0, 0) / 1000;
+    try {
+      this.setState({ isLoading: true });
+      const startTimestampSeconds =
+        new Date(dateObj).setHours(9, 0, 0, 0) / 1000;
+      const endTimestampSeconds = new Date(dateObj).setHours(15, 0, 0, 0) / 1000;
 
-    await this.fetchBuySellBubble(startTimestampSeconds, endTimestampSeconds);
-
-    let chartManager = XCanvasJSManager.getInstance("DB01");
-    chartManager.initViewRange(false);
-    chartManager.registerRenderCharts(true);
-
-    this.setState({ isLoading: false });
+      await this.fetchBuySellBubble(startTimestampSeconds, endTimestampSeconds);
+      let chartManager = XCanvasJSManager.getInstance("DB01");
+      chartManager.initViewRange(false);
+      chartManager.registerRenderCharts(true);
+    } catch (e) {
+      console.log("error in fetchData: ", e);
+    } finally {
+      this.setState({ isLoading: false });
+    }
   }
 
   async fetchBuySellBubble(startTimestampSeconds, endTimestampSeconds) {
@@ -284,4 +288,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(MainBubbleChartScreen);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MainBubbleChartScreen);

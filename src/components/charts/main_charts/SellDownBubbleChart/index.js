@@ -31,7 +31,6 @@ export default class SellDownBubbleChart extends BaseChart {
         item.time
       ).getMinutes()}`,
     }));
-    console.log("dataPoints", dataPoints);
     return dataPoints;
   }
 
@@ -74,7 +73,7 @@ export default class SellDownBubbleChart extends BaseChart {
         interval: 30,
         intervalType: "minute",
         valueFormatString: "HH:mm",
-        viewRange: 'default',
+        viewRange: "default",
         labelFontSize: labelFontSize,
         labelFontFamily: fontFamily,
         lineThickness: 0.4,
@@ -82,6 +81,9 @@ export default class SellDownBubbleChart extends BaseChart {
         margin: 0,
       },
       axisY2: {
+        crosshair: {
+          label: ''
+        },
         interval: 1,
         tickLength: 0,
         labelFontSize: labelFontSize,
@@ -106,7 +108,6 @@ export default class SellDownBubbleChart extends BaseChart {
             : "";
         },
       },
-
       data: [
         {
           axisYType: "secondary",
@@ -117,7 +118,7 @@ export default class SellDownBubbleChart extends BaseChart {
           type: "scatter",
           toolTipContent:
             "Time: {time}<br/>Code: {code}<br/>Price: {last}<br/>Total: {matchedVol}",
-          dataPoints: dataPoints,
+          dataPoints: dataPoints || [],
         },
       ],
     });
@@ -137,8 +138,7 @@ export default class SellDownBubbleChart extends BaseChart {
     this.chart.appendData([dataPoints]);
   }
 
-    mergeOptions(from, to) {
-      console.log("mergeOptions", from, to);
-      return _.merge(from, to);
-    }
+  mergeOptions(from, to) {
+    return _.merge(from, to);
+  }
 }
