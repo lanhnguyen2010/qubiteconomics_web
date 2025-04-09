@@ -13,7 +13,7 @@ export default class SellDownBubbleChart extends BaseChart {
     const maxMarkerSize = 20;
 
     // Build a unique list of codes and update the mapping
-    this.uniqueCodes = [...new Set(rawData.map((d) => d.code))];
+    this.uniqueCodes = [...new Set(rawData.map((d) => d.code))].sort();
     this.uniqueCodes.forEach((code, i) => {
       this.codeToIndex[code] = i + 1;
     });
