@@ -8,7 +8,6 @@ export default class BuyUpBubbleChart extends BaseChart {
     this.codeToIndex = {};
   }
 
-  
   prepareDataPoints(rawData, sizeProp = "markerSize") {
     const minMarkerSize = 5;
     const maxMarkerSize = 20;
@@ -28,9 +27,13 @@ export default class BuyUpBubbleChart extends BaseChart {
       code: item.code,
       last: item.last,
       matchedVol: item.matchedVol,
-      time: `${new Date(item.time).getHours()}:${new Date(
-        item.time
-      ).getMinutes()}`,
+      time: `${new Date(item.time)
+        .getHours()
+        .toString()
+        .padStart(2, "0")}:${new Date(item.time)
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}`,
     }));
     console.log("dataPoints", dataPoints);
     return dataPoints;
@@ -75,7 +78,7 @@ export default class BuyUpBubbleChart extends BaseChart {
         interval: 30,
         intervalType: "minute",
         valueFormatString: "HH:mm",
-        viewRange: 'default',
+        viewRange: "default",
         labelFontSize: labelFontSize,
         labelFontFamily: fontFamily,
         lineThickness: 0.4,
@@ -83,8 +86,11 @@ export default class BuyUpBubbleChart extends BaseChart {
         margin: 0,
       },
       axisY2: {
+        crosshair: {
+          label: "",
+        },
         interval: 1,
-        tickLength:0,
+        tickLength: 0,
         labelFontSize: labelFontSize,
         gridThickness: 0,
         lineThickness: 0,
@@ -96,8 +102,8 @@ export default class BuyUpBubbleChart extends BaseChart {
           lineDashType: "dot",
           thickness: 0.7,
           opacity: 5,
-          trimText : false,
-          fixedWidth: 30
+          trimText: false,
+          fixedWidth: 30,
         },
         disableAutoInterval: true,
         labelFormatter: (e) => {
@@ -107,7 +113,6 @@ export default class BuyUpBubbleChart extends BaseChart {
             : "";
         },
       },
-
       data: [
         {
           axisYType: "secondary",
@@ -138,7 +143,7 @@ export default class BuyUpBubbleChart extends BaseChart {
     this.chart.appendData([dataPoints]);
   }
 
-    mergeOptions(from, to) {
-      return _.merge(from, to);
-    }
+  mergeOptions(from, to) {
+    return _.merge(from, to);
+  }
 }
