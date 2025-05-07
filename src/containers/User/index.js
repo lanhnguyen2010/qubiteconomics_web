@@ -11,16 +11,13 @@ const UserScreen = () => {
   const [formData, setFormData] = useState({ name: "", email: "" });
   const [userToDelete, setUserToDelete] = useState(null);
 
-  // Initialize the API client (adjust the host as needed)
-  // Fetch users from the API when the component mounts
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await getUserList();
-        // Assuming response.getUserList() returns an array of user objects from the protobuf message
         const fetchedUsers = response.userList.map((user) => ({
           id: user.id,
-          name: user.username, // mapping username to name for display
+          name: user.username,
           email: user.email,
           role: user.role,
         }));
@@ -114,7 +111,7 @@ const UserScreen = () => {
         // Update existing user via API
         const response = await updateUser({
           id: editingUser.id,
-          username: formData.name, // using name as username
+          username: formData.name,
           email: formData.email,
           role: editingUser.role || "user",
         });

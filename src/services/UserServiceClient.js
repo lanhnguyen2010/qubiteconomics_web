@@ -45,7 +45,6 @@ export function addUser(userData) {
   });
 }
 
-// Update an existing user
 export function updateUser(userData) {
   return new Promise((resolve, reject) => {
     const req = new UpdateUserRequest();
@@ -66,7 +65,6 @@ export function updateUser(userData) {
   });
 }
 
-// Delete a user by ID
 export function deleteUser(id) {
   return new Promise((resolve, reject) => {
     const req = new DeleteUserRequest();

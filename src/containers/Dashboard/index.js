@@ -7,11 +7,12 @@ import {
   Route,
   Redirect,
 } from "react-router-dom";
-import { FaChartBar, FaUser, FaSignOutAlt, FaChartArea } from "react-icons/fa";
+import { FaChartBar, FaUser, FaSignOutAlt, FaChartArea, FaColumns } from "react-icons/fa";
 import "./index.css";
 import MainChartScreen from "containers/MainChart";
 import UserScreen from "containers/User";
 import MainBubbleChartScreen from "containers/MainBubbleChart";
+import ParserScreen from "containers/Parser";
 
 const Dashboard = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -55,6 +56,12 @@ const Dashboard = () => {
                 {!isCollapsed && <span>User</span>}
               </NavLink>
             </li>
+            <li>
+              <NavLink to={`${url}/parser`} activeClassName="active" exact>
+                <FaColumns className="sidebar-icon" />
+                {!isCollapsed && <span>Parser</span>}
+              </NavLink>
+            </li>
           </ul>
         </div>
         <div className="sidebar-footer">
@@ -77,6 +84,9 @@ const Dashboard = () => {
           </Route>
           <Route path={`${path}/user`}>
             <UserScreen />
+          </Route>
+          <Route path={`${path}/parser`}>
+            <ParserScreen />
           </Route>
         </Switch>
       </div>

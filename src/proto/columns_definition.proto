@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package columns_definition;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// Column represents a single column in a table.
+message Column {
+  string column_name = 1;
+  string datatype    = 2;
+  int32  position    = 3;
+}
+
+// ColumnsDefinition holds metadata and definitions for a table's columns.
+message ColumnsDefinition {
+  string source     = 1;
+  string table_name = 2;
+  repeated Column columns = 3;
+  google.protobuf.Timestamp created_at = 4;
+  // Unique identifier for the columns definition record.
+  int64 id = 5;
+}
+
+// Service for managing column definitions.
+service ColumnsDefinitionService {
+  rpc CreateColumnsDefinition(CreateColumnsDefinitionRequest) returns (CreateColumnsDefinitionResponse);
+  rpc GetColumnsDefinition(GetColumnsDefinitionRequest)       returns (GetColumnsDefinitionResponse);
+  rpc UpdateColumnsDefinition(UpdateColumnsDefinitionRequest) returns (UpdateColumnsDefinitionResponse);
+  rpc DeleteColumnsDefinition(DeleteColumnsDefinitionRequest) returns (google.protobuf.Empty);
+  rpc ListColumnsDefinitions(ListColumnsDefinitionsRequest)   returns (ListColumnsDefinitionsResponse);
+}
+
+message CreateColumnsDefinitionRequest {
+  string source     = 1;
+  string table_name = 2;
+  repeated Column columns = 3;
+}
+message CreateColumnsDefinitionResponse {
+  ColumnsDefinition columns_definition = 1;
+}
+
+message GetColumnsDefinitionRequest {
+  string source     = 1;
+  string table_name = 2;
+}
+message GetColumnsDefinitionResponse {
+  ColumnsDefinition columns_definition = 1;
+}
+
+message UpdateColumnsDefinitionRequest {
+  string source     = 1;
+  string table_name = 2;
+  repeated Column columns = 3;
+}
+message UpdateColumnsDefinitionResponse {
+  ColumnsDefinition columns_definition = 1;
+}
+
+message DeleteColumnsDefinitionRequest {
+  string source     = 1;
+  string table_name = 2;
+}
+
+message ListColumnsDefinitionsRequest {}
+message ListColumnsDefinitionsResponse {
+  repeated ColumnsDefinition columns_definitions = 1;
+}
