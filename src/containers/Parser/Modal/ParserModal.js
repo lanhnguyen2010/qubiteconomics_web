@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useTable } from "react-table";
 import EditableCell from "./EditableCell";
+import SingleSelectDropdown from "components/SingleSelectDropdown"; // Import the dropdown component
 import "./index.css";
 
 const ParserModal = ({
@@ -21,6 +22,16 @@ const ParserModal = ({
   const [jsonText, setJsonText] = useState(
     JSON.stringify(formData || {}, null, 2)
   );
+
+  // Data type options for the dropdown
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const datatypeOptions = useMemo(() => [
+    { value: "string", label: "String" },
+    { value: "integer", label: "Integer" },
+    { value: "float", label: "Float" },
+    { value: "timestamp", label: "Timestamp" },
+    { value: "code", label: "Code" },
+  ], []);
 
   const updateData = (rowIndex, columnId, value) => {
     setData((old) =>
@@ -67,26 +78,114 @@ const ParserModal = ({
     }
   };
 
+  // Custom cell renderer for datatype column that uses the dropdown
+  const DataTypeCell = ({ row: { index }, column: { id }, value }) => {
+    // Find the option that matches the current value
+    const selectedOption = value 
+      ? datatypeOptions.find(option => option.value === value) || { value: value, label: value }
+      : null;
+
+    return (
+      <SingleSelectDropdown
+        options={datatypeOptions}
+        placeholder="Select type..."
+        onChange={(selectedOption) => {
+          // When an option is selected, update the data with its value
+          updateData(index, id, selectedOption ? selectedOption.value : "");
+        }}
+        value={selectedOption} // Initialize with the current value
+      />
+    );
+  };
+
+  // Function to delete a row
+  const deleteRow = (rowIndex) => {
+    const updatedData = data.filter((_, index) => index !== rowIndex);
+    
+    // Re-number the positions of remaining rows
+    const reIndexedData = updatedData.map((row, index) => ({
+      ...row,
+      position: index + 1
+    }));
+    
+    setData(reIndexedData);
+    
+    // Update JSON text if in JSON mode
+    if (isJsonMode) {
+      try {
+        const currentJson = JSON.parse(jsonText);
+        currentJson.columnsList = reIndexedData;
+        setJsonText(JSON.stringify(currentJson, null, 2));
+      } catch (error) {
+        // If JSON is invalid, just create a new structure
+        const fullObject = {
+          source: formData.source,
+          tableName: formData.tableName,
+          columnsList: reIndexedData,
+          id: formData.id,
+        };
+        setJsonText(JSON.stringify(fullObject, null, 2));
+      }
+    }
+  };
+
+  // Custom cell for displaying row number
+  const RowNumberCell = ({ row: { index } }) => {
+    return <div className="row-number-cell">{index + 1}</div>;
+  };
+
+  // Custom cell for actions column
+  const ActionsCell = ({ row: { index } }) => {
+    return (
+      <div className="actions-cell">
+        <button 
+          className="delete-row-button"
+          onClick={(e) => {
+            e.stopPropagation();
+            deleteRow(index);
+          }}
+        >
+          Delete
+        </button>
+      </div>
+    );
+  };
+  
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const columns = useMemo(
     () => [
       {
+        Header: "No.",
+        id: "rowNumber",
+        Cell: RowNumberCell,
+        width: 60,  // Fixed width for row numbers
+      },
+      {
         Header: "Column Name",
         accessor: "columnName",
         Cell: (props) => <EditableCell {...props} updateData={updateData} />,
+        width: 250,  // More space for column names
       },
       {
         Header: "Datatype",
         accessor: "datatype",
-        Cell: (props) => <EditableCell {...props} updateData={updateData} />,
+        Cell: (props) => <DataTypeCell {...props} />, // Pass all props to our custom cell
+        width: 150,  // Medium space for data types
       },
       {
         Header: "Position",
         accessor: "position",
         Cell: (props) => <EditableCell {...props} updateData={updateData} />,
+        width: 100,  // Smaller space for position numbers
+      },
+      {
+        Header: "Actions",
+        id: "actions",
+        Cell: ActionsCell,
+        width: 100,  // Fixed width for action buttons
       },
     ],
-    []
+    [datatypeOptions]
   );
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -272,12 +371,17 @@ const ParserModal = ({
                 </button>
               </div>
               <div className="table-scroll-container">
-                <table {...getTableProps()} className="modal-table">
+                <table {...getTableProps()} className="modal-table" style={{ tableLayout: 'fixed', width: '100%' }}>
+                  <colgroup>
+                    {columns.map((column) => (
+                      <col key={column.id || column.accessor} style={{ width: column.width || 'auto' }} />
+                    ))}
+                  </colgroup>
                   <thead>
                     {headerGroups.map((headerGroup) => (
                       <tr {...headerGroup.getHeaderGroupProps()}>
                         {headerGroup.headers.map((column) => (
-                          <th {...column.getHeaderProps()}>
+                          <th {...column.getHeaderProps()} style={{ width: column.width || 'auto' }}>
                             {column.render("Header")}
                           </th>
                         ))}
@@ -290,7 +394,7 @@ const ParserModal = ({
                       return (
                         <tr {...row.getRowProps()}>
                           {row.cells.map((cell) => (
-                            <td {...cell.getCellProps()}>
+                            <td {...cell.getCellProps()} style={{ width: cell.column.width || 'auto' }}>
                               {cell.render("Cell")}
                             </td>
                           ))}

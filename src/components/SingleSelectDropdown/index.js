@@ -6,9 +6,17 @@ class SingleSelectDropdown extends React.Component {
     super(props);
     this.state = {
       isOpen: false,
-      selectedOption: null // Will hold the full { value, label } object
+      selectedOption: props.value || null // Initialize with the provided value
     };
     this.dropdownRef = React.createRef();
+  }
+
+  // Update state when props change
+  componentDidUpdate(prevProps) {
+    // If the value prop changed, update the internal state
+    if (this.props.value !== prevProps.value) {
+      this.setState({ selectedOption: this.props.value });
+    }
   }
 
   componentDidMount() {
@@ -64,7 +72,7 @@ class SingleSelectDropdown extends React.Component {
             <span className="selected-text">{selectedOption.label}</span>
           )}
 
-          <span className="single-select-dropdown__caret" />
+          <span className={`single-select-dropdown__caret ${isOpen ? 'open' : ''}`} />
         </div>
 
         {/* Dropdown menu */}

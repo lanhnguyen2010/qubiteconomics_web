@@ -226,7 +226,6 @@
   .modal-table td {
     border: 1px solid #ddd;
     padding: 8px;
-    min-width: 120px;
   }
   
   .modal-table th {
@@ -276,3 +275,14 @@
   .beautify-button:hover {
     background-color: #7b1fa2;
   }
+
+  .single-select-dropdown__input {
+    border: 1px solid #ccc !important;
+  }
+
+  .delete-row-button {
+    margin-top: 0px !important;
+    background-color: #DC3545 !important;
+  }
+
+  
