@@ -143,13 +143,9 @@ class MainChartScreen extends React.Component {
   }
 
   updateChart = async () => {
-    try {
-      await this.internalUpdateChart();
-    } finally {
-      // Trigger next call
-      if (!this.reachEndTime) {
-        this.callTimerID = setTimeout(this.updateChart, interval);
-      }
+    await this.internalUpdateChart();
+    if (this.reachEndTime) {
+      clearInterval(this.callTimerID);
     }
   };
 
@@ -293,7 +289,7 @@ class MainChartScreen extends React.Component {
     chartManager.registerRenderCharts(true);
 
     if (moment(dateStr).format("yyyy/MM/DD") === this.realTimeDate) {
-      this.callTimerID = setTimeout(this.updateChart, interval);
+      this.callTimerID = setInterval(this.updateChart, interval);
     }
 
     this.setState({ isLoading: false });
