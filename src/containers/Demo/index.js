@@ -28,7 +28,7 @@ CanvasJS.addColorSet("customColorSet1",
   "#EB8CC6",
 ]);
 
-const interval = 5000;
+const interval = 20000;
 
 const styles = {
   container: {
