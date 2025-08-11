@@ -74,7 +74,14 @@ class MainChartScreen extends React.Component {
       codeOptions: [],
       selectedCodes: [],
       selectedRolling: "",
-      isLoading: true,
+      chartLoading: {
+        vn30: true,
+        foreign: true,
+        netbusd: true,
+        busd: true,
+        fbfs: true,
+        bidask: true,
+      },
     };
 
     this.chartRefs = [];
@@ -214,6 +221,12 @@ class MainChartScreen extends React.Component {
     // this.NetBSChartRef.current.appendData(DataParser.parseSuuF1Outbound(suuF1));
   };
 
+  setChartLoading = (key, value) => {
+    this.setState((prevState) => ({
+      chartLoading: { ...prevState.chartLoading, [key]: value },
+    }));
+  };
+
   handleCodesChange = (newSelectedOptions) => {
     this.setState({ selectedCodes: newSelectedOptions }, () => {
       const startTimestampSeconds = new Date(this.selectedDate).setHours(9, 0, 0, 0) / 1000;
@@ -263,7 +276,6 @@ class MainChartScreen extends React.Component {
   }
 
   async fetchData(dateStr) {
-    this.setState({ isLoading: true });
     clearInterval(this.callTimerID);
 
     let requestData = { day: dateStr, endTime: "" };
@@ -274,28 +286,29 @@ class MainChartScreen extends React.Component {
     const endTimestampSeconds = new Date(dateStr).setHours(15, 0, 0, 0) / 1000;
     console.log("startTimestampSeconds in fetchData", startTimestampSeconds);
     console.log("endTimestampSeconds in fetchData", endTimestampSeconds);
-    await Promise.all([
+
+    const fetchPromises = [
       this.fetchOthers(startTimestampSeconds, endTimestampSeconds),
       this.fetchFbFs(startTimestampSeconds, endTimestampSeconds),
       this.fetchBusd(startTimestampSeconds, endTimestampSeconds),
       this.fetchNetBusd(startTimestampSeconds, endTimestampSeconds),
       this.fetchForeignPS(startTimestampSeconds, endTimestampSeconds),
       this.fetchBidAskPS(startTimestampSeconds, endTimestampSeconds)
-    ]);
-  
+    ];
 
-    let chartManager = XCanvasJSManager.getInstance("DB01");
-    chartManager.initViewRange();
-    chartManager.registerRenderCharts(true);
+    Promise.all(fetchPromises).then(() => {
+      let chartManager = XCanvasJSManager.getInstance("DB01");
+      chartManager.initViewRange();
+      chartManager.registerRenderCharts(true);
 
-    if (moment(dateStr).format("yyyy/MM/DD") === this.realTimeDate) {
-      this.callTimerID = setInterval(this.updateChart, interval);
-    }
-
-    this.setState({ isLoading: false });
+      if (moment(dateStr).format("yyyy/MM/DD") === this.realTimeDate) {
+        this.callTimerID = setInterval(this.updateChart, interval);
+      }
+    });
   }
 
   async fetchOthers(startTimestampSeconds, endTimestampSeconds) {
+    this.setChartLoading("vn30", true);
     const responseVN30PS = await getVN30PS(
       startTimestampSeconds,
       endTimestampSeconds
@@ -303,46 +316,46 @@ class MainChartScreen extends React.Component {
     const ps = responseVN30PS.psList;
     const vn30Index = responseVN30PS.vn30List;
 
-    // const ps = generatePSMockData(5000);
-    // const vn30Index = generateVN30IndexMockData(5000);
-    // const busd = generateBusdMockData();
     this.VN30DerivativeChartRef.current.updateData({
       PS: DataParser.parsePSOutbound(ps),
       VNIndex30: DataParser.parseVN30Index(vn30Index),
     });
 
-    // const arbitUnwind = await StockAPI.fetchArbitUnwind(requestBody);
-    // const arbitUnwind = generateArbitUnwindMockData();
-    // const busdData = DataParser.parseBusdOutbound(busd);
-    // this.BuyupSelldownChartRef.current.updateData({chartData: busdData, bubblesData: DataParser.parseArbit(arbitUnwind)});
-    // this.NETBUSDChartRef.current.updateData({chartData: busdData, bubblesData: DataParser.parseArbitUnwind(arbitUnwind)});
+    this.setChartLoading("vn30", false);
   }
 
   async fetchFbFs(startTimestampSeconds, endTimestampSeconds) {
+    this.setChartLoading("fbfs", true);
     const responseFBFS = await getFbFs(
       startTimestampSeconds,
       endTimestampSeconds
     );
     this.FBFSChartRef.current.updateData(DataParser.parseFBFS(responseFBFS));
+    this.setChartLoading("fbfs", false);
   }
 
   async fetchForeignPS(startTimestampSeconds, endTimestampSeconds) {
+    this.setChartLoading("foreign", true);
     const responseForeignPS = await getForeignPS(
       startTimestampSeconds,
       endTimestampSeconds
     );
     this.ForeignDerivativeChartRef.current.updateData(DataParser.parseForeignPS(responseForeignPS.foreignpsList));
+    this.setChartLoading("foreign", false);
   }
 
   async fetchBidAskPS(startTimestampSeconds, endTimestampSeconds) {
+    this.setChartLoading("bidask", true);
     const responseBidAskPS = await getBidAskPs(
       startTimestampSeconds,
       endTimestampSeconds
     );
     this.F1BidVAskVChartRef.current.updateData(DataParser.parseBidAskPS(responseBidAskPS.bidaskList));
+    this.setChartLoading("bidask", false);
   }
 
   async fetchBusd(startTimestampSeconds, endTimestampSeconds, codes, rolling) {
+    this.setChartLoading("busd", true);
     const responseBusd = await getBusd(
       startTimestampSeconds,
       endTimestampSeconds,
@@ -351,9 +364,11 @@ class MainChartScreen extends React.Component {
     );
     const dataBusdParse = DataParser.parseBusd(responseBusd);
     this.BuySellPressureChartRef.current.updateData(dataBusdParse);
+    this.setChartLoading("busd", false);
   }
 
   async fetchNetBusd(startTimestampSeconds, endTimestampSeconds, codes) {
+    this.setChartLoading("netbusd", true);
     const responseNetBusd = await getNetBUSD(
       startTimestampSeconds,
       endTimestampSeconds,
@@ -361,6 +376,7 @@ class MainChartScreen extends React.Component {
     );
     const dataNetBusdParse = DataParser.parseNetBusd(responseNetBusd);
     this.NETBUSDChartRef.current.updateData(dataNetBusdParse);
+    this.setChartLoading("netbusd", false);
   }
 
   handleSelectDate(date) {
@@ -376,19 +392,27 @@ class MainChartScreen extends React.Component {
   render() {
     return (
       <Container fluid style={styles.container}>
-        {/* Loading overlay */}
-        {this.state.isLoading && (
-          <div className="loading-overlay">
-            <Spinner animation="border" variant="primary" />
-          </div>
-        )}
         <Row style={styles.rowContainer}>
           <Col style={{ paddingLeft: 20 }}>
             <Row style={styles.rowCol1}>
-              <VN30DerivativeChart ref={this.VN30DerivativeChartRef} />
+              <div className="chart-wrapper">
+                {this.state.chartLoading.vn30 && (
+                  <div className="chart-loading">
+                    <Spinner animation="border" variant="primary" />
+                  </div>
+                )}
+                <VN30DerivativeChart ref={this.VN30DerivativeChartRef} />
+              </div>
             </Row>
             <Row style={styles.rowCol1}>
-              <ForeignDerivativeChart ref={this.ForeignDerivativeChartRef} />
+              <div className="chart-wrapper">
+                {this.state.chartLoading.foreign && (
+                  <div className="chart-loading">
+                    <Spinner animation="border" variant="primary" />
+                  </div>
+                )}
+                <ForeignDerivativeChart ref={this.ForeignDerivativeChartRef} />
+              </div>
             </Row>
             <Row style={styles.rowCol1}>
               {/* <NETBUSDChart ref={this.NETBUSDChartRef} /> */}
@@ -396,10 +420,24 @@ class MainChartScreen extends React.Component {
           </Col>
           <Col style={{ paddingLeft: 25, paddingRight: 25 }}>
             <Row style={styles.rowCol1}>
-              <NETBUSDChart ref={this.NETBUSDChartRef} />
+              <div className="chart-wrapper">
+                {this.state.chartLoading.netbusd && (
+                  <div className="chart-loading">
+                    <Spinner animation="border" variant="primary" />
+                  </div>
+                )}
+                <NETBUSDChart ref={this.NETBUSDChartRef} />
+              </div>
             </Row>
             <Row style={styles.rowCol1}>
-              <BuySellPressureChart ref={this.BuySellPressureChartRef} />
+              <div className="chart-wrapper">
+                {this.state.chartLoading.busd && (
+                  <div className="chart-loading">
+                    <Spinner animation="border" variant="primary" />
+                  </div>
+                )}
+                <BuySellPressureChart ref={this.BuySellPressureChartRef} />
+              </div>
             </Row>
             <Row style={styles.rowCol1}>
               <Col>
@@ -442,10 +480,24 @@ class MainChartScreen extends React.Component {
           </Col>
           <Col style={{ paddingRight: 21 }}>
             <Row style={styles.rowCol3}>
-              <FBFSChart ref={this.FBFSChartRef} />
+              <div className="chart-wrapper">
+                {this.state.chartLoading.fbfs && (
+                  <div className="chart-loading">
+                    <Spinner animation="border" variant="primary" />
+                  </div>
+                )}
+                <FBFSChart ref={this.FBFSChartRef} />
+              </div>
             </Row>
             <Row style={styles.rowCol3}>
-              <F1BidVAskVChart ref={this.F1BidVAskVChartRef} />
+              <div className="chart-wrapper">
+                {this.state.chartLoading.bidask && (
+                  <div className="chart-loading">
+                    <Spinner animation="border" variant="primary" />
+                  </div>
+                )}
+                <F1BidVAskVChart ref={this.F1BidVAskVChartRef} />
+              </div>
             </Row>
             {/* <Row style={styles.rowCol3}>
               <NetBSChart ref={this.NetBSChartRef} />
